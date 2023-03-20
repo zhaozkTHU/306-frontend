@@ -23,6 +23,8 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "antd": "5.3.1",
+    "@ant-design/pro-components":"2.4.2"
   }
 }
