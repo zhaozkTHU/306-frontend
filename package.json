@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
