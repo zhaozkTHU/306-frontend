@@ -25,7 +25,7 @@ const Words3ChooseDataForm: React.FC<{
         {(fields, key) =>
           fields.map((field, index) => (
             <div key={index}>
-              <Form.Item {...field} label={`选项${index}`}>
+              <Form.Item {...field} label={`选项${index}`} required>
                 <Input />
               </Form.Item>
             </div>
