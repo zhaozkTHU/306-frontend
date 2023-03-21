@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
+import { useRouter } from "next/router";
 import {
     QuestionCircleOutlined,
     UserOutlined,
     CarryOutOutlined,
     SettingOutlined,
     MonitorOutlined,
-    OrderedListOutlined
+    OrderedListOutlined,
+    EditOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Layout, Menu, theme } from 'antd';
-import AnnotaterContent from '@/components/AnnotaterContent';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -30,17 +31,18 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-    getItem('新任务', '1', <OrderedListOutlined />),
-    getItem('待标注', '2', <MonitorOutlined />),
-    getItem('审核中', '3', <QuestionCircleOutlined />),
-    getItem('已完成', '4', <CarryOutOutlined />),
-    getItem('用户信息', '5', <UserOutlined />),
-    getItem('设置', '6', <SettingOutlined />)
+    getItem('全部任务', 'all_task', <OrderedListOutlined />),
+    getItem('新任务', 'new_task', <EditOutlined />),
+    getItem('标注中', 'labelling', <MonitorOutlined />),
+    getItem('审核中', 'checking', <QuestionCircleOutlined />),
+    getItem('已完成', 'completed', <CarryOutOutlined />),
+    getItem('用户信息', 'info', <UserOutlined />),
+    getItem('设置', 'settings', <SettingOutlined />)
 ];
 
-const App: React.FC = () => {
+const AnnotaterDeploy = (props: any) => {
+    const router = useRouter();
     const [collapsed, setCollapsed] = useState(false);
-    const [AnnotaterItem, setAnnotaterItem] = useState("1")
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -50,15 +52,15 @@ const App: React.FC = () => {
             <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
                 <div style={{ height: 32, margin: 16, background: 'rgba(255, 255, 255, 0.2)' }} />
                 <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items}
-                onSelect={(e) =>{
-                    setAnnotaterItem(e.key)
+                onSelect={(e) => {
+                    router.push(`/annotater/${e.key}`)
                 }}
                  />
             </Sider>
             <Layout className="site-layout">
                 <Header style={{ padding: 0, background: colorBgContainer }} />
                 <Content style={{ margin: '0 16px' }}>
-                    <AnnotaterContent index={AnnotaterItem}/>
+                    {props.children}
                     {/* <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>User</Breadcrumb.Item>
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
@@ -73,4 +75,4 @@ const App: React.FC = () => {
     );
 };
 
-export default App;
+export default AnnotaterDeploy;
