@@ -1,26 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from "next/router";
 import { Button, Form, Input, Select } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { isValid } from '@/utils/valid';
 
 const onFinish = (values: any) => {
-    console.log('Success:', values);
+    alert(`${values.username}注册成功！`)
 };
 
 const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+
 };
 
 const LoginScreen = () => {
     const router = useRouter();
     const { Option } = Select;
+    
     return (
         <div style={{ position: "fixed", left: "50%", top: "10%", transform: "translate(-50%)" }}>
             <h2 style={{ textAlign: "center" }}>注册一个 306 账号</h2>
             <Form
                 name="basic"
                 style={{ maxWidth: 400 }}
-                initialValues={{ remember: true }}
+                initialValues={{ remember: true}}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
@@ -28,7 +30,17 @@ const LoginScreen = () => {
                 <p>用户名: </p>
                 <Form.Item
                     name="username"
-                    rules={[{ required: true, message: '用户名不能为空' }]}
+                    rules={[
+                        { required: true, message: '用户名不能为空' },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || isValid(value)) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('用户名只包含字母、数字、下划线'));
+                            },
+                        }),
+                    ]}
                 >
                     <Input
                         prefix={<UserOutlined className="site-form-item-icon" />}
@@ -41,7 +53,18 @@ const LoginScreen = () => {
                 <p>密码: </p>
                 <Form.Item
                     name="password"
-                    rules={[{ required: true, message: '密码不能为空' }]}
+                    rules={[
+                        { required: true, message: '密码不能为空' },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || isValid(value)) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('密码只包含字母、数字、下划线'));
+                            },
+                        }),
+                    ]}
+
                 >
                     <Input.Password
                         placeholder='密码'
@@ -78,14 +101,11 @@ const LoginScreen = () => {
                     rules={[{ required: true, message: '身份不能为空' }]}
                 >
                     <Select placeholder="选择身份">
-                        <Option value="male">需求方</Option>
-                        <Option value="female">标注方</Option>
+                        <Option value="demander">需求方</Option>
+                        <Option value="annotater">标注方</Option>
                     </Select>
                 </Form.Item>
-
-                <Button type="primary" htmlType="submit" block onClick={() => {
-                    alert("注册功能尚在开发中！")
-                }}>
+                <Button type="primary" htmlType="submit" block >
                     注册
                 </Button>
                 <p style={{ textAlign: "center" }}>已经有账号?</p>
