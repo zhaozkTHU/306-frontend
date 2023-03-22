@@ -1,29 +1,48 @@
 import React, { useState } from 'react';
 import { useRouter } from "next/router";
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, Select, Result } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { isValid } from '@/utils/valid';
-
-const onFinish = (values: any) => {
-    alert(`${values.username}注册成功！`)
-};
+import CryptoJS from 'crypto-js'
+import axios from 'axios';
 
 const onFinishFailed = (errorInfo: any) => {
-
+    console.log('Failed:', errorInfo);
 };
 
-const LoginScreen = () => {
+
+// register interface
+const RegisterScreen = () => {
     const router = useRouter();
     const { Option } = Select;
-    
+
     return (
-        <div style={{ position: "fixed", left: "50%", top: "10%", transform: "translate(-50%)" }}>
+        <div style={{ position: "fixed", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}>
             <h2 style={{ textAlign: "center" }}>注册一个 306 账号</h2>
             <Form
                 name="basic"
-                style={{ maxWidth: 400 }}
-                initialValues={{ remember: true}}
-                onFinish={onFinish}
+                style={{ maxWidth: 216 }}
+                initialValues={{ remember: true }}
+                onFinish={(values) => {
+                    // const hashedPassword = bcrypt.hashSync(values.password, 10);
+                    const hashPassword = CryptoJS.SHA256(values.password).toString()
+                    axios.post('api/user/register', {
+                        username: values.username,
+                        password: hashPassword,
+                        role: values.role
+                    })
+                        .then((response) => {
+                            console.log(response.data);
+                            router.push("/register/success")
+                        })
+                        .catch((error) => {
+                            if (error.response) {
+                                alert(`注册失败，${error.response.message}`)
+                            } else {
+                                alert("网络错误，请稍后重试")
+                            }
+                        })
+                }}
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
             >
@@ -34,10 +53,10 @@ const LoginScreen = () => {
                         { required: true, message: '用户名不能为空' },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
-                                if (!value || isValid(value)) {
+                                if (!value || (isValid(value)&&value.length<=50&&value.length>=3)) {
                                     return Promise.resolve();
                                 }
-                                return Promise.reject(new Error('用户名只包含字母、数字、下划线'));
+                                return Promise.reject(new Error('用户名只包含字母、数字、下划线且长度不超过50不小于3'));
                             },
                         }),
                     ]}
@@ -45,7 +64,7 @@ const LoginScreen = () => {
                     <Input
                         prefix={<UserOutlined className="site-form-item-icon" />}
                         placeholder='用户名'
-                        // style={{width:"400px"}}
+                    // style={{width:"400px"}}
                     />
                 </Form.Item>
 
@@ -57,10 +76,10 @@ const LoginScreen = () => {
                         { required: true, message: '密码不能为空' },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
-                                if (!value || isValid(value)) {
+                                if (!value || (isValid(value)&&value.length<=50&&value.length>=5)) {
                                     return Promise.resolve();
                                 }
-                                return Promise.reject(new Error('密码只包含字母、数字、下划线'));
+                                return Promise.reject(new Error('密码只包含字母、数字、下划线且长度不超过50不小于5'));
                             },
                         }),
                     ]}
@@ -117,4 +136,4 @@ const LoginScreen = () => {
     )
 };
 
-export default LoginScreen;
+export default RegisterScreen;
