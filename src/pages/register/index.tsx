@@ -10,7 +10,6 @@ const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
 };
 
-
 // register interface
 const RegisterScreen = () => {
     const router = useRouter();
@@ -121,7 +120,7 @@ const RegisterScreen = () => {
                 >
                     <Select placeholder="选择身份">
                         <Option value="demander">需求方</Option>
-                        <Option value="annotater">标注方</Option>
+                        <Option value="labeler">标注方</Option>
                     </Select>
                 </Form.Item>
                 <Button type="primary" htmlType="submit" block >

@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app'
 import { useEffect, useState, useContext, createContext } from "react";
 import { useRouter } from "next/router";
 import DemanderLayout from '@/layouts/DemanderLayout';
-import AnnotaterDeploy from '@/layouts/AnnotaterLayout';
+import LabelerDeploy from '@/layouts/LabelerLayout';
 import LoginScreen from '.';
 import NotFound from '@/components/NotFound';
 
@@ -21,8 +21,8 @@ const App = ({ Component, pageProps }: AppProps) => {
             // 已登录
             if (localStorage.getItem("role") == "demander") {
                 setLoginStatus("demanderAlreadyLogin")
-            } else if (localStorage.getItem("role") == "annotater") {
-                setLoginStatus("annotaterAlreadyLogin")
+            } else if (localStorage.getItem("role") == "labeler") {
+                setLoginStatus("labelerAlreadyLogin")
             }
         }
     },[router])
@@ -34,12 +34,12 @@ const App = ({ Component, pageProps }: AppProps) => {
                 </DemanderLayout>
             </UserIdContext.Provider>
         )
-    } else if (router.pathname.startsWith("/annotater/")) {
+    } else if (router.pathname.startsWith("/labeler/")) {
         return (
             <UserIdContext.Provider value={UserId}>
-                <AnnotaterDeploy loginStatus={LoginStatus} setLoginStatus={setLoginStatus}>
+                <LabelerDeploy loginStatus={LoginStatus} setLoginStatus={setLoginStatus}>
                     <Component {...pageProps} />
-                </AnnotaterDeploy>
+                </LabelerDeploy>
             </UserIdContext.Provider>
         )
     } else if (router.pathname.startsWith("/register")) {

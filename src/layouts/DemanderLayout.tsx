@@ -36,7 +36,7 @@ function getItem(
 const items: MenuItem[] = [
     getItem('所有任务', 'all_task', <OrderedListOutlined />),
     getItem('新建任务', 'new_task', <PlusOutlined />),
-    getItem('标注中', 'labelling', <MonitorOutlined />),
+    getItem('标注中', 'labeling', <MonitorOutlined />),
     getItem('待审核', 'checking', <QuestionCircleOutlined />),
     getItem('已完成', 'completed', <CarryOutOutlined />),
     getItem('用户信息', 'info', <UserOutlined />),
