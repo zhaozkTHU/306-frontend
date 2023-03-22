@@ -10,7 +10,7 @@ import {
     EditOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme, Spin, Result, Button } from 'antd';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -39,14 +39,33 @@ const items: MenuItem[] = [
     getItem('用户信息', 'info', <UserOutlined />),
     getItem('设置', 'settings', <SettingOutlined />)
 ];
+interface AnnotaterDeployprops {
+    loginStatus: string
+    children: any
+    setLoginStatus: any
+}
 
-const AnnotaterDeploy = (props: any) => {
+const AnnotaterDeploy = (props: AnnotaterDeployprops) => {
     const router = useRouter();
     const [collapsed, setCollapsed] = useState(false);
     const {
         token: { colorBgContainer },
     } = theme.useToken();
-
+    if(props.loginStatus=="waiting") {
+        return <Spin size='large'/>
+    } else if(props.loginStatus!="annotaterAlreadyLogin") {
+        return <Result
+        status="error"
+        title="尚未登录"
+        extra={[<Button
+            onClick={() => {
+                router.push("/");
+            }}
+        >
+            跳转到登录界面
+        </Button>]}
+        />
+    }
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>

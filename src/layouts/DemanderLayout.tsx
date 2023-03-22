@@ -10,7 +10,7 @@ import {
     OrderedListOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme, Spin, Result, Button } from 'antd';
 
 // import DemanderContent from '../../components/DemanderContent'
 
@@ -43,12 +43,13 @@ const items: MenuItem[] = [
     getItem('设置', 'settings', <SettingOutlined />)
 ];
 
-// export interface DemanderLayoutProps {
-//     a : string
-// }
+export interface DemanderLayoutProps {
+    loginStatus : string
+    children: any
+    setLoginStatus: any
+}
 
-const DemanderLayout = (props: { children: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }) => {
-
+const DemanderLayout = (props: DemanderLayoutProps) => {
     const router = useRouter()
     const [collapsed, setCollapsed] = useState(false);
     // const [DemanderItem, setDemanderItem] = useState("1")
@@ -56,6 +57,21 @@ const DemanderLayout = (props: { children: string | number | boolean | React.Rea
         token: { colorBgContainer },
     } = theme.useToken();
 
+    if(props.loginStatus=="waiting") {
+        return <Spin size='large'/>
+    } else if(props.loginStatus!="demanderAlreadyLogin") {
+        return <Result
+        status="error"
+        title="尚未登录"
+        extra={[<Button
+            onClick={() => {
+                router.push("/");
+            }}
+        >
+            跳转到登录界面
+        </Button>]}
+        />
+    }
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
