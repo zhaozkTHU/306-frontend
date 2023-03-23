@@ -50,6 +50,6 @@ style-test:
 deploy:
   stage: deploy
   script:
-    - deployer dyno replace frontend $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG gitlab-ci-token $REGISTRY_PWD
+    - deployer dyno replace 306-frontend $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG gitlab-ci-token $REGISTRY_PWD
   only:
     - main
