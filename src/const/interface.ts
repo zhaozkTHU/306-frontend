@@ -3,24 +3,26 @@ export interface User {
   password: string;
 }
 
-export interface Words3Choose1Data {
+export interface ThreeChooseOneData {
   description: string;
   options: string[];
 }
 
-export interface WordsDescribeData {
+export interface DescribeData {
   description: string;
+  content: string;
 }
 
 export interface TaskInfo {
-  task_id: number;
+  task_id?: number;
   title: string;
+  create_at: number;
+  deadline: number
   template: "words" | "images";
-  style: "3choose1" | "describe";
+  style: "ThreeChooseOne" | "describe";
   reward: number;
   time: number;
-  total_time: number;
-  worker_num: number;
+  labeler_num: number;
   demander_id: number;
-  task_data: Words3Choose1Data | WordsDescribeData;
+  task_data: ThreeChooseOneData[] | DescribeData[];
 }
