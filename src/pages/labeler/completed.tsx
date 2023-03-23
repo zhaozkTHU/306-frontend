@@ -1,5 +1,5 @@
 const LabelerCompleted = () => {
-    return <p>LabelerCompleted</p>
+  return <p>LabelerCompleted</p>
 }
 
 export default LabelerCompleted

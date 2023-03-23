@@ -1,5 +1,5 @@
 const LabelerLabeling = () => {
-    return <p>LabelerLabeling</p>
+  return <p>LabelerLabeling</p>
 }
 
 export default LabelerLabeling
