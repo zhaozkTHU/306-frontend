@@ -13,6 +13,7 @@ const RegisterSuccess = () => {
                     onClick={() => {
                         router.push("/");
                     }}
+                    key="jumpToLogin"
                 >
                     跳转到登录界面
                 </Button>,
@@ -20,6 +21,7 @@ const RegisterSuccess = () => {
                     onClick={() => {
                         router.push("/register")
                     }}
+                    key="jumpToRegister"
                 >
                     返回注册界面
                 </Button>

@@ -36,7 +36,7 @@ const RegisterScreen = () => {
                         })
                         .catch((error) => {
                             if (error.response) {
-                                alert(`注册失败，${error.response.message}`)
+                                alert(`注册失败，${error.response.data.message}`)
                             } else {
                                 alert("网络错误，请稍后重试")
                             }

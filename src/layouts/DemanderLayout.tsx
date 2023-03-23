@@ -64,6 +64,7 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
         status="error"
         title="尚未登录"
         extra={[<Button
+            key="jumpToLogin"
             onClick={() => {
                 router.push("/");
             }}

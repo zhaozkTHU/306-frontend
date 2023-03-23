@@ -10,6 +10,7 @@ const NotFound = () => {
             onClick={() => {
                 router.push("/");
             }}
+            key="jumpToLogin"
         >
             跳转到登录界面
         </Button>]}
