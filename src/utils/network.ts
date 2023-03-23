@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 
 const network = axios.create({
     baseURL: "",
@@ -24,7 +24,7 @@ export class NetworkError extends Error {
     }
 
     toString(): string { return this.message; }
-    valueOf(): Object { return this.message; }
+    valueOf(): unknown { return this.message; }
 }
 
 export const request = async (
