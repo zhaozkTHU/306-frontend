@@ -15,7 +15,7 @@ import { Layout, Menu, theme, Spin, Result, Button } from 'antd';
 // import DemanderContent from '../../components/DemanderContent'
 
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -57,9 +57,9 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  if (props.loginStatus == "waiting") {
+  if (props.loginStatus === "waiting") {
     return <Spin size='large' />
-  } else if (props.loginStatus != "demanderAlreadyLogin") {
+  } else if (props.loginStatus !== "demanderAlreadyLogin") {
     return <Result
       status="error"
       title="尚未登录"

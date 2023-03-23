@@ -3,7 +3,7 @@ export const isValid = (s: string): boolean => {
 }
 
 export const translate_err = (en: string): string => {
-    let ret: string = "";
+    // let ret: string = "";
     switch(en) {
         
     }

@@ -12,7 +12,7 @@ import {
 import type { MenuProps } from 'antd';
 import { Layout, Menu, theme, Spin, Result, Button } from 'antd';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -51,9 +51,9 @@ const LabelerDeploy = (props: LabelerDeployprops) => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  if (props.loginStatus == "waiting") {
+  if (props.loginStatus === "waiting") {
     return <Spin size='large' />
-  } else if (props.loginStatus != "labelerAlreadyLogin") {
+  } else if (props.loginStatus !== "labelerAlreadyLogin") {
     return <Result
       status="error"
       title="尚未登录"

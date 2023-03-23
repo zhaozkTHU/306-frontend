@@ -1,5 +1,5 @@
 import { Result, Button } from "antd";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 const NotFound = () => {
   const router = useRouter()

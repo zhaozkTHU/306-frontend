@@ -21,9 +21,9 @@ const App = ({ Component, pageProps }: AppProps) => {
       // 已登录
       const user_id = localStorage.getItem("user_id")
       setUserId(parseInt(user_id ? user_id : "-1"))
-      if (localStorage.getItem("role") == "demander") {
+      if (localStorage.getItem("role") === "demander") {
         setLoginStatus("demanderAlreadyLogin")
-      } else if (localStorage.getItem("role") == "labeler") {
+      } else if (localStorage.getItem("role") === "labeler") {
         setLoginStatus("labelerAlreadyLogin")
       }
     }
