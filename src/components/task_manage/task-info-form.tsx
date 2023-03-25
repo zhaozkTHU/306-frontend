@@ -3,6 +3,7 @@ import { Form, message, Input, Radio, InputNumber, DatePicker, Row, Col, Button,
 import dayjs from "dayjs";
 import React, { useState } from "react";
 
+// task_manage内部使用
 const TaskInfoForm: React.FC<{
   taskInfo?: TaskInfo,
   setTaskInfo?: (taskInfo: TaskInfo) => void,
@@ -73,7 +74,7 @@ const TaskInfoForm: React.FC<{
       </Form.Item>
       <Row>
         <Col>
-          <Button type="dashed" onClick={() => { add(info.style); }}>+</Button>
+          <Button type="dashed" onClick={() => { add(info.style); }} disabled={info.template === undefined || info.style === undefined}>+</Button>
         </Col>
         <Col>
           <Form.Item label="任务数据" rules={[{ required: true, message: "请输入任务数据" }]}>
