@@ -13,16 +13,21 @@ export interface DescribeData {
   content: string;
 }
 
+export interface TextClassificationProblem {
+  description: string
+  options : string[]
+}
+
 export interface TaskInfo {
   task_id?: number;
   title: string;
   create_at: number;
   deadline: number
-  template: "words" | "images";
+  template: "TextClassification" | "ImagesClassification";
   style: "ThreeChooseOne" | "describe";
   reward: number;
   time: number;
   labeler_num: number;
   demander_id: number;
-  task_data: ThreeChooseOneData[] | DescribeData[];
+  task_data: ThreeChooseOneData[] | DescribeData[] | TextClassificationProblem[];
 }
