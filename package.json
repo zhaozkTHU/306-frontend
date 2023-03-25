@@ -31,9 +31,10 @@
     "typescript": "4.9.5"
   },
   "devDependencies": {
-    "eslint": "^8.36.0",
-    "eslint-config-react-app": "^7.0.1",
     "@types/bcrypt": "^5.0.0",
-    "@types/crypto-js": "^4.1.1"
+    "@types/crypto-js": "^4.1.1",
+    "@types/file-saver": "^2.0.5",
+    "eslint": "^8.36.0",
+    "eslint-config-react-app": "^7.0.1"
   }
 }
