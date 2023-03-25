@@ -35,6 +35,7 @@ const DataExportForm: React.FC = () => {
         setModalOpen(false);
         // const blob = new Blob([value.map()], {type: "text/plain;charset=utf-8"});
         // FileSaver.saveAs(blob, `${taskId}.json`);
+        message.success("导出成功")
       })
       .catch((reason) => { console.log(reason); message.error("请求错误"); });
   };
