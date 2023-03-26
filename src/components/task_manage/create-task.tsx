@@ -19,17 +19,18 @@ const CreateTask: React.FC = () => {
       deadline: dayjs(taskInfo.deadline).valueOf(),
       demander_id: userId
     });
-    request("/api/task", "POST", taskInfo)
-      .then((value) => {
-        console.log(value);
-        message.success("发布成功");
-        setTimeout(() => router.push("/"), 1000);
-      })
-      .catch((reason) => {
-        console.log(reason);
-        message.error("发送失败");
-        setTimeout(() => router.push("/"), 1000);
-      });
+    console.log(taskInfo);
+    // request("/api/task", "POST", taskInfo)
+    //   .then((value) => {
+    //     console.log(value);
+    //     message.success("发布成功");
+    //     setTimeout(() => router.push("/"), 1000);
+    //   })
+    //   .catch((reason) => {
+    //     console.log(reason);
+    //     message.error("发送失败");
+    //     setTimeout(() => router.push("/"), 1000);
+    //   });
   };
 
   return (
