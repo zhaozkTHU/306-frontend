@@ -17,11 +17,11 @@ const TagList: React.FC = () => {
       },
     //   body: JSON.stringify({ labeler_id: labelerId }),
     });
-    const data = await response.json();
-    setTasks(data);
+    const data_json = await response.json();
+    setTasks(JSON.parse(data_json).task);
   };
 
-  const handleTagging = (task: TaskInfo) => {
+  const Taggingboard = (task: TaskInfo) => {
     // 在这里处理跳转到标注组件的逻辑，需要传入task数据
     const [visible, setVisible] = useState(true);
   
@@ -93,7 +93,7 @@ const TagList: React.FC = () => {
       title: 'Tagging',
       key: 'tagging',
       render: (text: any, record: TaskInfo) => (
-        <Button type="primary" onClick={() => handleTagging(record)}>
+        <Button type="primary" onClick={() => Taggingboard(record)}>
           Tagging
         </Button>
       ),

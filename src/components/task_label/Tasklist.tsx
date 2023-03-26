@@ -19,8 +19,8 @@ const TaskList: React.FC = () => {
         },
         body: JSON.stringify({ labeler_id: labelerId })
       });
-      const tasks = await response.json();
-      setTasks(tasks);
+      const tasks_json = await response.json();
+      setTasks(JSON.parse(tasks_json).tasks);
     } catch (error) {
       console.error(error);
       message.error('Failed to fetch tasks');
