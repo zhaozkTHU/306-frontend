@@ -19,39 +19,6 @@ const TaskInfoForm: React.FC<{
     props.onFinish();
   };
 
-  const addData = (template: "TextClassification" | "ImagesClassification") => {
-    setInfo((info) => {
-      const newInfo = { ...info };
-      if (newInfo.task_data !== undefined) {
-        if (template === "TextClassification") {
-          newInfo.task_data = [...newInfo.task_data, { description: "", options: [] }];
-        } else {
-          // TODO
-        }
-      } else if (template === "TextClassification") {
-        newInfo.task_data = [{ description: "", options: [] }];
-      }
-      return newInfo;
-    });
-    console.log(info);
-    form.setFieldsValue(info);
-  };
-
-  const delData = (index: number) => {
-    form.setFieldsValue({
-      ...form.getFieldsValue(),
-      task_data: [
-        ...form.getFieldsValue().task_data.slice(0, index),
-        ...form.getFieldsValue().task_data.slice(index + 1)
-      ]
-    });
-    setInfo((info) => {
-      const newInfo = { ...info };
-      newInfo.task_data = [...newInfo.task_data.slice(0, index), newInfo.task_data.slice(index + 1)] as any;
-      return newInfo;
-    });
-  };
-
   return (
     <Form
       form={form}
