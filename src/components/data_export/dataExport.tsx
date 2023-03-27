@@ -5,7 +5,6 @@ import { useContext } from "react";
 import { TaskInfo } from "@/const/interface";
 import { useRouter } from "next/router";
 import { Button, Empty, List, message, Modal, Spin, Switch } from "antd";
-import FileSaver from "file-saver";
 
 const DataExportForm: React.FC = () => {
   const userId = useContext(UserIdContext);
@@ -19,23 +18,29 @@ const DataExportForm: React.FC = () => {
   const query = router.query;
 
   useEffect(() => {
-    request("/api/task", "GET", {demander_id: userId})
+    request("/api/task", "GET", { demander_id: userId })
       .then((value) => { setAllTaskInfo(value); setLoading(false); })
       .catch((reason) => { console.log(reason); message.error("请求错误"); });
   }, [router, query, userId]);
 
   const handleOk = () => {
     setExportLoading(true);
-    request("/api/data", "GET", { task_id: taskId })
+    request("/api/data", "GET", { task_id: taskId, merge: merge })
       .then((value) => {
         // TODO: 我不清楚标注数据的内部结构，需要其他人去处理 --zzk
-        if (merge) {}
-        else {}
+        const jsonData = JSON.stringify(value);
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = 'data.json';
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         setExportLoading(false);
         setModalOpen(false);
-        // const blob = new Blob([value.map()], {type: "text/plain;charset=utf-8"});
-        // FileSaver.saveAs(blob, `${taskId}.json`);
-        message.success("导出成功")
+        message.success("导出成功");
       })
       .catch((reason) => { console.log(reason); message.error("请求错误"); });
   };
