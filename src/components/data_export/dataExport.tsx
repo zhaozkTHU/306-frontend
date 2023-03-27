@@ -6,7 +6,29 @@ import { TaskInfo } from "@/const/interface";
 import { useRouter } from "next/router";
 import { Button, Empty, List, message, Modal, Spin, Switch } from "antd";
 
-const DataExportForm: React.FC = () => {
+export const DataExportCallback = (taskId: number, merge: boolean) => {
+  request("/api/data", "GET", { task_id: taskId, merge: merge })
+    .then((value) => {
+      const jsonData = JSON.stringify(value);
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.download = 'data.json';
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      message.success("导出成功");
+    })
+    .catch((reason) => { console.log(reason); message.error("请求错误"); });
+};
+
+// 弃用
+/**
+ * @deprecated Please use DataExportCallback
+ */
+export const DataExportForm: React.FC = () => {
   const userId = useContext(UserIdContext);
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
@@ -27,7 +49,6 @@ const DataExportForm: React.FC = () => {
     setExportLoading(true);
     request("/api/data", "GET", { task_id: taskId, merge: merge })
       .then((value) => {
-        // TODO: 我不清楚标注数据的内部结构，需要其他人去处理 --zzk
         const jsonData = JSON.stringify(value);
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -89,4 +110,4 @@ const DataExportForm: React.FC = () => {
 };
 
 
-export default DataExportForm;
+export default DataExportCallback;
