@@ -42,12 +42,13 @@ const DemanderChecking = () => {
       }))
     })
     .catch((err) => {
+      console.log(err)
     })
   })
   
   return (
-    tasks.map((task) => 
-      <DemanderTaskBlock {...task}/>
+    tasks.map((task, idx) => 
+      <DemanderTaskBlock {...task} key={idx}/>
     )
   )  
 }

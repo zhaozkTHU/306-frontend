@@ -1,5 +1,5 @@
-import { TextClassificationProblem } from '../../const/interface'
-import CheckTextClassificationTask from "../../components/check/checkTextClassificationTask"
+// import { TextClassificationProblem } from '../../const/interface'
+// import CheckTextClassificationTask from "../../components/check/checkTextClassificationTask"
 
 const DemanderAllTask = () => {
   // const problems:TextClassificationProblem[] = [
