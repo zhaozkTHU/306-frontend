@@ -15,7 +15,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
     const [passedNumber, setPassedNumber] = useState<number>(0);
     const [problems, setProblems] = useState<TextClassificationProblem[]>([])
     useEffect(() => {
-        axios.get(`/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_id}`)
+        axios.get(`api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_id}`)
         .then((response) => {
                 setProblems(response.data.task_list)
             }

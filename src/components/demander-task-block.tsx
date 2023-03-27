@@ -4,6 +4,9 @@ import { transTime } from '../utils/valid'
 import { DownloadOutlined} from '@ant-design/icons';
 import { useState } from 'react';
 import CheckModel from './check/checkModel'
+import DataExportCallback from './data_export/dataExport';
+import UpdateTask from './task_manage/update-task';
+
 export interface DemanderTaskBlockProps {
   task_id: number
   creat_at: number
@@ -17,7 +20,8 @@ export interface DemanderTaskBlockProps {
 }
 
 const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
-  const [isModalOpen, setIsMoalOpen] = useState<boolean>(false)
+  const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false)
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false)
   const [labelerId, setLabelerId] = useState<number>(-1)
   const [isShow, setIsShow] = useState<boolean>(false)
   const items: MenuProps['items'] = [
@@ -47,15 +51,26 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
   return (
     <>
     <Modal 
-      open={isModalOpen}
+      open={isCheckModalOpen}
       onOk={() => {
-        setIsMoalOpen(false)
+        setIsCheckModalOpen(false)
       }}
       onCancel={() => {
-        setIsMoalOpen(false)
+        setIsCheckModalOpen(false)
       }}
     >
       <CheckModel task_id={props.task_id} labeler_id={labelerId} template={props.template} isShow={isShow}/>
+    </Modal>
+    <Modal 
+      open={isUpdateModalOpen}
+      onOk={() => {
+        setIsUpdateModalOpen(false)
+      }}
+      onCancel={() => {
+        setIsUpdateModalOpen(false)
+      }}
+    >
+      <UpdateTask taskId={props.task_id} />
     </Modal>
     <Card
       title={props.title}
@@ -70,20 +85,39 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
           items:items,
           onClick: ({key}) => {
             setIsShow(true)
-            setIsMoalOpen(true)
+            setIsCheckModalOpen(true)
             setLabelerId(props.labeler_id[parseInt(key)])
           }
         }}
         >
           审核
         </Dropdown.Button>
-        <Button>
-          修改任务
-        </Button>
-        <Button
+        <Dropdown.Button
           icon={<DownloadOutlined />}
+          menu={{
+            items:[
+              {
+                key: 'merge',
+                label: '归并导出'
+              },
+              {
+                key: 'notMerge',
+                label: '导出原始数据'
+              }
+            ],
+            onClick:({key}) => {
+              DataExportCallback(props.task_id, key==='merge'?true:false)
+            }
+          }}
         >
           导出数据
+        </Dropdown.Button>
+        <Button
+        onClick={()=>{
+          setIsUpdateModalOpen(true)
+        }}
+        >
+         修改任务
         </Button>
         </Space>
       </>
