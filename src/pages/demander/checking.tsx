@@ -31,7 +31,7 @@ const DemanderChecking = () => {
   // ]
   const [tasks, setTasks] = useState<DemanderTaskBlockProps[]>([])
   useEffect(() => {
-    axios.get('api/task/checking', {
+    axios.get('/api/task/checking', {
       headers:{
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
