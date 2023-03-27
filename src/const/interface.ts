@@ -16,6 +16,7 @@ export interface DescribeData {
 export interface TextClassificationProblem {
   description: string
   options : string[]
+  chosen? : boolean[]
 }
 
 export interface TaskInfo {
@@ -30,4 +31,8 @@ export interface TaskInfo {
   labeler_num: number;
   demander_id: number;
   task_data: ThreeChooseOneData[] | DescribeData[] | TextClassificationProblem[];
+}
+
+export interface TextClassificationData {
+  label_data: (boolean[])[]
 }

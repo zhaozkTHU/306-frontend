@@ -1,5 +1,7 @@
+import CreateTask from "@/components/task_manage/create-task"
+
 const DemanderNewTask = () => {
-  return <p>DemanderNewTask</p>
+  return <CreateTask />
 }
 
 export default DemanderNewTask

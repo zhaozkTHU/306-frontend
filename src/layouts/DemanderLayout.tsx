@@ -75,7 +75,13 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
   }
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}
+        style={{
+          overflow: 'auto',
+          position: 'fixed',
+          height: '100vh'
+        }}
+      >
         <div style={{ height: 32, margin: 16, background: 'rgba(255, 255, 255, 0.2)' }} />
         <Menu theme="dark" defaultSelectedKeys={['info']} mode="inline" items={items}
           onSelect={(e) => {
@@ -84,7 +90,7 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
           }}
         />
       </Sider>
-      <Layout className="site-layout">
+      <Layout className="site-layout" style={{marginLeft:200}}>
         <Header style={{ padding: 0, background: colorBgContainer }} />
         <Content style={{ margin: '0 16px' }}>
           {props.children}
