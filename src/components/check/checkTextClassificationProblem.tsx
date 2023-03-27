@@ -9,7 +9,7 @@ interface CheckTextClassificationProps {
 }
 
 const CheckTextClassificationProblem = (props: CheckTextClassificationProps) => {
-  const [source, setSource] = useState<string>("");
+  // const [source, setSource] = useState<string>("");
   const [current, setCurrent] = useState<string>("fail");
   return <Card
     title = "问题"
@@ -17,11 +17,10 @@ const CheckTextClassificationProblem = (props: CheckTextClassificationProps) => 
     <>
     <p>{props.problem.description}</p>
     {props.problem.options.map((option, index) => 
-      <div>
+      <div key = {index}>
       <Checkbox
         defaultChecked = {props.problem.chosen?props.problem?.chosen[index]:false}
         disabled = {true}
-        key = {index}
       >
         {option}
       </Checkbox>
@@ -29,15 +28,15 @@ const CheckTextClassificationProblem = (props: CheckTextClassificationProps) => 
     )}
     <Radio.Group defaultValue="fail"
       onChange={(e: RadioChangeEvent) => {
-        setSource(() => current)
-        setCurrent(() => e.target.value)
-        let s = current
-        let c = e.target.value
-        if(s=="fail"&&c=="pass"){
+        // setSource(() => current)
+        const s = current
+        const c = e.target.value
+        if(s==="fail"&&c==="pass"){
           props.setPassedNumber((b) => b+1)
-        } else if(s=="pass"&&c=="fail") {
+        } else if(s==="pass"&&c==="fail") {
           props.setPassedNumber((b) => b-1)
         } 
+        setCurrent(() => e.target.value)
       }}
     >
       <Radio value="pass">合格</Radio>
