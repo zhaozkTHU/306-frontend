@@ -19,6 +19,7 @@ const CreateTask: React.FC = () => {
       deadline: dayjs(taskInfo.deadline).valueOf(),
       demander_id: userId
     });
+    console.log(taskInfo);
     request("/api/task", "POST", taskInfo)
       .then((value) => {
         console.log(value);
