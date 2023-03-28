@@ -30,12 +30,13 @@ const RegisterScreen = () => {
         style={{ maxWidth: 216 }}
         initialValues={{ remember: true }}
         onFinish={(values) => {
-          const hashPassword = CryptoJS.SHA256(values.password).toString()
-          axios.post('/api/user/register', {
-            username: values.username,
-            password: hashPassword,
-            role: values.role
-          })
+          const hashPassword = CryptoJS.SHA256(values.password).toString();
+          axios
+            .post("/api/user/register", {
+              username: values.username,
+              password: hashPassword,
+              role: values.role,
+            })
             .then((response) => {
               console.log(response.data);
               router.push("/register/success");
