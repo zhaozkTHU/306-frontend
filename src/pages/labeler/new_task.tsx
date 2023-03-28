@@ -1,5 +1,7 @@
+import TaskList from "@/components/task_label/Tasklist"
+
 const LabelerNewTask = () => {
-  return <p>LabelerNewTask</p>
+  return <TaskList />
 }
 
 export default LabelerNewTask
