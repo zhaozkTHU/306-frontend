@@ -19,15 +19,15 @@ const RegisterSuccess = () => {
         </Button>,
         <Button
           onClick={() => {
-            router.push("/register")
+            router.push("/register");
           }}
           key="jumpToRegister"
         >
           返回注册界面
-        </Button>
+        </Button>,
       ]}
     />
-  )
-}
+  );
+};
 
 export default RegisterSuccess;

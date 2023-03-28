@@ -1,5 +1,5 @@
 const DemanderChecking = () => {
-  return <p>DemanderChecking</p>
-}
+  return <p>DemanderChecking</p>;
+};
 
-export default DemanderChecking
+export default DemanderChecking;

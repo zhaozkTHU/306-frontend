@@ -1,5 +1,5 @@
 const LabelerInfo = () => {
-  return <p>LabelerInfo</p>
-}
+  return <p>LabelerInfo</p>;
+};
 
-export default LabelerInfo
+export default LabelerInfo;

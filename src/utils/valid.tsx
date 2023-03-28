@@ -1,11 +1,10 @@
 export const isValid = (s: string): boolean => {
-    return /^\w+$/.test(s);
-}
+  return /^\w+$/.test(s);
+};
 
 export const translate_err = (en: string): string => {
-    // let ret: string = "";
-    switch(en) {
-        
-    }
-    return ""
-}
+  // let ret: string = "";
+  switch (en) {
+  }
+  return "";
+};

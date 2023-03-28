@@ -12,8 +12,8 @@ export const DataExportCallback = (taskId: number, merge: boolean) => {
       const jsonData = JSON.stringify(value);
       const blob = new Blob([jsonData], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.download = 'data.json';
+      const a = document.createElement("a");
+      a.download = "data.json";
       a.href = url;
       document.body.appendChild(a);
       a.click();
@@ -21,7 +21,10 @@ export const DataExportCallback = (taskId: number, merge: boolean) => {
       URL.revokeObjectURL(url);
       message.success("导出成功");
     })
-    .catch((reason) => { console.log(reason); message.error("请求错误"); });
+    .catch((reason) => {
+      console.log(reason);
+      message.error("请求错误");
+    });
 };
 
 // 弃用
@@ -41,8 +44,14 @@ export const DataExportForm: React.FC = () => {
 
   useEffect(() => {
     request("/api/task", "GET", { demander_id: userId })
-      .then((value) => { setAllTaskInfo(value); setLoading(false); })
-      .catch((reason) => { console.log(reason); message.error("请求错误"); });
+      .then((value) => {
+        setAllTaskInfo(value);
+        setLoading(false);
+      })
+      .catch((reason) => {
+        console.log(reason);
+        message.error("请求错误");
+      });
   }, [router, query, userId]);
 
   const handleOk = () => {
@@ -52,8 +61,8 @@ export const DataExportForm: React.FC = () => {
         const jsonData = JSON.stringify(value);
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.download = 'data.json';
+        const a = document.createElement("a");
+        a.download = "data.json";
         a.href = url;
         document.body.appendChild(a);
         a.click();
@@ -63,51 +72,60 @@ export const DataExportForm: React.FC = () => {
         setModalOpen(false);
         message.success("导出成功");
       })
-      .catch((reason) => { console.log(reason); message.error("请求错误"); });
+      .catch((reason) => {
+        console.log(reason);
+        message.error("请求错误");
+      });
   };
 
-  return (
-    loading ? <Spin tip="加载中" /> :
-      <>
-        {allTaskInfo.length === 0 && <Empty description="无发表任务" />}
-        {allTaskInfo.length !== 0 &&
-          <>
-            <List
-              dataSource={allTaskInfo}
-              bordered
-              renderItem={(item) =>
-                <>
-                  <List.Item>{item.title}</List.Item>
-                  <List.Item>
-                    <Button
-                      onClick={() => { setModalOpen(true); setTaskId(item.task_id as number); }}
-                    >
-                      导出数据
-                    </Button>
-                  </List.Item>
-                </>
-              }
-            />
-            <Modal
-              title="导出任务数据"
-              open={modalOpen}
-              onOk={handleOk}
-              confirmLoading={exportLoading}
-              okText="导出"
-              onCancel={() => setModalOpen(false)}
-            >
-              {
-                <>
-                  <p>合并数据</p>
-                  <Switch checked={merge} onChange={(checked) => setMerge(checked)} />
-                </>
-              }
-            </Modal>
-          </>
-        }
-      </>
+  return loading ? (
+    <Spin tip="加载中" />
+  ) : (
+    <>
+      {allTaskInfo.length === 0 && <Empty description="无发表任务" />}
+      {allTaskInfo.length !== 0 && (
+        <>
+          <List
+            dataSource={allTaskInfo}
+            bordered
+            renderItem={(item) => (
+              <>
+                <List.Item>{item.title}</List.Item>
+                <List.Item>
+                  <Button
+                    onClick={() => {
+                      setModalOpen(true);
+                      setTaskId(item.task_id as number);
+                    }}
+                  >
+                    导出数据
+                  </Button>
+                </List.Item>
+              </>
+            )}
+          />
+          <Modal
+            title="导出任务数据"
+            open={modalOpen}
+            onOk={handleOk}
+            confirmLoading={exportLoading}
+            okText="导出"
+            onCancel={() => setModalOpen(false)}
+          >
+            {
+              <>
+                <p>合并数据</p>
+                <Switch
+                  checked={merge}
+                  onChange={(checked) => setMerge(checked)}
+                />
+              </>
+            }
+          </Modal>
+        </>
+      )}
+    </>
   );
 };
-
 
 export default DataExportCallback;

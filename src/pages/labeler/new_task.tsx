@@ -1,5 +1,5 @@
 const LabelerNewTask = () => {
-  return <p>LabelerNewTask</p>
-}
+  return <p>LabelerNewTask</p>;
+};
 
-export default LabelerNewTask
+export default LabelerNewTask;

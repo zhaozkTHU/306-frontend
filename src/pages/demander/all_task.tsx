@@ -1,5 +1,5 @@
 const DemanderAllTask = () => {
-  return <p>DemanderAllTask</p>
-}
+  return <p>DemanderAllTask</p>;
+};
 
-export default DemanderAllTask
+export default DemanderAllTask;
