@@ -1,5 +1,7 @@
+import TagList from "@/components/task_label/Taglist"
+
 const LabelerLabeling = () => {
-  return <p>LabelerLabeling</p>;
-};
+  return <TagList />
+}
 
 export default LabelerLabeling;

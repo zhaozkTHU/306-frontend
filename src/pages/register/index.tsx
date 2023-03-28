@@ -30,10 +30,9 @@ const RegisterScreen = () => {
         style={{ maxWidth: 216 }}
         initialValues={{ remember: true }}
         onFinish={(values) => {
-          // const hashedPassword = bcrypt.hashSync(values.password, 10);
           const hashPassword = CryptoJS.SHA256(values.password).toString();
           axios
-            .post("api/user/register", {
+            .post("/api/user/register", {
               username: values.username,
               password: hashPassword,
               role: values.role,

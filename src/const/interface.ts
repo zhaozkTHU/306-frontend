@@ -27,3 +27,7 @@ export interface TaskInfo {
   demander_id: number;
   task_data: TextClassificationProblem[] | ImagesClassificationProblem[];
 }
+
+export interface TextClassificationData {
+  label_data: boolean[][];
+}
