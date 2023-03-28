@@ -11,13 +11,15 @@ import { useRouter } from "next/router";
 const CreateTask: React.FC = () => {
   const userId = useContext(UserIdContext);
   const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
+  const router = useRouter();
   useEffect(() => {
     console.log("CreateTask", taskInfo);
   }, [taskInfo]);
   const onFinish = (info: TaskInfo) => {
+    const time = new Date().valueOf();
     setTaskInfo({
       ...info,
-      create_at: new Date().valueOf(),
+      create_at: time,
       demander_id: userId,
     });
     // request("/api/task", "POST", taskInfo)
