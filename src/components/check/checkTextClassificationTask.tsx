@@ -43,7 +43,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
                     size="large"
                     block
                     onClick={() => {
-                        axios.post('api/checking',
+                        axios.post('/api/checking',
                             {
                                 task_id: props.task_id,
                                 labeler_id: props.labeler_id,
@@ -59,7 +59,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
                     size="large"
                     block
                     onClick={() => {
-                        axios.post('api/checking',
+                        axios.post('/api/checking',
                             {
                                 task_id: props.task_id,
                                 labeler_id: props.labeler_id,
