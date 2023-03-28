@@ -27,7 +27,7 @@ const LoginScreen = (props: LoginScreenPorps) => {
         initialValues={{ remember: true }}
         onFinish={(values) => {
           const hashPassword = CryptoJS.SHA256(values.password).toString()
-          axios.post('api/user/login', {
+          axios.post('/api/user/login', {
             username: values.username,
             password: hashPassword
           })
