@@ -29,5 +29,5 @@ export interface TaskInfo {
 }
 
 export interface TextClassificationData {
-  label_data: (boolean[])[]
+  label_data: boolean[][];
 }
