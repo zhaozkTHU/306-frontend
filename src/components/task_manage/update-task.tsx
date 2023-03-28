@@ -12,9 +12,9 @@ const UpdateTask: React.FC<{ taskId: number; }> = (props) => {
   request("/api/task", "GET", { task_id: props.taskId })
     .then((res) => { setTaskInfo(res); setLoading(false); })
     .catch((reason) => { console.log(reason); message.error("获取数据失败"); });
-  const onFinish = () => {
+  const onFinish = (info: TaskInfo) => {
     setLoading(true);
-    console.log(taskInfo);
+    setTaskInfo({ ...taskInfo, ...info });
     request("/api/task", "PUT", taskInfo)
       .then((_) => { setLoading(false); message.success("更新成功"); })
       .catch((reason) => { console.log(reason); setLoading(false); message.error("更新失败"); });
@@ -22,7 +22,7 @@ const UpdateTask: React.FC<{ taskId: number; }> = (props) => {
 
   return (
     loading ? <Spin tip="加载中" /> :
-      <TaskInfoForm taskInfo={taskInfo} setTaskInfo={(info) => { setTaskInfo(info); }} onFinish={onFinish} />
+      <TaskInfoForm taskInfo={taskInfo} onFinish={(info) => onFinish(info)} />
   );
 };
 
