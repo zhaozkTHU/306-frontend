@@ -1,6 +1,6 @@
 export const isValid = (s: string): boolean => {
-    return /^\w+$/.test(s);
-}
+  return /^\w+$/.test(s);
+};
 
 export const transTime = (time: number): string => {
     return `${new Date(time*=1000).getFullYear()}-${new Date(time).getMonth()+1}-${new Date(time).getDate()} ${

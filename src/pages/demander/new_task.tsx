@@ -4,4 +4,4 @@ const DemanderNewTask = () => {
   return <CreateTask />
 }
 
-export default DemanderNewTask
+export default DemanderNewTask;

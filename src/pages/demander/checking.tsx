@@ -59,4 +59,4 @@ const DemanderChecking = () => {
   )
 }
 
-export default DemanderChecking
+export default DemanderChecking;

@@ -4,4 +4,4 @@ const LabelerLabeling = () => {
   return <TagList />
 }
 
-export default LabelerLabeling
+export default LabelerLabeling;

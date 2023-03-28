@@ -1,5 +1,5 @@
 const LabelerChecking = () => {
-  return <p>LabelerChecking</p>
-}
+  return <p>LabelerChecking</p>;
+};
 
-export default LabelerChecking
+export default LabelerChecking;

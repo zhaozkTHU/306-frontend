@@ -4,4 +4,4 @@ const LabelerNewTask = () => {
   return <TaskList />
 }
 
-export default LabelerNewTask
+export default LabelerNewTask;
