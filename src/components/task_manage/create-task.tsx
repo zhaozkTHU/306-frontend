@@ -3,8 +3,8 @@ import { TaskInfo } from "@/const/interface";
 import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { UserIdContext } from "@/pages/_app";
-import { request } from "@/utils/network";
 import { message } from "antd";
+import axios from "axios";
 
 const CreateTask: React.FC = () => {
   const userId = useContext(UserIdContext);
@@ -19,14 +19,17 @@ const CreateTask: React.FC = () => {
       create_at: time,
       demander_id: userId,
     });
-    request("/api/task", "POST", taskInfo)
+    axios
+      .post("/api/task", taskInfo, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
       .then((value) => {
-        console.log(value);
-        message.success("发布成功");
+        if (value.data.code === 0) message.success("发布成功");
+        else message.success("发布失败");
       })
       .catch((reason) => {
         console.log(reason);
-        message.error("发送失败");
+        message.error("网络错误");
       });
   };
 
