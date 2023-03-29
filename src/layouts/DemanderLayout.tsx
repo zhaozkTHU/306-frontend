@@ -82,6 +82,11 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        style={{
+          overflow: "auto",
+          position: "fixed",
+          height: "100vh",
+        }}
       >
         <div
           style={{
@@ -101,7 +106,7 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
           }}
         />
       </Sider>
-      <Layout className="site-layout">
+      <Layout className="site-layout" style={{ marginLeft: 200 }}>
         <Header style={{ padding: 0, background: colorBgContainer }} />
         <Content style={{ margin: "0 16px" }}>
           {props.children}
