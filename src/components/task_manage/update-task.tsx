@@ -7,7 +7,7 @@ import { message, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 
-const UpdateTask: React.FC<{ taskId: number; }> = (props) => {
+const UpdateTask: React.FC<{ taskId: number }> = (props) => {
   // TODO: 获取数据
   const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
   const [loading, setLoading] = useState(true);
@@ -43,17 +43,16 @@ const UpdateTask: React.FC<{ taskId: number; }> = (props) => {
   const onFinish = (info: TaskInfo) => {
     setLoading(true);
     setTaskInfo({ ...taskInfo, ...info });
-    axios.request({
-      headers: { Authorization: `Bearer ${token}` },
-      data: taskInfo,
-      method: "PUT",
-      url: "/api/task",
-    })
+    axios
+      .request({
+        headers: { Authorization: `Bearer ${token}` },
+        data: taskInfo,
+        method: "PUT",
+        url: "/api/task",
+      })
       .then((value) => {
-        if (value.data.code === 0)
-          console.log("更新成功");
-        else
-          message.error("更新失败");
+        if (value.data.code === 0) console.log("更新成功");
+        else message.error("更新失败");
       })
       .catch((reason) => {
         console.log(reason);
