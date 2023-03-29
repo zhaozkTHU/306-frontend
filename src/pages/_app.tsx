@@ -7,20 +7,22 @@ import LabelerDeploy from "@/layouts/LabelerLayout";
 import LoginScreen from ".";
 import NotFound from "@/components/NotFound";
 
-export const UserIdContext = createContext<number>(-1);
+export const TokenContext = createContext<string | null>(null);
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-
-  const [UserId, setUserId] = useState<number>(-1);
+  const [Token, setToken] = useState<string | null>(null);
   const [LoginStatus, setLoginStatus] = useState<string>("waiting");
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    } 
     if (!localStorage.getItem("token")) {
       // 未登录
+      setToken(null);
       setLoginStatus("notLogin");
     } else {
       // 已登录
-      const user_id = localStorage.getItem("user_id");
-      setUserId(parseInt(user_id ? user_id : "-1"));
+      setToken(localStorage.getItem("token"));
       if (localStorage.getItem("role") === "demander") {
         setLoginStatus("demanderAlreadyLogin");
       } else if (localStorage.getItem("role") === "labeler") {
@@ -28,36 +30,37 @@ const App = ({ Component, pageProps }: AppProps) => {
       }
     }
   }, [router]);
+  if (!router.isReady) {
+    return;
+  }
   if (router.pathname.startsWith("/demander/")) {
     return (
-      <UserIdContext.Provider value={UserId}>
+      <TokenContext.Provider value={Token}>
         <DemanderLayout
           loginStatus={LoginStatus}
           setLoginStatus={setLoginStatus}
         >
           <Component {...pageProps} />
         </DemanderLayout>
-      </UserIdContext.Provider>
+      </TokenContext.Provider>
     );
   } else if (router.pathname.startsWith("/labeler/")) {
     return (
-      <UserIdContext.Provider value={UserId}>
+      <TokenContext.Provider value={Token}>
         <LabelerDeploy
           loginStatus={LoginStatus}
           setLoginStatus={setLoginStatus}
         >
           <Component {...pageProps} />
         </LabelerDeploy>
-      </UserIdContext.Provider>
+      </TokenContext.Provider>
     );
   } else if (router.pathname.startsWith("/register")) {
     // register, no deploy
     return <Component {...pageProps} />;
   } else if (router.pathname === "/") {
     // login
-    return (
-      <LoginScreen setLoginStatus={setLoginStatus} setUserId={setUserId} />
-    );
+    return <LoginScreen setLoginStatus={setLoginStatus} setToken={setToken} />;
   } else {
     // other interface
     return <NotFound />;

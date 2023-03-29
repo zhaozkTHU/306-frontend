@@ -1,10 +1,7 @@
 import Button from "antd/lib/button";
 import { useRouter } from "next/router";
-import { UserIdContext } from "../_app";
-import { useContext } from "react";
 const DemanderSettings = () => {
   const router = useRouter();
-  const user_id = useContext(UserIdContext);
   return (
     <Button
       onClick={() => {
@@ -12,7 +9,7 @@ const DemanderSettings = () => {
         router.push("/");
       }}
     >
-      退出登录{user_id}
+      退出登录
     </Button>
   );
 };

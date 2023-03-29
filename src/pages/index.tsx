@@ -12,7 +12,7 @@ const onFinishFailed = (errorInfo: any) => {
 
 interface LoginScreenPorps {
   setLoginStatus: any;
-  setUserId: any;
+  setToken: any;
 }
 
 // login interface
@@ -42,9 +42,8 @@ const LoginScreen = (props: LoginScreenPorps) => {
             .then((response) => {
               localStorage.setItem("token", response.data.token);
               localStorage.setItem("role", response.data.role);
-              localStorage.setItem("user_id", response.data.user_id);
               props.setLoginStatus(`${response.data.role}AlreadyLogin`);
-              props.setUserId(response.data.user_id);
+              props.setToken(response.data.token);
               router.push(`/${response.data.role}/info`);
             })
             .catch((error) => {
