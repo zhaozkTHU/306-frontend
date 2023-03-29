@@ -1,9 +1,9 @@
 interface CheckImgClassificationProps {
-    pass: any
+  pass: any;
 }
 
 const CheckImgClassification = (props: CheckImgClassificationProps) => {
-    return props
-}
+  return props;
+};
 
-export default CheckImgClassification
+export default CheckImgClassification;

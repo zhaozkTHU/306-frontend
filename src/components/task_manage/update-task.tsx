@@ -21,11 +21,7 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
     if (!router.isReady) return;
 
     axios
-      .request({
-        headers: { Authorization: `Bearer ${token}` },
-        method: "GET",
-        url: "/api/task",
-      })
+      .get("/api/task", { headers: { Authorization: `Bearer ${token}` } })
       .then((value) => {
         if (value.data.code === 0) {
           setTaskInfo(value.data.demander_tasks);
@@ -43,12 +39,10 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
   const onFinish = (info: TaskInfo) => {
     setLoading(true);
     setTaskInfo({ ...taskInfo, ...info });
+
     axios
-      .request({
+      .put("/api/task", taskInfo, {
         headers: { Authorization: `Bearer ${token}` },
-        data: taskInfo,
-        method: "PUT",
-        url: "/api/task",
       })
       .then((value) => {
         if (value.data.code === 0) console.log("更新成功");
