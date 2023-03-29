@@ -1,7 +1,9 @@
-import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander-task-block"
-import axios from "axios"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
+import DemanderTaskBlock, {
+  DemanderTaskBlockProps,
+} from "@/components/demander-task-block";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 const DemanderChecking = () => {
   // const tasks = [
@@ -35,28 +37,29 @@ const DemanderChecking = () => {
   const [tasks, setTasks] = useState<DemanderTaskBlockProps[]>([]);
   useEffect(() => {
     setRefreshing(true);
-    axios.get('/api/task/checking', {
-      headers:{
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    })
-    .then((response) => {
-      const newTasks = response.data.task_list.map((task: any) => {
-        return {...task, state: "checking"};
+    axios
+      .get("/api/task/checking", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       })
-      setTasks(newTasks);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+      .then((response) => {
+        const newTasks = response.data.task_list.map((task: any) => {
+          return { ...task, state: "checking" };
+        });
+        setTasks(newTasks);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     setRefreshing(false);
-  }, [router])
-  
-  return refreshing?<p>Loading...</p>:(
-    tasks.map((task, idx) => 
-      <DemanderTaskBlock {...task} key={idx}/>
-    )
-  )
-}
+  }, [router]);
+
+  return refreshing ? (
+    <p>Loading...</p>
+  ) : (
+    tasks.map((task, idx) => <DemanderTaskBlock {...task} key={idx} />)
+  );
+};
 
 export default DemanderChecking;

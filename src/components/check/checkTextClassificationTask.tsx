@@ -75,6 +75,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               is_passed: false,
               correct_number: passedNumber
             },
+
           )
         }}
       >

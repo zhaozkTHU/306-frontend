@@ -2,6 +2,10 @@ import axios, { AxiosError } from "axios";
 
 const network = axios.create({
   baseURL: "",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
 });
 
 enum NetworkErrorType {
