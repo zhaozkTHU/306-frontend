@@ -78,6 +78,13 @@ const TaskInfoForm: React.FC<{
           <InputNumber min={0} />
         </Form.Item>
         <Form.Item
+          label="单题限时"
+          name="time"
+          rules={[{ required: true, message: "请输入单题限时" }]}
+        >
+          <InputNumber min={0} addonAfter="秒"/>
+        </Form.Item>
+        <Form.Item
           label="任务截止时间"
           name="deadline"
           rules={[{ required: true, message: "请选择任务截止时间" }]}

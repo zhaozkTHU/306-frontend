@@ -2,7 +2,6 @@ import TaskInfoForm from "./task-info-form";
 import { TaskInfo } from "@/const/interface";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
-import { request } from "@/utils/network";
 import { message, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -21,7 +20,7 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
     if (!router.isReady) return;
 
     axios
-      .get("/api/task", { headers: { Authorization: `Bearer ${token}` } })
+      .post("/api/data", {}, { headers: { Authorization: `Bearer ${token}` } })
       .then((value) => {
         if (value.data.code === 0) {
           setTaskInfo(value.data.demander_tasks);

@@ -1,33 +1,41 @@
 import { TaskInfo } from "@/const/interface";
-import { UserIdContext } from "@/pages/_app";
-import { request } from "@/utils/network";
+import { TokenContext } from "@/pages/_app";
 import { Button, List, message, Spin } from "antd";
+import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 
 const DeleteTask: React.FC = () => {
-  const userId = useContext(UserIdContext);
   const [taskInfo, setTaskInfo] = useState<TaskInfo[]>([]);
   const [deleteNum, setDeleteNum] = useState(0);
   const [loading, setLoading] = useState(true);
+  const token = useContext(TokenContext);
   useEffect(() => {
     setLoading(true);
-    request(`/api/task/demander_id?${userId}`, "GET")
+    axios.get("/api/task", { headers: { Authorization: `Bearer ${token}` } })
       .then((value) => {
-        setTaskInfo(value.demander_tasks);
+        if (value.data.code === 0)
+          setTaskInfo(value.data.demander_tasks);
+        else
+          message.error("获取任务失败");
       })
       .catch((reason) => {
         console.log(reason);
         message.error("获取任务失败");
       })
       .finally(() => setLoading(false));
-  }, [deleteNum, userId]);
+  }, [deleteNum, token]);
 
   const onDelete = (taskId: number) => {
     setLoading(true);
-    request(`/api/task/task_id?${taskId}`, "DELETE")
-      .then((_) => {
-        setDeleteNum((num) => num + 1);
-        message.success("删除成功");
+
+    axios.delete(`/api/task/task_id?${taskId}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((value) => {
+        if (value.data.code === 0) {
+          setDeleteNum((num) => num + 1);
+          message.success("删除成功");
+        } else {
+          message.error("删除任务失败");
+        }
       })
       .catch((reason) => {
         console.log(reason);
