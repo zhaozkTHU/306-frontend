@@ -1,13 +1,11 @@
 import TaskInfoForm from "./task-info-form";
 import { TaskInfo } from "@/const/interface";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
-import { UserIdContext } from "@/pages/_app";
 import { message } from "antd";
 import axios from "axios";
 
 const CreateTask: React.FC = () => {
-  const userId = useContext(UserIdContext);
   const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
   useEffect(() => {
     console.log("CreateTask", taskInfo);
@@ -17,7 +15,6 @@ const CreateTask: React.FC = () => {
     setTaskInfo({
       ...info,
       create_at: time,
-      demander_id: userId,
     });
     axios
       .post("/api/task", taskInfo, {

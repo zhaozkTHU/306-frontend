@@ -5,7 +5,12 @@ import axios from "axios";
 
 export const DataExportCallback = (taskId: number, merge: boolean) => {
   const token = useContext(TokenContext);
-  axios.post("/api/data", { task_id: taskId, merge: merge }, { headers: { Authorization: `Bearer ${token as string}` } })
+  axios
+    .post(
+      "/api/data",
+      { task_id: taskId, merge: merge },
+      { headers: { Authorization: `Bearer ${token as string}` } }
+    )
     .then((value) => {
       if (value.data.code === 0) {
         const jsonData = JSON.stringify(value.data.data);

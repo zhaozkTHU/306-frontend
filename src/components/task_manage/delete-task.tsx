@@ -11,12 +11,11 @@ const DeleteTask: React.FC = () => {
   const token = useContext(TokenContext);
   useEffect(() => {
     setLoading(true);
-    axios.get("/api/task", { headers: { Authorization: `Bearer ${token}` } })
+    axios
+      .get("/api/task", { headers: { Authorization: `Bearer ${token}` } })
       .then((value) => {
-        if (value.data.code === 0)
-          setTaskInfo(value.data.demander_tasks);
-        else
-          message.error("获取任务失败");
+        if (value.data.code === 0) setTaskInfo(value.data.demander_tasks);
+        else message.error("获取任务失败");
       })
       .catch((reason) => {
         console.log(reason);
@@ -28,7 +27,11 @@ const DeleteTask: React.FC = () => {
   const onDelete = (taskId: number) => {
     setLoading(true);
 
-    axios.delete(`/api/task/task_id?${taskId}`, { headers: { Authorization: `Bearer ${token}` } })
+    axios
+      .delete(`/api/task/`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { task_id: taskId },
+      })
       .then((value) => {
         if (value.data.code === 0) {
           setDeleteNum((num) => num + 1);
