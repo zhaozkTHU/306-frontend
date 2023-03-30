@@ -1,18 +1,20 @@
 import { TaskInfo } from "@/const/interface";
-import { TokenContext } from "@/pages/_app";
 import { Button, List, message, Spin } from "antd";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const DeleteTask: React.FC = () => {
   const [taskInfo, setTaskInfo] = useState<TaskInfo[]>([]);
   const [deleteNum, setDeleteNum] = useState(0);
   const [loading, setLoading] = useState(true);
-  const token = useContext(TokenContext);
   useEffect(() => {
     setLoading(true);
     axios
-      .get("/api/task", { headers: { Authorization: `Bearer ${token}` } })
+      .get("/api/task", {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+      })
       .then((value) => {
         if (value.data.code === 0) setTaskInfo(value.data.demander_tasks);
         else message.error("获取任务失败");
@@ -22,14 +24,16 @@ const DeleteTask: React.FC = () => {
         message.error("获取任务失败");
       })
       .finally(() => setLoading(false));
-  }, [deleteNum, token]);
+  }, [deleteNum]);
 
   const onDelete = (taskId: number) => {
     setLoading(true);
 
     axios
       .delete(`/api/task/`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
         params: { task_id: taskId },
       })
       .then((value) => {

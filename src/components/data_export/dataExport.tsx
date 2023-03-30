@@ -1,15 +1,16 @@
-import { useContext } from "react";
 import { message } from "antd";
-import { TokenContext } from "@/pages/_app";
 import axios from "axios";
 
 export const DataExportCallback = (taskId: number, merge: boolean) => {
-  const token = useContext(TokenContext);
   axios
     .post(
       "/api/data",
       { task_id: taskId, merge: merge },
-      { headers: { Authorization: `Bearer ${token as string}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+      }
     )
     .then((value) => {
       if (value.data.code === 0) {

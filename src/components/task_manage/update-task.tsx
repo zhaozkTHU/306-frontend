@@ -1,6 +1,6 @@
 import TaskInfoForm from "./task-info-form";
 import { TaskInfo } from "@/const/interface";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import { message, Spin } from "antd";
 import axios from "axios";
@@ -11,20 +11,20 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
   const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const token = useMemo(() => {
-    if (!router.isReady) return undefined;
-    return localStorage.getItem("token");
-  }, [router]);
 
   useEffect(() => {
     if (!router.isReady) return;
 
     axios
-      .post("/api/data", {}, { headers: { Authorization: `Bearer ${token}` } })
+      .get("/api/task", {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+        params: { task_id: props.taskId },
+      })
       .then((value) => {
         if (value.data.code === 0) {
-          setTaskInfo(value.data.demander_tasks);
-          setLoading(false);
+          setTaskInfo(value.data.data);
         } else {
           message.error("获取数据失败");
         }
@@ -33,7 +33,7 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
         console.log(reason);
         message.error("获取数据失败");
       });
-  }, [router, token]);
+  }, [router, props.taskId]);
 
   const onFinish = (info: TaskInfo) => {
     setLoading(true);
@@ -41,7 +41,9 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
 
     axios
       .put("/api/task", taskInfo, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
       })
       .then((value) => {
         if (value.data.code === 0) console.log("更新成功");
