@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Button, Checkbox, message } from "antd";
-import { UserIdContext } from "@/pages/_app";
-import { useContext } from "react";
+import axios from "axios"
+// import { UserIdContext } from "@/pages/_app";
+// import { useContext } from "react";
 import { TaskInfo, TextClassificationProblem } from "@/const/interface";
 
 const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [chosenOptions, setChosenOptions] = useState<boolean[]>([]);
-  const labelerId = useContext(UserIdContext);
+  const [loading, setLoading] = useState(false);
+  // const labelerId = useContext(UserIdContext);
 
   const currentProblem = taskInfo.task_data[
     currentProblemIndex
@@ -37,16 +39,37 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         chosen: chosenOptions[index],
       })),
     };
-    const response = await fetch("/submit", {
-      method: "POST",
-      body: JSON.stringify({
-        labeler_id: labelerId,
-        task_id: taskInfo.task_id,
-        tag_data,
-      }),
-    });
-    const data = await response.json();
-    message.success("Uploaded!");
+    const token = localStorage.getItem("token");
+    setLoading(true);
+    // const response = await fetch("/api/submit", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: "Bearer " + token,
+    //   },
+    //   body: JSON.stringify({
+    //     // labeler_id: labelerId,
+    //     task_id: taskInfo.task_id,
+    //     tag_data,
+    //   }),
+    // });
+    // await response.json();
+    // message.success("Uploaded!");
+    axios
+      .post(
+        "/api/submit",
+        { task_id: taskInfo.task_id, tag_data },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        message.success("Uploaded!");
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("Failed to submit data");
+        setLoading(false);
+      });
   };
 
   const handlePrevious = () => {
@@ -71,9 +94,9 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  const handleClose = () => {
-    // perform any necessary cleanup and close the component
-  };
+  // const handleClose = () => {
+  //   // perform any necessary cleanup and close the component
+  // };
 
   return (
     <div>
@@ -93,9 +116,9 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Button onClick={handleSave}>Save</Button>
         <Button onClick={handleUpload}>Upload</Button>
       </div>
-      <div>
+      {/* <div>
         <Button onClick={handleClose}>Close</Button>
-      </div>
+      </div> */}
     </div>
   );
 };
