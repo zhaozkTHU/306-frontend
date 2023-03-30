@@ -80,10 +80,6 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  // const handleClose = () => {
-  //   // perform any necessary cleanup and close the component
-  // };
-
   return (
     <div>
       <div>{currentProblem.description}</div>
@@ -102,9 +98,6 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Button onClick={handleSave}>Save</Button>
         <Button onClick={handleUpload}>Upload</Button>
       </div>
-      {/* <div>
-        <Button onClick={handleClose}>Close</Button>
-      </div> */}
     </div>
   );
 };

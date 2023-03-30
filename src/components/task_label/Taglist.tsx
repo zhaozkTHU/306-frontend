@@ -10,17 +10,6 @@ const TagList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   // const labelerId = useContext(UserIdContext);
 
-  // const fetchTasks = async () => {
-  //   const token = localStorage.getItem("token");
-  //   const response = await fetch("/api/labeling", {
-  //     // undetermined
-  //     method: "GET",
-  //     headers: { Authorization: `Bearer ${token}` }
-  //     //   body: JSON.stringify({ labeler_id: labelerId }),
-  //   });
-  //   const data_json = await response.json();
-  //   setTasks(JSON.parse(data_json).task);
-  // };
   const fetchTasks = () => {
     const token = localStorage.getItem("token");
     axios
