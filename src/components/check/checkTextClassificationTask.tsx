@@ -7,7 +7,7 @@ import axios from "axios"
 
 interface CheckTextClassificationTaskProps {
   task_id: number
-  labeler_id: number
+  labeler_index: number
 }
 
 const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) => {
@@ -16,8 +16,11 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
   const [problems, setProblems] = useState<TextClassificationProblem[]>([])
   const router = useRouter()
   useEffect(() => {
+    if(!router.isReady) {
+      return
+    }
     setRefreshing(true)
-    axios.get(`/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_id}`,
+    axios.get(`/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_index}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -55,7 +58,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
           axios.post('/api/checking',
             {
               task_id: props.task_id,
-              labeler_id: props.labeler_id,
+              labeler_id: props.labeler_index,
               is_passed: true,
               correct_number: passedNumber
             }
@@ -71,7 +74,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
           axios.post('/api/checking',
             {
               task_id: props.task_id,
-              labeler_id: props.labeler_id,
+              labeler_id: props.labeler_index,
               is_passed: false,
               correct_number: passedNumber
             },
