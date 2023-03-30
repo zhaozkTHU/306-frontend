@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Checkbox, message } from "antd";
-import axios from "axios"
+import axios from "axios";
 // import { UserIdContext } from "@/pages/_app";
 // import { useContext } from "react";
 import { TaskInfo, TextClassificationProblem } from "@/const/interface";
@@ -41,20 +41,6 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     };
     const token = localStorage.getItem("token");
     setLoading(true);
-    // const response = await fetch("/api/submit", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + token,
-    //   },
-    //   body: JSON.stringify({
-    //     // labeler_id: labelerId,
-    //     task_id: taskInfo.task_id,
-    //     tag_data,
-    //   }),
-    // });
-    // await response.json();
-    // message.success("Uploaded!");
     axios
       .post(
         "/api/submit",

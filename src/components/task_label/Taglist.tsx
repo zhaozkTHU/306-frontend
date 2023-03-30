@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import TextClassificationComponent from "@/components/task_label/Option_tag";
-import axios from "axios"
+import axios from "axios";
 
 const TagList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
@@ -36,7 +36,13 @@ const TagList: React.FC = () => {
       .catch((error) => {
         console.error(error);
         message.error("Failed to fetch tasks");
-      })
+      });
+    return (
+      <>
+        <TagTable columns={columns} tasks={tasks} />
+        <Button onClick={fetchTasks}>Update</Button>
+      </>
+    );
   };
 
   const Taggingboard = (task: TaskInfo) => {
@@ -75,7 +81,7 @@ const TagList: React.FC = () => {
             template={task.template}
             reward={task.reward}
             time={task.time}
-            labeler_num={task.labeler_num}
+            labeler_number={task.labeler_number}
             demander_id={task.demander_id}
             task_data={task.task_data}
           />
@@ -87,7 +93,7 @@ const TagList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [tasks]);
 
   const columns = [
     {
@@ -129,10 +135,19 @@ const TagList: React.FC = () => {
 
   return (
     <>
-      <Table columns={columns} dataSource={tasks} rowKey="task_id" />
+      <TagTable columns={columns} tasks={tasks} />
       <Button onClick={fetchTasks}>Update</Button>
     </>
   );
+};
+
+interface TagTableProps {
+  tasks: TaskInfo[];
+  columns: any;
+}
+
+const TagTable: React.FC<TagTableProps> = ({ tasks, columns }) => {
+  return <Table columns={columns} dataSource={tasks} rowKey="task_id" />;
 };
 
 export default TagList;

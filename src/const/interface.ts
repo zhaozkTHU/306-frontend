@@ -23,7 +23,7 @@ export interface TaskInfo {
   template: "TextClassification" | "ImagesClassification";
   reward: number;
   time: number;
-  labeler_num: number;
+  labeler_number: number;
   demander_id: number;
   task_data: TextClassificationProblem[] | ImagesClassificationProblem[];
 }

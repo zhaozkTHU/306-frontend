@@ -15,7 +15,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     if (!router.isReady) {
       return;
-    } 
+    }
     if (!localStorage.getItem("token")) {
       // 未登录
       setToken(null);
