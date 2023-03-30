@@ -43,7 +43,7 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
     axios
       .put(
         "/api/task",
-        { ...taskInfo, deadline: new Date().valueOf() },
+        { ...taskInfo, create_at: new Date().valueOf() },
         {
           headers: {
             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
