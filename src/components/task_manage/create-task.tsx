@@ -1,15 +1,12 @@
 import TaskInfoForm from "./task-info-form";
 import { TaskInfo } from "@/const/interface";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import { message } from "antd";
 import axios from "axios";
 
 const CreateTask: React.FC = () => {
   const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
-  useEffect(() => {
-    console.log("CreateTask", taskInfo);
-  }, [taskInfo]);
   const onFinish = (info: TaskInfo) => {
     const time = new Date().valueOf();
     setTaskInfo({

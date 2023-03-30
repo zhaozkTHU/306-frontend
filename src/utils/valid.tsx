@@ -3,7 +3,7 @@ export const isValid = (s: string): boolean => {
 };
 
 export const transTime = (time: number): string => {
-  return `${new Date((time *= 1000)).getFullYear()}-${
+  return `${new Date((time)).getFullYear()}-${
     new Date(time).getMonth() + 1
   }-${new Date(time).getDate()} ${
     new Date(time).getHours() < 10

@@ -24,7 +24,7 @@ export interface TaskInfo {
   reward: number;
   time: number;
   labeler_number: number;
-  demander_id: number;
+  demander_id?: number;
   task_data: TextClassificationProblem[] | ImagesClassificationProblem[];
 }
 

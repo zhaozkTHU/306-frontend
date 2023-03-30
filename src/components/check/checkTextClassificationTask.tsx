@@ -6,8 +6,8 @@ import { Button } from "antd";
 import axios from "axios";
 
 interface CheckTextClassificationTaskProps {
-  task_id: number;
-  labeler_id: number;
+  task_id: number
+  labeler_index: number
 }
 
 const CheckTextClassificationTask = (
@@ -18,14 +18,14 @@ const CheckTextClassificationTask = (
   const [problems, setProblems] = useState<TextClassificationProblem[]>([]);
   const router = useRouter();
   useEffect(() => {
-    setRefreshing(true);
-    axios
-      .get(
-        `/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+    if(!router.isReady) {
+      return
+    }
+    setRefreshing(true)
+    axios.get(`/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_index}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       )
       .then((response) => {
@@ -61,12 +61,14 @@ const CheckTextClassificationTask = (
         size="large"
         block
         onClick={() => {
-          axios.post("/api/checking", {
-            task_id: props.task_id,
-            labeler_id: props.labeler_id,
-            is_passed: true,
-            correct_number: passedNumber,
-          });
+          axios.post('/api/checking',
+            {
+              task_id: props.task_id,
+              labeler_id: props.labeler_index,
+              is_passed: true,
+              correct_number: passedNumber
+            }
+          )
         }}
       >
         合格
@@ -75,12 +77,15 @@ const CheckTextClassificationTask = (
         size="large"
         block
         onClick={() => {
-          axios.post("/api/checking", {
-            task_id: props.task_id,
-            labeler_id: props.labeler_id,
-            is_passed: false,
-            correct_number: passedNumber,
-          });
+          axios.post('/api/checking',
+            {
+              task_id: props.task_id,
+              labeler_id: props.labeler_index,
+              is_passed: false,
+              correct_number: passedNumber
+            },
+
+          )
         }}
       >
         不合格
