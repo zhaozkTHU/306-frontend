@@ -72,7 +72,7 @@ const TaskInfoForm: React.FC<{
         </Form.Item>
         <Form.Item
           label="标注方人数"
-          name="labeler_num"
+          name="labeler_number"
           rules={[{ required: true, message: "请输入标注方人数" }]}
         >
           <InputNumber min={0} />
