@@ -1,33 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { UserIdContext } from "@/pages/_app";
-import { useContext } from "react";
-import { Button, Table, Modal } from "antd";
+// import { UserIdContext } from "@/pages/_app";
+// import { useContext } from "react";
+import { Button, Table, Modal, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import TextClassificationComponent from "@/components/task_label/Option_tag";
+import axios from "axios"
 
 const TagList: React.FC = () => {
-  const [tasks, setTasks] = useState([]);
-  const labelerId = useContext(UserIdContext);
+  const [tasks, setTasks] = useState<TaskInfo[]>([]);
+  // const labelerId = useContext(UserIdContext);
 
-  const fetchTasks = async () => {
-    const response = await fetch("/labeling", {
-      // undetermined
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      //   body: JSON.stringify({ labeler_id: labelerId }),
-    });
-    const data_json = await response.json();
-    setTasks(JSON.parse(data_json).task);
+  // const fetchTasks = async () => {
+  //   const token = localStorage.getItem("token");
+  //   const response = await fetch("/api/labeling", {
+  //     // undetermined
+  //     method: "GET",
+  //     headers: { Authorization: `Bearer ${token}` }
+  //     //   body: JSON.stringify({ labeler_id: labelerId }),
+  //   });
+  //   const data_json = await response.json();
+  //   setTasks(JSON.parse(data_json).task);
+  // };
+  const fetchTasks = () => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("/api/labeling", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const tasks_json = response.data;
+        setTasks(tasks_json.task);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("Failed to fetch tasks");
+      })
   };
 
   const Taggingboard = (task: TaskInfo) => {
     // 在这里处理跳转到标注组件的逻辑，需要传入task数据
-    const [visible, setVisible] = useState(true);
+    const [open, setOpen] = useState(true);
 
     const handleCancel = () => {
-      setVisible(false);
+      setOpen(false);
     };
 
     if (task.template === "ImagesClassification") {
@@ -35,7 +52,7 @@ const TagList: React.FC = () => {
       return (
         <Modal
           title="Images Classification"
-          visible={visible}
+          open={open}
           onCancel={handleCancel}
           footer={null}
         >
@@ -47,7 +64,7 @@ const TagList: React.FC = () => {
       return (
         <Modal
           title="Text Classification"
-          visible={visible}
+          open={open}
           onCancel={handleCancel}
           footer={null}
         >
@@ -70,7 +87,7 @@ const TagList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [labelerId]);
+  }, []);
 
   const columns = [
     {
