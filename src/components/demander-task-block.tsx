@@ -9,7 +9,7 @@ import UpdateTask from "./task_manage/update-task";
 
 export interface DemanderTaskBlockProps {
   task_id: number;
-  creat_at: number;
+  create_at: number;
   deadline: number;
   title: string;
   state: string;
@@ -96,7 +96,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         }
       >
         <>
-          <p>创建时间: {transTime(props.creat_at)}</p>
+          <p>创建时间: {transTime(props.create_at)}</p>
           <p>截止时间: {transTime(props.deadline)}</p>
           <p>任务状态: {props.state}</p>
           <Space wrap>

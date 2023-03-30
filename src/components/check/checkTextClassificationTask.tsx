@@ -61,7 +61,13 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               labeler_id: props.labeler_index,
               is_passed: true,
               correct_number: passedNumber
+            },
+            {
+              headers:{
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+              }
             }
+            
           )
         }}
       >
@@ -78,7 +84,11 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               is_passed: false,
               correct_number: passedNumber
             },
-
+            {
+              headers:{
+                  Authorization: `Bearer ${localStorage.getItem('token')}`
+              }
+            }
           )
         }}
       >
