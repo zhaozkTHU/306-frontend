@@ -32,7 +32,8 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
       .catch((reason) => {
         console.log(reason);
         message.error("获取数据失败");
-      });
+      })
+      .finally(() => setLoading(false));
   }, [router, props.taskId]);
 
   const onFinish = (info: TaskInfo) => {
