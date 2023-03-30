@@ -35,7 +35,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         return {
           key: idx,
           label: `标注者${index}号`,
-          disabled: props.isDone[idx],
+          disabled: !props.isDone[idx],
         };
       }),
     },
@@ -67,7 +67,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
       >
         <CheckModel
           task_id={props.task_id}
-          labeler_id={labelerId}
+          labeler_index={labelerId}
           template={props.template}
           isShow={isShow}
         />
