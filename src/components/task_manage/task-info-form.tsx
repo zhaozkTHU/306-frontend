@@ -171,7 +171,12 @@ const TaskInfoForm: React.FC<{
           name="deadline"
           rules={[{ required: true, message: "请选择任务截止时间" }]}
         >
-          <DatePicker />
+          <DatePicker
+            locale={locale.DatePicker}
+            inputReadOnly
+            showTime
+            disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
+          />
         </Form.Item>
         <Form.Item
           label="任务数据"
