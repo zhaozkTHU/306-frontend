@@ -97,16 +97,10 @@ const TaskList: React.FC = () => {
       title: "Actions",
       render: (_: any, task: TaskInfo) => (
         <>
-          <Button
-            onClick={() => handleStatusChange(Number(task.task_id), "tagging")}
-          >
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "tagging")}>
             Accept
           </Button>
-          <Button
-            onClick={() =>
-              handleStatusChange(Number(task.task_id), "undesignated")
-            }
-          >
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "undesignated")}>
             Refuse
           </Button>
         </>
@@ -117,12 +111,7 @@ const TaskList: React.FC = () => {
   return (
     <>
       <Button onClick={fetchTasks}>Update</Button>
-      <Table
-        dataSource={tasks}
-        columns={columns}
-        loading={loading}
-        rowKey="id"
-      />
+      <Table dataSource={tasks} columns={columns} loading={loading} rowKey="id" />
     </>
   );
 };

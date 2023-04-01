@@ -1,6 +1,4 @@
-import DemanderTaskBlock, {
-  DemanderTaskBlockProps,
-} from "@/components/demander-task-block";
+import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander-task-block";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -19,11 +17,7 @@ const DemanderLabeling = () => {
       })
       .then((response) => {
         const newTasks = response.data.task_list.map((task: any) => {
-          return { ...task, 
-            state: "labeling" ,
-            isDone: [false],
-            labeler_id: [-1],
-          };
+          return { ...task, state: "labeling", isDone: [false], labeler_id: [-1] };
         });
         setTasks(newTasks);
       })

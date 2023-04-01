@@ -8,9 +8,7 @@ interface CheckTextClassificationProps {
   setPassedNumber: Dispatch<SetStateAction<number>>;
 }
 
-const CheckTextClassificationProblem = (
-  props: CheckTextClassificationProps
-) => {
+const CheckTextClassificationProblem = (props: CheckTextClassificationProps) => {
   // const [source, setSource] = useState<string>("");
   const [current, setCurrent] = useState<string>("fail");
   return (
@@ -20,9 +18,7 @@ const CheckTextClassificationProblem = (
         {props.problem.options.map((option, index) => (
           <div key={index}>
             <Checkbox
-              defaultChecked={
-                props.problem.chosen ? props.problem?.chosen[index] : false
-              }
+              defaultChecked={props.problem.chosen ? props.problem?.chosen[index] : false}
               disabled={true}
             >
               {option}

@@ -27,12 +27,7 @@ const CreateTask: React.FC = () => {
       });
   };
 
-  return (
-    <TaskInfoForm
-      taskInfo={taskInfo}
-      onFinish={(info: TaskInfo) => onFinish(info)}
-    />
-  );
+  return <TaskInfoForm taskInfo={taskInfo} onFinish={(info: TaskInfo) => onFinish(info)} />;
 };
 
 export default CreateTask;
