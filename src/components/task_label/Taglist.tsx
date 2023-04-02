@@ -10,17 +10,6 @@ const TagList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   // const labelerId = useContext(UserIdContext);
 
-  // const fetchTasks = async () => {
-  //   const token = localStorage.getItem("token");
-  //   const response = await fetch("/api/labeling", {
-  //     // undetermined
-  //     method: "GET",
-  //     headers: { Authorization: `Bearer ${token}` }
-  //     //   body: JSON.stringify({ labeler_id: labelerId }),
-  //   });
-  //   const data_json = await response.json();
-  //   setTasks(JSON.parse(data_json).task);
-  // };
   const fetchTasks = () => {
     const token = localStorage.getItem("token");
     axios
@@ -37,6 +26,12 @@ const TagList: React.FC = () => {
         console.error(error);
         message.error("Failed to fetch tasks");
       });
+    return (
+      <>
+        <TagTable columns={columns} tasks={tasks} />
+        <Button onClick={fetchTasks}>Update</Button>
+      </>
+    );
   };
 
   const Taggingboard = (task: TaskInfo) => {
@@ -50,14 +45,24 @@ const TagList: React.FC = () => {
     if (task.template === "ImagesClassification") {
       // 渲染图片标注组件
       return (
-        <Modal title="Images Classification" open={open} onCancel={handleCancel} footer={null}>
+        <Modal
+          title="Images Classification"
+          open={open}
+          onCancel={handleCancel}
+          footer={null}
+        >
           {/* <ImageClassificationComponent task={task} /> */}
         </Modal>
       );
     } else if (task.template === "TextClassification") {
       // 渲染文本标注组件
       return (
-        <Modal title="Text Classification" open={open} onCancel={handleCancel} footer={null}>
+        <Modal
+          title="Text Classification"
+          open={open}
+          onCancel={handleCancel}
+          footer={null}
+        >
           <TextClassificationComponent
             title={task.title}
             create_at={task.create_at}
@@ -65,7 +70,7 @@ const TagList: React.FC = () => {
             template={task.template}
             reward={task.reward}
             time={task.time}
-            labeler_num={task.labeler_num}
+            labeler_number={task.labeler_number}
             demander_id={task.demander_id}
             task_data={task.task_data}
           />
@@ -77,7 +82,7 @@ const TagList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [tasks]);
 
   const columns = [
     {
@@ -119,10 +124,19 @@ const TagList: React.FC = () => {
 
   return (
     <>
-      <Table columns={columns} dataSource={tasks} rowKey="task_id" />
+      <TagTable columns={columns} tasks={tasks} />
       <Button onClick={fetchTasks}>Update</Button>
     </>
   );
+};
+
+interface TagTableProps {
+  tasks: TaskInfo[];
+  columns: any;
+}
+
+const TagTable: React.FC<TagTableProps> = ({ tasks, columns }) => {
+  return <Table columns={columns} dataSource={tasks} rowKey="task_id" />;
 };
 
 export default TagList;
