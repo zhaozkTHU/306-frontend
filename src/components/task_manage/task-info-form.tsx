@@ -42,6 +42,11 @@ const TaskInfoForm: React.FC<{
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
+        initialValues={
+          props.taskInfo
+            ? { ...props.taskInfo, deadline: dayjs(props.taskInfo.deadline) }
+            : undefined
+        }
       >
         <Form.Item
           label="任务标题"

@@ -38,12 +38,11 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
 
   const onFinish = (info: TaskInfo) => {
     setLoading(true);
-    setTaskInfo({ ...taskInfo, ...info });
 
     axios
       .put(
         "/api/task",
-        { ...taskInfo, create_at: new Date().valueOf(), task_id: props.taskId },
+        { ...info, create_at: new Date().valueOf(), task_id: props.taskId },
         {
           headers: {
             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
