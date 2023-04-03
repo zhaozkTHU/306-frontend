@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { Table, Button, message } from "antd";
-// import { UserIdContext } from "@/pages/_app";
-// import { useContext } from "react";
 import { TaskInfo } from "@/const/interface";
 import axios from "axios";
 
@@ -10,37 +8,15 @@ const TaskList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   // const labelerId = useContext(UserIdContext);
 
-  // const fetchTasks = async () => {
-  //   const token = localStorage.getItem("token");
-  //   setLoading(true);
-  //   try {
-  //     const response = await fetch("/api/destribute", {
-  //       // undetermined
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: "Bearer ${token}",
-  //       },
-  //       // body: JSON.stringify({ labeler_id: labelerId }),
-  //     });
-  //     const tasks_json = await response.json();
-  //     setTasks(JSON.parse(tasks_json).tasks);
-  //   } catch (error) {
-  //     console.error(error);
-  //     message.error("Failed to fetch tasks");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const fetchTasks = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     axios
-      .get("/api/destribute", { headers: { Authorization: `Bearer ${token}` } })
+      .get("/api/distribute", { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         const tasks_json = response.data;
-        setTasks(tasks_json.tasks);
+        const new_task = tasks_json.tasks
+        setTasks(new_task);
         setLoading(false);
       })
       .catch((error) => {
@@ -72,17 +48,11 @@ const TaskList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [tasks]);
 
   const columns = [
-    {
-      title: "Title",
-      dataIndex: "title",
-    },
-    {
-      title: "Style",
-      dataIndex: "style",
-    },
+    { title: "Title", dataIndex: "title" },
+    { title: "Style", dataIndex: "style" },
     {
       title: "Reward",
       dataIndex: "reward",
@@ -97,10 +67,16 @@ const TaskList: React.FC = () => {
       title: "Actions",
       render: (_: any, task: TaskInfo) => (
         <>
-          <Button onClick={() => handleStatusChange(Number(task.task_id), "tagging")}>
+          <Button
+            onClick={() => handleStatusChange(Number(task.task_id), "tagging")}
+          >
             Accept
           </Button>
-          <Button onClick={() => handleStatusChange(Number(task.task_id), "undesignated")}>
+          <Button
+            onClick={() =>
+              handleStatusChange(Number(task.task_id), "undesignated")
+            }
+          >
             Refuse
           </Button>
         </>
@@ -111,8 +87,20 @@ const TaskList: React.FC = () => {
   return (
     <>
       <Button onClick={fetchTasks}>Update</Button>
-      <Table dataSource={tasks} columns={columns} loading={loading} rowKey="id" />
+      <TaskTable tasks={tasks} columns={columns} loading={loading} />
     </>
+  );
+};
+
+interface TaskTableProps {
+  tasks: TaskInfo[];
+  columns: any;
+  loading: boolean;
+}
+
+const TaskTable: React.FC<TaskTableProps> = ({ tasks, columns, loading }) => {
+  return (
+    <Table dataSource={tasks} columns={columns} loading={loading} rowKey="id" />
   );
 };
 
