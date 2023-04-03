@@ -15,6 +15,7 @@ import ConfigProvider from "antd/lib/config-provider";
 import dayjs from "dayjs";
 import React from "react";
 import locale from "antd/locale/zh_CN";
+import FileUploader from "./FileUploader";
 
 // task_manage内部使用
 const TaskInfoForm: React.FC<{
@@ -123,39 +124,49 @@ const TaskInfoForm: React.FC<{
                           </Button>
                         </Col>
                       </Row>
-                      <Form.List name={[dataField.name, "options"]}>
-                        {(optFields, { add: optAdd, remove: optRemove }) => {
-                          return (
-                            <>
-                              <Button onClick={() => optAdd()}>添加选项</Button>
-                              {optFields.map((optField, optIndex) => (
-                                <div key={optIndex}>
-                                  <Row>
-                                    <Col>
-                                      <Form.Item
-                                        {...optField}
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message: "请输入选项",
-                                          },
-                                        ]}
-                                      >
-                                        <Input addonBefore={`选项${optIndex + 1}`} />
-                                      </Form.Item>
-                                    </Col>
-                                    <Col>
-                                      <Button onClick={() => optRemove(optIndex)} danger>
-                                        -
-                                      </Button>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              ))}
-                            </>
-                          );
-                        }}
-                      </Form.List>
+                      {form.getFieldValue("template") === "TextClassification" && (
+                        <Form.List name={[dataField.name, "options"]}>
+                          {(optFields, { add: optAdd, remove: optRemove }) => {
+                            return (
+                              <>
+                                <Button onClick={() => optAdd()}>添加选项</Button>
+                                {optFields.map((optField, optIndex) => (
+                                  <div key={optIndex}>
+                                    <Row>
+                                      <Col>
+                                        <Form.Item
+                                          {...optField}
+                                          rules={[
+                                            {
+                                              required: true,
+                                              message: "请输入选项",
+                                            },
+                                          ]}
+                                        >
+                                          <Input addonBefore={`选项${optIndex + 1}`} />
+                                        </Form.Item>
+                                      </Col>
+                                      <Col>
+                                        <Button onClick={() => optRemove(optIndex)} danger>
+                                          -
+                                        </Button>
+                                      </Col>
+                                    </Row>
+                                  </div>
+                                ))}
+                              </>
+                            );
+                          }}
+                        </Form.List>
+                      )}
+                      {form.getFieldValue("template") === "ImagesClassification" && (
+                        <FileUploader
+                          urls={form.getFieldValue([dataField.name, "options"])}
+                          onUrlListChange={(newUrlList) => {
+                            form.setFieldValue([dataField.name, "options"], newUrlList);
+                          }}
+                        />
+                      )}
                     </div>
                   ))}
                 </>
