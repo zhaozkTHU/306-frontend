@@ -8,10 +8,32 @@ import axios from "axios";
 
 const TagList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
-  // const labelerId = useContext(UserIdContext);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
+  // const labelerId = useContext(UserIdContext);
+  const handleStatusChange = (taskId: number, response: string) => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    axios
+      .post(
+        "/api/task_status",
+        { task_id: taskId, response: response },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((response) => {
+        fetchTasks();
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("Failed to update task status");
+        setLoading(false);
+      });
+  };
   const fetchTasks = () => {
     const token = localStorage.getItem("token");
+    setLoading(true);
     axios
       .get("/api/labeling", {
         headers: {
@@ -20,11 +42,25 @@ const TagList: React.FC = () => {
       })
       .then((response) => {
         const tasks_json = response.data;
-        setTasks(tasks_json.task);
+        const task: TaskInfo[] = [{
+          task_id: tasks_json.task_id,
+          title: tasks_json.title,
+          create_at: tasks_json.create_at,
+          deadline: tasks_json.deadline,
+          template: tasks_json.template,
+          reward: tasks_json.reward,
+          time: tasks_json.time,
+          labeler_number: tasks_json.labeler_number,
+          demander_id: tasks_json.demander_id,
+          task_data: tasks_json.task_data,
+        }]
+        setTasks(task);
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
         message.error("Failed to fetch tasks");
+        setLoading(false);
       });
     return (
       <>
@@ -36,8 +72,7 @@ const TagList: React.FC = () => {
 
   const Taggingboard = (task: TaskInfo) => {
     // 在这里处理跳转到标注组件的逻辑，需要传入task数据
-    const [open, setOpen] = useState(true);
-
+    setOpen(true);
     const handleCancel = () => {
       setOpen(false);
     };
@@ -82,7 +117,7 @@ const TagList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [tasks]);
+  }, []);
 
   const columns = [
     {
@@ -107,16 +142,20 @@ const TagList: React.FC = () => {
       key: "template",
     },
     {
-      title: "Style",
-      dataIndex: "style",
-      key: "style",
-    },
-    {
       title: "Tagging",
       key: "tagging",
       render: (text: any, record: TaskInfo) => (
         <Button type="primary" onClick={() => Taggingboard(record)}>
           Tagging
+        </Button>
+      ),
+    },
+    {
+      title: "Refuse",
+      key: "refuse",
+      render: (text: any, task: TaskInfo) => (
+        <Button type="primary" onClick={() => handleStatusChange(Number(task.task_id), "no")}>
+            Refuse
         </Button>
       ),
     },

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Table, Button, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import axios from "axios";
+import { render } from "@testing-library/react";
 
 const TaskList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
@@ -15,20 +16,26 @@ const TaskList: React.FC = () => {
       .get("/api/distribute", { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         const tasks_json = response.data;
-        setTasks(tasks_json.tasks);
+        const task: TaskInfo[] = [{
+          task_id: tasks_json.task_id,
+          title: tasks_json.title,
+          create_at: tasks_json.create_at,
+          deadline: tasks_json.deadline,
+          template: tasks_json.template,
+          reward: tasks_json.reward,
+          time: tasks_json.time,
+          labeler_number: tasks_json.labeler_number,
+          demander_id: tasks_json.demander_id,
+          task_data: tasks_json.task_data,
+        }]
+        setTasks(task);
         setLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        message.error("Failed to fetch tasks");
+        message.error("没有更新的任务了!");
         setLoading(false);
       });
-    return (
-      <>
-        <Button onClick={fetchTasks}>Update</Button>
-        <TaskTable tasks={tasks} columns={columns} loading={loading} />
-      </>
-    );
   };
 
   const handleStatusChange = (taskId: number, response: string) => {
@@ -57,31 +64,16 @@ const TaskList: React.FC = () => {
 
   const columns = [
     { title: "Title", dataIndex: "title" },
-    { title: "Style", dataIndex: "style" },
-    {
-      title: "Reward",
-      dataIndex: "reward",
-      render: (reward: number) => `$${reward}`,
-    },
-    {
-      title: "Deadline",
-      dataIndex: "deadline",
-      render: (deadline: number) => new Date(deadline).toLocaleString(),
-    },
-    {
-      title: "Actions",
+    { title: "Template", dataIndex: "template" },
+    { title: "Reward", dataIndex: "reward", render: (reward: number) => `$${reward}` },
+    { title: "Deadline", dataIndex: "deadline", render: (deadline: number) => new Date(deadline).toLocaleString() },
+    { title: "Actions",
       render: (_: any, task: TaskInfo) => (
         <>
-          <Button
-            onClick={() => handleStatusChange(Number(task.task_id), "tagging")}
-          >
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "ok")}>
             Accept
           </Button>
-          <Button
-            onClick={() =>
-              handleStatusChange(Number(task.task_id), "undesignated")
-            }
-          >
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "no")}>
             Refuse
           </Button>
         </>
@@ -91,8 +83,8 @@ const TaskList: React.FC = () => {
 
   return (
     <>
-      <Button onClick={fetchTasks}>Update</Button>
       <TaskTable tasks={tasks} columns={columns} loading={loading} />
+      <Button onClick={fetchTasks}>Update</Button>
     </>
   );
 };

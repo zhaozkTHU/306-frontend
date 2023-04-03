@@ -27,7 +27,7 @@ const CheckTextClassificationTask = (
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
-      )
+      })
       .then((response) => {
         const newProblems: TextClassificationProblem[] =
           response.data.task_list;
