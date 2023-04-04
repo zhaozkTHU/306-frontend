@@ -64,25 +64,17 @@ const LoginScreen = (props: LoginScreenPorps) => {
             { required: true, message: "用户名不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (
-                  !value ||
-                  (isValid(value) && value.length <= 50 && value.length >= 3)
-                ) {
+                if (!value || (isValid(value) && value.length <= 50 && value.length >= 3)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
-                  new Error(
-                    "用户名只包含字母、数字、下划线且长度不超过50不小于3"
-                  )
+                  new Error("用户名只包含字母、数字、下划线且长度不超过50不小于3")
                 );
               },
             }),
           ]}
         >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="用户名"
-          />
+          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
         </Form.Item>
         <p>密码:</p>
         <Form.Item
@@ -91,10 +83,7 @@ const LoginScreen = (props: LoginScreenPorps) => {
             { required: true, message: "密码不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (
-                  !value ||
-                  (isValid(value) && value.length <= 50 && value.length >= 5)
-                ) {
+                if (!value || (isValid(value) && value.length <= 50 && value.length >= 5)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
@@ -113,12 +102,7 @@ const LoginScreen = (props: LoginScreenPorps) => {
           登录
         </Button>
         <p style={{ textAlign: "center" }}>还没有306账号?</p>
-        <Button
-          type="primary"
-          htmlType="button"
-          block
-          onClick={() => router.push("/register")}
-        >
+        <Button type="primary" htmlType="button" block onClick={() => router.push("/register")}>
           注册
         </Button>
       </Form>

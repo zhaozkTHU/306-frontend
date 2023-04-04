@@ -9,7 +9,7 @@ import UpdateTask from "./task_manage/update-task";
 
 export interface DemanderTaskBlockProps {
   task_id: number;
-  creat_at: number;
+  create_at: number;
   deadline: number;
   title: string;
   state: string;
@@ -28,10 +28,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
     {
       key: "allCheck",
       label: "全量审核",
-      children: Array.from(
-        Array(props.labeler_number).keys(),
-        (n) => n + 1
-      ).map((index, idx) => {
+      children: Array.from(Array(props.labeler_number).keys(), (n) => n + 1).map((index, idx) => {
         return {
           key: idx,
           label: `标注者${index}号`,
@@ -42,10 +39,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
     {
       key: "sampleCheck",
       label: "抽样审核",
-      children: Array.from(
-        Array(props.labeler_number).keys(),
-        (n) => n + 1
-      ).map((index, idx) => {
+      children: Array.from(Array(props.labeler_number).keys(), (n) => n + 1).map((index, idx) => {
         return {
           key: idx,
           label: `标注者${index}号`,
@@ -96,7 +90,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         }
       >
         <>
-          <p>创建时间: {transTime(props.creat_at)}</p>
+          <p>创建时间: {transTime(props.create_at)}</p>
           <p>截止时间: {transTime(props.deadline)}</p>
           <p>任务状态: {props.state}</p>
           <Space wrap>
@@ -126,10 +120,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
                   },
                 ],
                 onClick: ({ key }) => {
-                  DataExportCallback(
-                    props.task_id,
-                    key === "merge" ? true : false
-                  );
+                  DataExportCallback(props.task_id, key === "merge" ? true : false);
                 },
               }}
             >

@@ -41,11 +41,15 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
     setTaskInfo({ ...taskInfo, ...info });
 
     axios
-      .put("/api/task", taskInfo, {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-        },
-      })
+      .put(
+        "/api/task",
+        { ...taskInfo, create_at: new Date().valueOf(), task_id: props.taskId },
+        {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((value) => {
         if (value.data.code === 0) console.log("更新成功");
         else message.error("更新失败");

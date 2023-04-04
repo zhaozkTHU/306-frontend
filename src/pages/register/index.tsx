@@ -59,16 +59,11 @@ const RegisterScreen = () => {
             { required: true, message: "用户名不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (
-                  !value ||
-                  (isValid(value) && value.length <= 50 && value.length >= 3)
-                ) {
+                if (!value || (isValid(value) && value.length <= 50 && value.length >= 3)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
-                  new Error(
-                    "用户名只包含字母、数字、下划线且长度不超过50不小于3"
-                  )
+                  new Error("用户名只包含字母、数字、下划线且长度不超过50不小于3")
                 );
               },
             }),
@@ -88,10 +83,7 @@ const RegisterScreen = () => {
             { required: true, message: "密码不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (
-                  !value ||
-                  (isValid(value) && value.length <= 50 && value.length >= 5)
-                ) {
+                if (!value || (isValid(value) && value.length <= 50 && value.length >= 5)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
@@ -131,10 +123,7 @@ const RegisterScreen = () => {
         </Form.Item>
 
         <p>选择身份: </p>
-        <Form.Item
-          name="role"
-          rules={[{ required: true, message: "身份不能为空" }]}
-        >
+        <Form.Item name="role" rules={[{ required: true, message: "身份不能为空" }]}>
           <Select placeholder="选择身份">
             <Option value="demander">需求方</Option>
             <Option value="labeler">标注方</Option>
@@ -144,12 +133,7 @@ const RegisterScreen = () => {
           注册
         </Button>
         <p style={{ textAlign: "center" }}>已经有账号?</p>
-        <Button
-          type="primary"
-          htmlType="button"
-          block
-          onClick={() => router.push("/")}
-        >
+        <Button type="primary" htmlType="button" block onClick={() => router.push("/")}>
           登录
         </Button>
       </Form>
