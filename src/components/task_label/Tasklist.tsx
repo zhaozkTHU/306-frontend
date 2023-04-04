@@ -15,13 +15,26 @@ const TaskList: React.FC = () => {
       .get("/api/distribute", { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         const tasks_json = response.data;
-        const new_task = tasks_json.tasks
-        setTasks(new_task);
+        const task: TaskInfo[] = [
+          {
+            task_id: tasks_json.task_id,
+            title: tasks_json.title,
+            create_at: tasks_json.create_at,
+            deadline: tasks_json.deadline,
+            template: tasks_json.template,
+            reward: tasks_json.reward,
+            time: tasks_json.time,
+            labeler_number: tasks_json.labeler_number,
+            demander_id: tasks_json.demander_id,
+            task_data: tasks_json.task_data,
+          },
+        ];
+        setTasks(task);
         setLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        message.error("Failed to fetch tasks");
+        message.error("没有更新的任务了!");
         setLoading(false);
       });
   };
@@ -36,7 +49,7 @@ const TaskList: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
-        fetchTasks();
+        setTasks([]);
         setLoading(false);
       })
       .catch((error) => {
@@ -52,7 +65,7 @@ const TaskList: React.FC = () => {
 
   const columns = [
     { title: "Title", dataIndex: "title" },
-    { title: "Style", dataIndex: "style" },
+    { title: "Template", dataIndex: "template" },
     {
       title: "Reward",
       dataIndex: "reward",
@@ -68,14 +81,12 @@ const TaskList: React.FC = () => {
       render: (_: any, task: TaskInfo) => (
         <>
           <Button
-            onClick={() => handleStatusChange(Number(task.task_id), "tagging")}
+            onClick={() => handleStatusChange(Number(task.task_id), "ok")}
           >
             Accept
           </Button>
           <Button
-            onClick={() =>
-              handleStatusChange(Number(task.task_id), "undesignated")
-            }
+            onClick={() => handleStatusChange(Number(task.task_id), "no")}
           >
             Refuse
           </Button>
@@ -86,8 +97,8 @@ const TaskList: React.FC = () => {
 
   return (
     <>
-      <Button onClick={fetchTasks}>Update</Button>
       <TaskTable tasks={tasks} columns={columns} loading={loading} />
+      <Button onClick={fetchTasks}>Update</Button>
     </>
   );
 };
