@@ -10,7 +10,6 @@ const TagList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  
   const handleStatusChange = (taskId: number, response: string) => {
     setLoading(true);
     const token = localStorage.getItem("token");
@@ -41,18 +40,20 @@ const TagList: React.FC = () => {
       })
       .then((response) => {
         const tasks_json = response.data;
-        const task: TaskInfo[] = [{
-          task_id: tasks_json.task_id,
-          title: tasks_json.title,
-          create_at: tasks_json.create_at,
-          deadline: tasks_json.deadline,
-          template: tasks_json.template,
-          reward: tasks_json.reward,
-          time: tasks_json.time,
-          labeler_number: tasks_json.labeler_number,
-          demander_id: tasks_json.demander_id,
-          task_data: tasks_json.task_data,
-        }]
+        const task: TaskInfo[] = [
+          {
+            task_id: tasks_json.task_id,
+            title: tasks_json.title,
+            create_at: tasks_json.create_at,
+            deadline: tasks_json.deadline,
+            template: tasks_json.template,
+            reward: tasks_json.reward,
+            time: tasks_json.time,
+            labeler_number: tasks_json.labeler_number,
+            demander_id: tasks_json.demander_id,
+            task_data: tasks_json.task_data,
+          },
+        ];
         setTasks([tasks_json.task]);
         setLoading(false);
       })
@@ -63,7 +64,7 @@ const TagList: React.FC = () => {
       });
     return (
       <>
-        <TagTable columns={columns} tasks={tasks} loading={loading}/>
+        <TagTable columns={columns} tasks={tasks} loading={loading} />
         <Button onClick={fetchTasks}>Update</Button>
       </>
     );
@@ -118,14 +119,25 @@ const TagList: React.FC = () => {
 
   const columns = [
     { title: "Title", dataIndex: "title" },
-    { title: "Reward", dataIndex: "reward", render: (reward: number) => `$${reward}` },
-    { title: "Deadline", dataIndex: "deadline", render: (text: number) => new Date(text).toLocaleString() },
+    {
+      title: "Reward",
+      dataIndex: "reward",
+      render: (reward: number) => `$${reward}`,
+    },
+    {
+      title: "Deadline",
+      dataIndex: "deadline",
+      render: (text: number) => new Date(text).toLocaleString(),
+    },
     { title: "Template", dataIndex: "template" },
-    { title: "Actions",
+    {
+      title: "Actions",
       render: (_: any, record: TaskInfo) => (
         <>
-          <TagBoard task={record}/>
-          <Button onClick={() => handleStatusChange(Number(record.task_id), "no")}>
+          <TagBoard task={record} />
+          <Button
+            onClick={() => handleStatusChange(Number(record.task_id), "no")}
+          >
             Refuse
           </Button>
         </>
@@ -144,11 +156,18 @@ const TagList: React.FC = () => {
 interface TagTableProps {
   tasks: TaskInfo[];
   columns: any;
-  loading: boolean
+  loading: boolean;
 }
 
 const TagTable: React.FC<TagTableProps> = ({ tasks, columns, loading }) => {
-  return <Table dataSource={tasks} columns={columns} loading={loading} rowKey="task_id" />;
+  return (
+    <Table
+      dataSource={tasks}
+      columns={columns}
+      loading={loading}
+      rowKey="task_id"
+    />
+  );
 };
 
 export default TagList;
