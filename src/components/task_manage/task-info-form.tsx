@@ -89,12 +89,14 @@ const TaskInfoForm: React.FC<{
           name="deadline"
           rules={[{ required: true, message: "请选择任务截止时间" }]}
         >
-          <DatePicker />
+          <DatePicker
+            locale={locale.DatePicker}
+            inputReadOnly
+            showTime
+            disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
+          />
         </Form.Item>
-        <Form.Item
-          label="任务数据"
-          rules={[{ required: true, message: "请输入任务数据" }]}
-        >
+        <Form.Item label="任务数据" rules={[{ required: true, message: "请输入任务数据" }]}>
           <Form.List name="task_data">
             {(dataFields, { add: dataAdd, remove: dataRemove }) => {
               return (
@@ -116,11 +118,7 @@ const TaskInfoForm: React.FC<{
                           </Form.Item>
                         </Col>
                         <Col>
-                          <Button
-                            onClick={() => dataRemove(index)}
-                            type="primary"
-                            danger
-                          >
+                          <Button onClick={() => dataRemove(index)} type="primary" danger>
                             删除题目
                           </Button>
                         </Col>
@@ -143,16 +141,11 @@ const TaskInfoForm: React.FC<{
                                           },
                                         ]}
                                       >
-                                        <Input
-                                          addonBefore={`选项${optIndex + 1}`}
-                                        />
+                                        <Input addonBefore={`选项${optIndex + 1}`} />
                                       </Form.Item>
                                     </Col>
                                     <Col>
-                                      <Button
-                                        onClick={() => optRemove(optIndex)}
-                                        danger
-                                      >
+                                      <Button onClick={() => optRemove(optIndex)} danger>
                                         -
                                       </Button>
                                     </Col>

@@ -36,10 +36,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   if (router.pathname.startsWith("/demander/")) {
     return (
       <TokenContext.Provider value={Token}>
-        <DemanderLayout
-          loginStatus={LoginStatus}
-          setLoginStatus={setLoginStatus}
-        >
+        <DemanderLayout loginStatus={LoginStatus} setLoginStatus={setLoginStatus}>
           <Component {...pageProps} />
         </DemanderLayout>
       </TokenContext.Provider>
@@ -47,10 +44,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   } else if (router.pathname.startsWith("/labeler/")) {
     return (
       <TokenContext.Provider value={Token}>
-        <LabelerDeploy
-          loginStatus={LoginStatus}
-          setLoginStatus={setLoginStatus}
-        >
+        <LabelerDeploy loginStatus={LoginStatus} setLoginStatus={setLoginStatus}>
           <Component {...pageProps} />
         </LabelerDeploy>
       </TokenContext.Provider>

@@ -10,9 +10,7 @@ interface CheckTextClassificationTaskProps {
   labeler_index: number;
 }
 
-const CheckTextClassificationTask = (
-  props: CheckTextClassificationTaskProps
-) => {
+const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [passedNumber, setPassedNumber] = useState<number>(0);
   const [problems, setProblems] = useState<TextClassificationProblem[]>([]);
@@ -23,17 +21,13 @@ const CheckTextClassificationTask = (
     }
     setRefreshing(true);
     axios
-      .get(
-        `/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_index}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
+      .get(`/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_index}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
       .then((response) => {
-        const newProblems: TextClassificationProblem[] =
-          response.data.task_list;
+        const newProblems: TextClassificationProblem[] = response.data.task_list;
         setProblems(newProblems);
       })
       .catch((err) => {
@@ -64,12 +58,20 @@ const CheckTextClassificationTask = (
         size="large"
         block
         onClick={() => {
-          axios.post("/api/checking", {
-            task_id: props.task_id,
-            labeler_id: props.labeler_index,
-            is_passed: true,
-            correct_number: passedNumber,
-          });
+          axios.post(
+            "/api/checking",
+            {
+              task_id: props.task_id,
+              labeler_id: props.labeler_index,
+              is_passed: true,
+              correct_number: passedNumber,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
         }}
       >
         合格
@@ -78,12 +80,20 @@ const CheckTextClassificationTask = (
         size="large"
         block
         onClick={() => {
-          axios.post("/api/checking", {
-            task_id: props.task_id,
-            labeler_id: props.labeler_index,
-            is_passed: false,
-            correct_number: passedNumber,
-          });
+          axios.post(
+            "/api/checking",
+            {
+              task_id: props.task_id,
+              labeler_id: props.labeler_index,
+              is_passed: false,
+              correct_number: passedNumber,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
         }}
       >
         不合格

@@ -115,7 +115,7 @@ const TagList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [tasks]);
 
   const columns = [
     { title: "Title", dataIndex: "title" },
