@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Table, Button, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import axios from "axios";
-import { render } from "@testing-library/react";
 
 const TaskList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
@@ -48,7 +47,7 @@ const TaskList: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
-        fetchTasks();
+        setTasks([]);;
         setLoading(false);
       })
       .catch((error) => {
@@ -60,7 +59,7 @@ const TaskList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [tasks]);
+  }, []);
 
   const columns = [
     { title: "Title", dataIndex: "title" },
