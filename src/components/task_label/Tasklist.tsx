@@ -111,7 +111,7 @@ interface TaskTableProps {
 
 const TaskTable: React.FC<TaskTableProps> = ({ tasks, columns, loading }) => {
   return (
-    <Table dataSource={tasks} columns={columns} loading={loading} rowKey="id" />
+    <Table dataSource={tasks} columns={columns} loading={loading} rowKey="task_id" />
   );
 };
 
