@@ -2,6 +2,7 @@ import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Empty } from "antd";
 
 const DemanderLabeling = () => {
   const router = useRouter();
@@ -30,7 +31,14 @@ const DemanderLabeling = () => {
   return refreshing ? (
     <p>Loading...</p>
   ) : (
-    tasks.map((task, idx) => <DemanderTaskBlock {...task} key={idx} />)
+    <>
+      {tasks.length
+      ? tasks.map((task, idx) => <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing}/>)
+      : <Empty
+        description="暂无标注中的任务"
+        />
+      }
+    </>
   );
 };
 
