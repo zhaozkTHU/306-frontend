@@ -8,6 +8,7 @@ import axios from "axios";
 interface CheckTextClassificationTaskProps {
   task_id: number;
   labeler_index: number;
+  is_sample: boolean;
 }
 
 const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) => {
@@ -36,16 +37,26 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
     setRefreshing(false);
   }, [router]);
 
-  const checkedNumber: number = problems.length;
+  let result = problems.slice();
+  const totalNumber = problems.length;
+  if (props.is_sample) {
+    for (let i=result.length-1;i>0;i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    result = result.slice(0, Math.ceil(totalNumber/3));
+  }
+
+  const checkedNumber: number = result.length;
   return (
     <>
-      <p>已审核题目数量: {checkedNumber}</p>
+      <p>审核题目数量: {checkedNumber}</p>
       <p>通过题目数量: {passedNumber}</p>
       <p>当前通过率: {(passedNumber / checkedNumber).toFixed(3)}</p>
       {refreshing ? (
         <p>Loading...</p>
       ) : (
-        problems.map((items, index) => (
+        result.map((items, index) => (
           <CheckTextClassificationProblem
             description={items.description}
             options={items.options}
@@ -66,7 +77,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               task_id: props.task_id,
               labeler_id: props.labeler_index,
               is_passed: true,
-              correct_number: passedNumber,
+              correct_number: props.is_sample?undefined:passedNumber,
             },
             {
               headers: {
@@ -88,7 +99,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               task_id: props.task_id,
               labeler_id: props.labeler_index,
               is_passed: false,
-              correct_number: passedNumber,
+              correct_number: props.is_sample?undefined:passedNumber,
             },
             {
               headers: {
