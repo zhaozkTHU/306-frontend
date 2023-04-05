@@ -2,7 +2,7 @@ import { Card, Button, Dropdown, Modal, Space } from "antd";
 import type { MenuProps } from "antd";
 import { transTime } from "../utils/valid";
 import { DownloadOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import CheckModel from "./check/checkModel";
 import DataExportCallback from "./data_export/dataExport";
 import UpdateTask from "./task_manage/update-task";
@@ -17,6 +17,7 @@ export interface DemanderTaskBlockProps {
   labeler_id: number[];
   template: string;
   isDone: boolean[]; // 对应ID的标注方是否完成标注
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
@@ -58,6 +59,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         onCancel={() => {
           setIsCheckModalOpen(false);
         }}
+        
       >
         <CheckModel
           task_id={props.task_id}

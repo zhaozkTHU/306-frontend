@@ -21,13 +21,13 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
     }
     setRefreshing(true);
     axios
-      .get(`/api/task/checking?task_id=${props.task_id}%labeler_index=${props.labeler_index}`, {
+      .get(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
-        const newProblems: TextClassificationProblem[] = response.data.task_list;
+        const newProblems: TextClassificationProblem[] = JSON.parse(response.data.label_data);
         setProblems(newProblems);
       })
       .catch((err) => {
@@ -47,7 +47,9 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
       ) : (
         problems.map((items, index) => (
           <CheckTextClassificationProblem
-            problem={items}
+            description={items.description}
+            options={items.options}
+            chosen={items.chosen?items.chosen:[false]}
             index={index}
             setPassedNumber={setPassedNumber}
             key={index}

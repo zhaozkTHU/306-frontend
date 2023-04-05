@@ -82,7 +82,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       tags: taskInfo.task_data.map((problem, problemIndex) => ({
         description: problem.description,
         options: problem.options,
-        chosed: modifiedChosedOptionsAll[problemIndex].slice(
+        chosen: modifiedChosedOptionsAll[problemIndex].slice(
           0,
           problem.options.length
         ),
