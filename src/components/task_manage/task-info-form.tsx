@@ -15,6 +15,7 @@ import ConfigProvider from "antd/lib/config-provider";
 import dayjs from "dayjs";
 import React from "react";
 import locale from "antd/locale/zh_CN";
+import FileUploader from "./FileUploader";
 
 // task_manage内部使用
 const TaskInfoForm: React.FC<{
@@ -41,6 +42,11 @@ const TaskInfoForm: React.FC<{
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
+        initialValues={
+          props.taskInfo
+            ? { ...props.taskInfo, deadline: dayjs(props.taskInfo.deadline) }
+            : undefined
+        }
       >
         <Form.Item
           label="任务标题"
@@ -101,7 +107,11 @@ const TaskInfoForm: React.FC<{
             {(dataFields, { add: dataAdd, remove: dataRemove }) => {
               return (
                 <>
-                  <Button onClick={() => dataAdd()} type="primary">
+                  <Button
+                    onClick={() => dataAdd()}
+                    type="primary"
+                    disabled={form.getFieldValue("template") === undefined}
+                  >
                     添加题目
                   </Button>
                   {dataFields.map((dataField, index) => (
@@ -123,39 +133,49 @@ const TaskInfoForm: React.FC<{
                           </Button>
                         </Col>
                       </Row>
-                      <Form.List name={[dataField.name, "options"]}>
-                        {(optFields, { add: optAdd, remove: optRemove }) => {
-                          return (
-                            <>
-                              <Button onClick={() => optAdd()}>添加选项</Button>
-                              {optFields.map((optField, optIndex) => (
-                                <div key={optIndex}>
-                                  <Row>
-                                    <Col>
-                                      <Form.Item
-                                        {...optField}
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message: "请输入选项",
-                                          },
-                                        ]}
-                                      >
-                                        <Input addonBefore={`选项${optIndex + 1}`} />
-                                      </Form.Item>
-                                    </Col>
-                                    <Col>
-                                      <Button onClick={() => optRemove(optIndex)} danger>
-                                        -
-                                      </Button>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              ))}
-                            </>
-                          );
-                        }}
-                      </Form.List>
+                      {form.getFieldValue("template") === "TextClassification" && (
+                        <Form.List name={[dataField.name, "options"]}>
+                          {(optFields, { add: optAdd, remove: optRemove }) => {
+                            return (
+                              <>
+                                <Button onClick={() => optAdd()}>添加选项</Button>
+                                {optFields.map((optField, optIndex) => (
+                                  <div key={optIndex}>
+                                    <Row>
+                                      <Col>
+                                        <Form.Item
+                                          {...optField}
+                                          rules={[
+                                            {
+                                              required: true,
+                                              message: "请输入选项",
+                                            },
+                                          ]}
+                                        >
+                                          <Input addonBefore={`选项${optIndex + 1}`} />
+                                        </Form.Item>
+                                      </Col>
+                                      <Col>
+                                        <Button onClick={() => optRemove(optIndex)} danger>
+                                          -
+                                        </Button>
+                                      </Col>
+                                    </Row>
+                                  </div>
+                                ))}
+                              </>
+                            );
+                          }}
+                        </Form.List>
+                      )}
+                      {form.getFieldValue("template") === "ImagesClassification" && (
+                        <FileUploader
+                          urls={form.getFieldValue([dataField.name, "options"]) ?? []}
+                          onUrlListChange={(newUrlList) => {
+                            form.setFieldValue([dataField.name, "options"], newUrlList);
+                          }}
+                        />
+                      )}
                     </div>
                   ))}
                 </>

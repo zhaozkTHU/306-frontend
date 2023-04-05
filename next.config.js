@@ -7,7 +7,7 @@ const nextConfig = {
   async rewrites() {
     return [{
       source: "/api/:path*",
-      destination: "http://127.0.0.1:8000/:path*",
+      destination: "https://crowdsourcing-backend-306wins.app.secoder.net/:path*",
     }];
   }
 }

@@ -16,11 +16,11 @@ const CreateTask: React.FC = () => {
       )
       .then((value) => {
         if (value.data.code === 0) message.success("发布成功");
-        else message.success("发布失败");
+        else message.error(value.data.reason);
       })
       .catch((reason) => {
         console.log(reason);
-        message.error("网络错误");
+        message.error(`网络错误 ${reason?.response?.data?.message}`);
       });
   };
 

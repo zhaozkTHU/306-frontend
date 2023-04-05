@@ -107,8 +107,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handlePrevious = () => {
     if (currentProblemIndex > 0) {
-      const newChosenOptions =
-        taskInfo.task_data[currentProblemIndex - 1].chosen || [];
+      const newChosenOptions = taskInfo.task_data[currentProblemIndex - 1].chosen || [];
       setCurrentProblemIndex((prevState) => prevState - 1);
       setchosenOptions(newChosenOptions);
     } else {
@@ -131,11 +130,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     <div>
       <div>{currentProblem.description}</div>
       {currentProblem.options.map((option, index) => (
-        <Checkbox
-          key={index}
-          checked={chosenOptions[index]}
-          onChange={handleCheckboxChange(index)}
-        >
+        <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
           {option}
         </Checkbox>
       ))}
