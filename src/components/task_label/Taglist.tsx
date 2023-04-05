@@ -62,12 +62,6 @@ const TagList: React.FC = () => {
         message.error("Failed to fetch tasks");
         setLoading(false);
       });
-    return (
-      <>
-        <TagTable columns={columns} tasks={tasks} loading={loading} />
-        <Button onClick={fetchTasks}>Update</Button>
-      </>
-    );
   };
 
   const Taggingboard = (task: TaskInfo) => {
@@ -115,7 +109,7 @@ const TagList: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [tasks]);
+  }, []);
 
   const columns = [
     { title: "Title", dataIndex: "title" },
