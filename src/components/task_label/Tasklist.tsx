@@ -6,7 +6,6 @@ import axios from "axios";
 const TaskList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
-  // const labelerId = useContext(UserIdContext);
 
   const fetchTasks = () => {
     const token = localStorage.getItem("token");
@@ -34,7 +33,7 @@ const TaskList: React.FC = () => {
       })
       .catch((error) => {
         console.error(error);
-        message.error("没有更新的任务了!");
+        message.warning("没有更新的任务了!");
         setLoading(false);
       });
   };

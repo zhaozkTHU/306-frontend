@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, message } from "antd";
 import { TaskInfo } from "@/const/interface";
-import TextClassificationComponent from "@/components/task_label/Option_tag";
 import TagBoard from "./TagBoard";
 import axios from "axios";
 
 const TagList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const handleStatusChange = (taskId: number, response: string) => {
     setLoading(true);
@@ -59,52 +57,9 @@ const TagList: React.FC = () => {
       })
       .catch((error) => {
         console.error(error);
-        message.error("Failed to fetch tasks");
+        message.warning("没有更新的任务了！");
         setLoading(false);
       });
-  };
-
-  const Taggingboard = (task: TaskInfo) => {
-    // 在这里处理跳转到标注组件的逻辑，需要传入task数据
-    setOpen(true);
-    const handleCancel = () => {
-      setOpen(false);
-    };
-
-    if (task.template === "ImagesClassification") {
-      return (
-        <Modal
-          title="Images Classification"
-          open={open}
-          onCancel={handleCancel}
-          footer={null}
-        >
-          {/* <ImageClassificationComponent task={task} /> */}
-        </Modal>
-      );
-    } else if (task.template === "TextClassification") {
-      return (
-        <Modal
-          title="Text Classification"
-          open={open}
-          onCancel={handleCancel}
-          footer={null}
-        >
-          <TextClassificationComponent
-            title={task.title}
-            create_at={task.create_at}
-            deadline={task.deadline}
-            template={task.template}
-            reward={task.reward}
-            time={task.time}
-            labeler_number={task.labeler_number}
-            demander_id={task.demander_id}
-            task_data={task.task_data}
-          />
-        </Modal>
-      );
-    }
-    console.log(task);
   };
 
   useEffect(() => {

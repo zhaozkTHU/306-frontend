@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox, message, Card } from "antd";
 import axios from "axios";
-import { TaskInfo, TextClassificationProblem } from "@/const/interface";
+import { TaskInfo, ImagesClassificationProblem } from "@/const/interface";
 
-const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
+const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0); // keep current pro id
   const [chosenOptions, setchosenOptions] = useState<boolean[]>([]); // current problem's answer
-  // const [chosenOptionsAll, setChosenOptionsAll] = useState<boolean[][]>([]); // save all answers
   const [chosenOptionsAll, setchosenOptionsAll] = useState<Array<boolean[]>>(
     taskInfo.task_data.map((problem) => problem.options.map(() => false))
   );
@@ -16,7 +15,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   
   const currentProblem = taskInfo.task_data[
     currentProblemIndex
-  ] as TextClassificationProblem;
+  ] as ImagesClassificationProblem;
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -136,7 +135,11 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
           checked={chosenOptions[index]}
           onChange={handleCheckboxChange(index)}
         >
-          {option}
+        <Card
+            hoverable
+            style={{ width: 240 }}
+            cover={<img alt="example" src={option} />}
+        />
         </Checkbox>
       ))}
       <div>
@@ -149,6 +152,6 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   );
 };
 
-export default TextClassificationComponent;
+export default ImagesClassificationComponent;
 
 
