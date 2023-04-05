@@ -15,7 +15,7 @@ const TaskList: React.FC = () => {
       .get("/api/distribute", { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         const tasks_json = response.data;
-        const new_task = tasks_json.tasks
+        const new_task = tasks_json.tasks;
         setTasks(new_task);
         setLoading(false);
       })
@@ -67,16 +67,10 @@ const TaskList: React.FC = () => {
       title: "Actions",
       render: (_: any, task: TaskInfo) => (
         <>
-          <Button
-            onClick={() => handleStatusChange(Number(task.task_id), "tagging")}
-          >
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "tagging")}>
             Accept
           </Button>
-          <Button
-            onClick={() =>
-              handleStatusChange(Number(task.task_id), "undesignated")
-            }
-          >
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "undesignated")}>
             Refuse
           </Button>
         </>
@@ -99,9 +93,7 @@ interface TaskTableProps {
 }
 
 const TaskTable: React.FC<TaskTableProps> = ({ tasks, columns, loading }) => {
-  return (
-    <Table dataSource={tasks} columns={columns} loading={loading} rowKey="id" />
-  );
+  return <Table dataSource={tasks} columns={columns} loading={loading} rowKey="id" />;
 };
 
 export default TaskList;

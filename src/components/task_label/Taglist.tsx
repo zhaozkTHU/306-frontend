@@ -45,24 +45,14 @@ const TagList: React.FC = () => {
     if (task.template === "ImagesClassification") {
       // 渲染图片标注组件
       return (
-        <Modal
-          title="Images Classification"
-          open={open}
-          onCancel={handleCancel}
-          footer={null}
-        >
+        <Modal title="Images Classification" open={open} onCancel={handleCancel} footer={null}>
           {/* <ImageClassificationComponent task={task} /> */}
         </Modal>
       );
     } else if (task.template === "TextClassification") {
       // 渲染文本标注组件
       return (
-        <Modal
-          title="Text Classification"
-          open={open}
-          onCancel={handleCancel}
-          footer={null}
-        >
+        <Modal title="Text Classification" open={open} onCancel={handleCancel} footer={null}>
           <TextClassificationComponent
             title={task.title}
             create_at={task.create_at}

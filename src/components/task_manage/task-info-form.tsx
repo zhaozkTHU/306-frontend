@@ -107,7 +107,11 @@ const TaskInfoForm: React.FC<{
             {(dataFields, { add: dataAdd, remove: dataRemove }) => {
               return (
                 <>
-                  <Button onClick={() => dataAdd()} type="primary">
+                  <Button
+                    onClick={() => dataAdd()}
+                    type="primary"
+                    disabled={form.getFieldValue("template") === undefined}
+                  >
                     添加题目
                   </Button>
                   {dataFields.map((dataField, index) => (
@@ -166,7 +170,7 @@ const TaskInfoForm: React.FC<{
                       )}
                       {form.getFieldValue("template") === "ImagesClassification" && (
                         <FileUploader
-                          urls={form.getFieldValue([dataField.name, "options"])}
+                          urls={form.getFieldValue([dataField.name, "options"]) ?? []}
                           onUrlListChange={(newUrlList) => {
                             form.setFieldValue([dataField.name, "options"], newUrlList);
                           }}

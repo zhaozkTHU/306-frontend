@@ -16,12 +16,12 @@ const DeleteTask: React.FC = () => {
         },
       })
       .then((value) => {
-        if (value.data.code === 0) setTaskInfo(value.data.demander_tasks);
-        else message.error("获取任务失败");
+        if (value.data.code === 0) setTaskInfo(value.data?.demander_tasks);
+        else message.error(`获取任务失败 ${value.data?.code}`);
       })
       .catch((reason) => {
         console.log(reason);
-        message.error("获取任务失败");
+        message.error(`获取任务失败 ${reason?.response?.data?.message}`);
       })
       .finally(() => setLoading(false));
   }, [deleteNum]);
