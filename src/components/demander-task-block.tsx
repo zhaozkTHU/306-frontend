@@ -2,7 +2,7 @@ import { Card, Button, Dropdown, Modal, Space } from "antd";
 import type { MenuProps } from "antd";
 import { transTime } from "../utils/valid";
 import { DownloadOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import CheckModel from "./check/checkModel";
 import DataExportCallback from "./data_export/dataExport";
 import UpdateTask from "./task_manage/update-task";
@@ -17,6 +17,7 @@ export interface DemanderTaskBlockProps {
   labeler_id: number[];
   template: string;
   isDone: boolean[]; // 对应ID的标注方是否完成标注
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
@@ -24,13 +25,14 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [labelerId, setLabelerId] = useState<number>(-1);
   const [isShow, setIsShow] = useState<boolean>(false);
+  const [isSample, setisSample] = useState<boolean>(false);
   const items: MenuProps["items"] = [
     {
       key: "allCheck",
       label: "全量审核",
-      children: Array.from(Array(props.labeler_number).keys(), (n) => n + 1).map((index, idx) => {
+      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map((index, idx) => {
         return {
-          key: idx,
+          key: `{\"is_sample\": false, \"labeler_index\": ${idx}}`,
           label: `标注者${index}号`,
           disabled: !props.isDone[idx],
         };
@@ -39,9 +41,9 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
     {
       key: "sampleCheck",
       label: "抽样审核",
-      children: Array.from(Array(props.labeler_number).keys(), (n) => n + 1).map((index, idx) => {
+      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map((index, idx) => {
         return {
-          key: idx,
+          key: `{\"is_sample\": true, \"labeler_index\": ${idx}}`,
           label: `标注者${index}号`,
           disabled: !props.isDone[idx],
         };
@@ -58,8 +60,10 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         onCancel={() => {
           setIsCheckModalOpen(false);
         }}
+        
       >
         <CheckModel
+          is_sample={isSample}
           task_id={props.task_id}
           labeler_index={labelerId}
           template={props.template}
@@ -98,9 +102,11 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
               menu={{
                 items: items,
                 onClick: ({ key }) => {
+                  const item = JSON.parse(key)
+                  setisSample(item.is_sample)
                   setIsShow(true);
                   setIsCheckModalOpen(true);
-                  setLabelerId(props.labeler_id[parseInt(key)]);
+                  setLabelerId(props.labeler_id[item.labeler_index]);
                 },
               }}
             >
