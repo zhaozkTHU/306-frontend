@@ -30,7 +30,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
     {
       key: "allCheck",
       label: "全量审核",
-      children: Array.from(Array(props.labeler_number).keys(), (n) => n + 1).map((index, idx) => {
+      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map((index, idx) => {
         return {
           key: `{\"is_sample\": false, \"labeler_index\": ${idx}}`,
           label: `标注者${index}号`,
@@ -41,7 +41,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
     {
       key: "sampleCheck",
       label: "抽样审核",
-      children: Array.from(Array(props.labeler_number).keys(), (n) => n + 1).map((index, idx) => {
+      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map((index, idx) => {
         return {
           key: `{\"is_sample\": true, \"labeler_index\": ${idx}}`,
           label: `标注者${index}号`,
