@@ -18,16 +18,16 @@ it("@/utils/valid: isValid", () => {
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
   const bad = "~`@*(){}-+=/><,.'\"&^#$%";
   const length = Math.floor(1 + Math.random() * 1000);
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   const randomTrueInput = text;
   expect(isValid(randomTrueInput)).toBeTruthy();
 
-  let insert_times = Math.floor(1 + Math.random() * 1000);
-  for (var i = 0; i < insert_times; i++) {
-    let insert_position = Math.floor(Math.random() * text.length);
-    let insert_ch = Math.floor(Math.random() * 23);
+  const insert_times = Math.floor(1 + Math.random() * 1000);
+  for (let i = 0; i < insert_times; i++) {
+    const insert_position = Math.floor(Math.random() * text.length);
+    const insert_ch = Math.floor(Math.random() * 23);
     text = text.slice(0, insert_position) + bad[insert_ch] + text.slice(insert_position);
   }
   const randomFalseInput = text;

@@ -33,7 +33,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
       children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map(
         (index, idx) => {
           return {
-            key: `{\"is_sample\": false, \"labeler_index\": ${idx}}`,
+            key: `{"is_sample": false, "labeler_index": ${idx}}`,
             label: `标注者${index}号`,
             disabled: !props.isDone[idx],
           };
@@ -46,7 +46,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
       children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map(
         (index, idx) => {
           return {
-            key: `{\"is_sample\": true, \"labeler_index\": ${idx}}`,
+            key: `{"is_sample": true, "labeler_index": ${idx}}`,
             label: `标注者${index}号`,
             disabled: !props.isDone[idx],
           };

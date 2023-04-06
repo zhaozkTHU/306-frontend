@@ -1,4 +1,3 @@
-import { TextClassificationProblem } from "../../const/interface";
 import { Card, Checkbox, Radio, RadioChangeEvent } from "antd";
 import { Dispatch, SetStateAction, useState } from "react";
 
