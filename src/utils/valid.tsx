@@ -1,5 +1,5 @@
 export const isValid = (s: string): boolean => {
-  return /^\w+$/.test(s);
+  return /^[0-9a-zA-Z_]{1,}$/.test(s);
 };
 
 export const transTime = (time: number): string => {
