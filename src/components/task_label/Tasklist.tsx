@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Table, Button, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import axios from "axios";
@@ -6,8 +6,12 @@ import axios from "axios";
 const TaskList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(false);
 
   const fetchTasks = () => {
+    if (isMounted.current) {
+      return;
+    }
     const token = localStorage.getItem("token");
     setLoading(true);
     axios
@@ -59,6 +63,7 @@ const TaskList: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log('useEffect called');
     fetchTasks();
   }, []);
 
