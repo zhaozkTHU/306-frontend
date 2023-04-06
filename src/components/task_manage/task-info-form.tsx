@@ -17,7 +17,13 @@ import React from "react";
 import locale from "antd/locale/zh_CN";
 import FileUploader from "./FileUploader";
 
-// task_manage内部使用
+/**
+ * 任务信息表单组件
+ * @param props.taskInfo 任务信息
+ * @param props.onFinish 表单提交时的回调函数
+ * @returns 任务信息表单组件
+ * @private 
+ */
 const TaskInfoForm: React.FC<{
   taskInfo?: TaskInfo;
   onFinish: (info: TaskInfo) => void;

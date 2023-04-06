@@ -6,8 +6,12 @@ import { message, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 
+/**
+ * 更新任务组件
+ * @param taskId 任务id
+ * @returns 更新任务组件
+ */
 const UpdateTask: React.FC<{ taskId: number }> = (props) => {
-  // TODO: 获取数据
   const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -36,6 +40,10 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
       .finally(() => setLoading(false));
   }, [router, props.taskId]);
 
+  /**
+   * 更新任务信息
+   * @param info 任务信息
+   */
   const onFinish = (info: TaskInfo) => {
     setLoading(true);
 

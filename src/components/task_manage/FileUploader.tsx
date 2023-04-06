@@ -9,6 +9,13 @@ interface FileUploaderProps {
   onUrlListChange: (newUrlList: string[]) => void;
 }
 
+/**
+ * 文件上传子组件
+ * @param props.urls 上传文件的url列表
+ * @param props.onUrlListChange 上传文件url列表改变时的回调函数
+ * @returns   上传文件组件
+ * @private
+ */
 const FileUploader: React.FC<FileUploaderProps> = (props) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -22,6 +29,10 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
     setFileList(initFileList);
   }, [props.urls]);
 
+  /**
+   * @param file 上传文件，类型为`RcFile`
+   * @description 上传文件的回调函数
+   */
   const handleUpload = async (file : RcFile) => {
     const formData = new FormData();
     formData.append("upload_image", file);
@@ -52,6 +63,10 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
     props.onUrlListChange(newUrlList);
   };
 
+  /** 
+   * @param url 上传文件的url
+   * @description 删除文件的回调函数
+   */
   const handleRemove = async ({ url }: UploadFile) => {
     let data: any;
     axios
