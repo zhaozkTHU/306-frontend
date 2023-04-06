@@ -30,24 +30,28 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
     {
       key: "allCheck",
       label: "全量审核",
-      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map((index, idx) => {
-        return {
-          key: `{\"is_sample\": false, \"labeler_index\": ${idx}}`,
-          label: `标注者${index}号`,
-          disabled: !props.isDone[idx],
-        };
-      }),
+      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map(
+        (index, idx) => {
+          return {
+            key: `{\"is_sample\": false, \"labeler_index\": ${idx}}`,
+            label: `标注者${index}号`,
+            disabled: !props.isDone[idx],
+          };
+        }
+      ),
     },
     {
       key: "sampleCheck",
       label: "抽样审核",
-      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map((index, idx) => {
-        return {
-          key: `{\"is_sample\": true, \"labeler_index\": ${idx}}`,
-          label: `标注者${index}号`,
-          disabled: !props.isDone[idx],
-        };
-      }),
+      children: Array.from(Array(props.labeler_id.length).keys(), (n) => n + 1).map(
+        (index, idx) => {
+          return {
+            key: `{\"is_sample\": true, \"labeler_index\": ${idx}}`,
+            label: `标注者${index}号`,
+            disabled: !props.isDone[idx],
+          };
+        }
+      ),
     },
   ];
   return (
@@ -60,7 +64,6 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         onCancel={() => {
           setIsCheckModalOpen(false);
         }}
-        
       >
         <CheckModel
           is_sample={isSample}
@@ -102,8 +105,8 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
               menu={{
                 items: items,
                 onClick: ({ key }) => {
-                  const item = JSON.parse(key)
-                  setisSample(item.is_sample)
+                  const item = JSON.parse(key);
+                  setisSample(item.is_sample);
                   setIsShow(true);
                   setIsCheckModalOpen(true);
                   setLabelerId(props.labeler_id[item.labeler_index]);
