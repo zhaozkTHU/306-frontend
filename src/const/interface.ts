@@ -17,12 +17,14 @@ export interface ImagesClassificationProblem {
 }
 
 export interface FaceTagProblem {
+  description: string;
   faceImageUrl: string;
   /** 点坐标数组 */
   data?: [number, number][];
 }
 
 export interface ImageFramePromblem {
+  description: string;
   imageUrl: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
@@ -35,8 +37,8 @@ export interface ImageFramePromblem {
  * @see 文档中标注示例
  */
 export interface SoundTagProblem {
-  soundUrl: string;
   description: string;
+  soundUrl: string;
   /** 有些选项需要标注方填写 */
   choice: {
     text: string;
@@ -50,8 +52,10 @@ export interface SoundTagProblem {
 
 /**
  * @interface 修改自`SoundTagProblem`，将`soundUrl`改为`videoUrl`
+ * @see `SoundTagProblem`
  */
 export interface VideoTagProblem extends Omit<SoundTagProblem, "soundUrl"> {
+  description: string;
   videoUrl: string;
 }
 
