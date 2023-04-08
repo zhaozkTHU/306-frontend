@@ -31,9 +31,13 @@ export interface ImageFramePromblem {
   }[];
 }
 
+/**
+ * @see 文档中标注示例
+ */
 export interface SoundTagProblem {
   soundUrl: string;
   description: string;
+  /** 有些选项需要标注方填写 */
   choice: {
     text: string;
     needInput: boolean;
@@ -44,7 +48,9 @@ export interface SoundTagProblem {
   };
 }
 
-// 将soundUrl 改为 videoUrl
+/**
+ * @interface 修改自`SoundTagProblem`，将`soundUrl`改为`videoUrl`
+ */
 export interface VideoTagProblem extends Omit<SoundTagProblem, "soundUrl"> {
   videoUrl: string;
 }
@@ -69,7 +75,9 @@ export interface TaskInfo {
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
-    | ImageFramePromblem[];
+    | ImageFramePromblem[]
+    | SoundTagProblem[]
+    | VideoTagProblem[];
 }
 
 export interface TextClassificationData {
