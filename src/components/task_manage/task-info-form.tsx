@@ -22,7 +22,7 @@ import FileUploader from "./FileUploader";
  * @param props.taskInfo 任务信息
  * @param props.onFinish 表单提交时的回调函数
  * @returns 任务信息表单组件
- * @private 
+ * @private
  */
 const TaskInfoForm: React.FC<{
   taskInfo?: TaskInfo;

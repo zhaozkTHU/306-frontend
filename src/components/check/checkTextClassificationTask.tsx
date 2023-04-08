@@ -40,11 +40,11 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
   let result = problems.slice();
   const totalNumber = problems.length;
   if (props.is_sample) {
-    for (let i=result.length-1;i>0;i--) {
+    for (let i = result.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [result[i], result[j]] = [result[j], result[i]];
     }
-    result = result.slice(0, Math.ceil(totalNumber/3));
+    result = result.slice(0, Math.ceil(totalNumber / 3));
   }
 
   const checkedNumber: number = result.length;
@@ -60,7 +60,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
           <CheckTextClassificationProblem
             description={items.description}
             options={items.options}
-            chosen={items.chosen?items.chosen:[false]}
+            chosen={items.chosen ? items.chosen : [false]}
             index={index}
             setPassedNumber={setPassedNumber}
             key={index}
@@ -77,7 +77,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               task_id: props.task_id,
               labeler_id: props.labeler_index,
               is_passed: true,
-              correct_number: props.is_sample?undefined:passedNumber,
+              correct_number: props.is_sample ? undefined : passedNumber,
             },
             {
               headers: {
@@ -99,7 +99,7 @@ const CheckTextClassificationTask = (props: CheckTextClassificationTaskProps) =>
               task_id: props.task_id,
               labeler_id: props.labeler_index,
               is_passed: false,
-              correct_number: props.is_sample?undefined:passedNumber,
+              correct_number: props.is_sample ? undefined : passedNumber,
             },
             {
               headers: {

@@ -32,12 +32,13 @@ const DemanderLabeling = () => {
     <p>Loading...</p>
   ) : (
     <>
-      {tasks.length
-      ? tasks.map((task, idx) => <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing}/>)
-      : <Empty
-        description="暂无标注中的任务"
-        />
-      }
+      {tasks.length ? (
+        tasks.map((task, idx) => (
+          <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing} />
+        ))
+      ) : (
+        <Empty description="暂无标注中的任务" />
+      )}
     </>
   );
 };

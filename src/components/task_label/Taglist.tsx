@@ -89,11 +89,7 @@ const TagList: React.FC = () => {
       render: (_: any, record: TaskInfo) => (
         <>
           <TagBoard task={record} />
-          <Button
-            onClick={() => handleStatusChange(Number(record.task_id), "no")}
-          >
-            Refuse
-          </Button>
+          <Button onClick={() => handleStatusChange(Number(record.task_id), "no")}>Refuse</Button>
         </>
       ),
     },
@@ -114,14 +110,7 @@ interface TagTableProps {
 }
 
 const TagTable: React.FC<TagTableProps> = ({ tasks, columns, loading }) => {
-  return (
-    <Table
-      dataSource={tasks}
-      columns={columns}
-      loading={loading}
-      rowKey="task_id"
-    />
-  );
+  return <Table dataSource={tasks} columns={columns} loading={loading} rowKey="task_id" />;
 };
 
 export default TagList;

@@ -18,10 +18,7 @@ const CheckTextClassificationProblem = (props: CheckTextClassificationProps) => 
         <p>{props.description}</p>
         {props.options.map((option, index) => (
           <div key={index}>
-            <Checkbox
-              defaultChecked={props.chosen[index]}
-              disabled={true}
-            >
+            <Checkbox defaultChecked={props.chosen[index]} disabled={true}>
               {option}
             </Checkbox>
           </div>

@@ -63,7 +63,7 @@ const TaskList: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log('useEffect called');
+    console.log("useEffect called");
     fetchTasks();
   }, []);
 
@@ -84,16 +84,8 @@ const TaskList: React.FC = () => {
       title: "Actions",
       render: (_: any, task: TaskInfo) => (
         <>
-          <Button
-            onClick={() => handleStatusChange(Number(task.task_id), "ok")}
-          >
-            Accept
-          </Button>
-          <Button
-            onClick={() => handleStatusChange(Number(task.task_id), "no")}
-          >
-            Refuse
-          </Button>
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "ok")}>Accept</Button>
+          <Button onClick={() => handleStatusChange(Number(task.task_id), "no")}>Refuse</Button>
         </>
       ),
     },
@@ -114,9 +106,7 @@ interface TaskTableProps {
 }
 
 const TaskTable: React.FC<TaskTableProps> = ({ tasks, columns, loading }) => {
-  return (
-    <Table dataSource={tasks} columns={columns} loading={loading} rowKey="task_id" />
-  );
+  return <Table dataSource={tasks} columns={columns} loading={loading} rowKey="task_id" />;
 };
 
 export default TaskList;

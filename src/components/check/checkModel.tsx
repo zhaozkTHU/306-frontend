@@ -14,7 +14,11 @@ const CheckModel = (props: CheckModelProps) => {
   }
   if (props.template === "TextClassification") {
     return (
-      <CheckTextClassificationTask task_id={props.task_id} labeler_index={props.labeler_index} is_sample={props.is_sample} />
+      <CheckTextClassificationTask
+        task_id={props.task_id}
+        labeler_index={props.labeler_index}
+        is_sample={props.is_sample}
+      />
     );
   }
   return <p>error</p>;

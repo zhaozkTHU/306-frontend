@@ -33,7 +33,7 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
    * @param file 上传文件，类型为`RcFile`
    * @description 上传文件的回调函数
    */
-  const handleUpload = async (file : RcFile) => {
+  const handleUpload = async (file: RcFile) => {
     const formData = new FormData();
     formData.append("upload_image", file);
     let url: any;
@@ -63,7 +63,7 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
     props.onUrlListChange(newUrlList);
   };
 
-  /** 
+  /**
    * @param url 上传文件的url
    * @description 删除文件的回调函数
    */
@@ -78,8 +78,7 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
         if (value.data.code === 0) {
           data = value.data;
           message.success("删除成功");
-        }
-        else if (value.status === 404) message.warning("图片不存在");
+        } else if (value.status === 404) message.warning("图片不存在");
       })
       .catch((reason) => {
         console.log(reason);
