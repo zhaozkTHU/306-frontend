@@ -3,6 +3,10 @@ import { Button, List, message, Spin } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
+/**
+ * 删除任务组件
+ * @returns 删除任务组件
+ */
 const DeleteTask: React.FC = () => {
   const [taskInfo, setTaskInfo] = useState<TaskInfo[]>([]);
   const [deleteNum, setDeleteNum] = useState(0);

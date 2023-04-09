@@ -9,6 +9,13 @@ interface FileUploaderProps {
   onUrlListChange: (newUrlList: string[]) => void;
 }
 
+/**
+ * 文件上传子组件
+ * @param props.urls 上传文件的url列表
+ * @param props.onUrlListChange 上传文件url列表改变时的回调函数
+ * @returns   上传文件组件
+ * @private
+ */
 const FileUploader: React.FC<FileUploaderProps> = (props) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -22,7 +29,11 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
     setFileList(initFileList);
   }, [props.urls]);
 
-  const handleUpload = async (file : RcFile) => {
+  /**
+   * @param file 上传文件，类型为`RcFile`
+   * @description 上传文件的回调函数
+   */
+  const handleUpload = async (file: RcFile) => {
     const formData = new FormData();
     formData.append("upload_image", file);
     let url: any;
@@ -52,6 +63,10 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
     props.onUrlListChange(newUrlList);
   };
 
+  /**
+   * @param url 上传文件的url
+   * @description 删除文件的回调函数
+   */
   const handleRemove = async ({ url }: UploadFile) => {
     let data: any;
     axios
@@ -63,8 +78,7 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
         if (value.data.code === 0) {
           data = value.data;
           message.success("删除成功");
-        }
-        else if (value.status === 404) message.warning("图片不存在");
+        } else if (value.status === 404) message.warning("图片不存在");
       })
       .catch((reason) => {
         console.log(reason);

@@ -13,16 +13,15 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [loading, setLoading] = useState(false); // using while upload
   const [timer, setTimer] = useState(0);
 
-  
-  const currentProblem = taskInfo.task_data[
-    currentProblemIndex
-  ] as TextClassificationProblem;
-  
+  const currentProblem = taskInfo.task_data[currentProblemIndex] as TextClassificationProblem;
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prevTimer) => prevTimer + 1);
     }, 1000);
-    return () => { clearInterval(interval); };
+    return () => {
+      clearInterval(interval);
+    };
   }, [currentProblemIndex]);
 
   const handleCheckboxChange = (index: number) => (e: any) => {
@@ -47,16 +46,10 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       return;
     }
     const newTaskData = [...taskInfo.task_data]; // chosen not chosen
-    const modifiedchosenOptions = chosenOptions.map((option) =>
-      option === null ? false : option
-    );
-    if (
-      modifiedchosenOptions.length <
-      newTaskData[currentProblemIndex].options.length
-    ) {
+    const modifiedchosenOptions = chosenOptions.map((option) => (option === null ? false : option));
+    if (modifiedchosenOptions.length < newTaskData[currentProblemIndex].options.length) {
       const remainingOptions =
-        newTaskData[currentProblemIndex].options.length -
-        modifiedchosenOptions.length;
+        newTaskData[currentProblemIndex].options.length - modifiedchosenOptions.length;
       for (let i = 0; i < remainingOptions; i++) {
         modifiedchosenOptions.push(false);
       }
@@ -76,10 +69,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       tags: taskInfo.task_data.map((problem, problemIndex) => ({
         description: problem.description,
         options: problem.options,
-        chosen: modifiedchosenOptionsAll[problemIndex].slice(
-          0,
-          problem.options.length
-        ),
+        chosen: modifiedchosenOptionsAll[problemIndex].slice(0, problem.options.length),
       })),
     };
 
@@ -117,8 +107,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handleNext = () => {
     if (currentProblemIndex < taskInfo.task_data.length - 1) {
-      const newchosenOptions =
-        taskInfo.task_data[currentProblemIndex + 1].chosen || [];
+      const newchosenOptions = taskInfo.task_data[currentProblemIndex + 1].chosen || [];
       setCurrentProblemIndex((prevState) => prevState + 1);
       setchosenOptions(newchosenOptions);
     } else {
@@ -145,5 +134,3 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 };
 
 export default TextClassificationComponent;
-
-
