@@ -76,7 +76,6 @@ const CheckModel = (props: CheckModelProps) => {
           } else if (props.template==="ImageClassification") {
             return (
               <CheckImgClassificationProblem
-                description={items.description}
                 pass={1} 
                 key={index}
               />
