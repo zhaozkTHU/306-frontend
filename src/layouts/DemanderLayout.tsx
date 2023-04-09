@@ -51,7 +51,6 @@ export interface DemanderLayoutProps {
 const DemanderLayout = (props: DemanderLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  // const [DemanderItem, setDemanderItem] = useState("1")
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -107,7 +106,9 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
         />
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
+        <Header style={{ padding: 0, background: colorBgContainer }}>
+          
+        </Header>
         <Content style={{ margin: "0 16px" }}>
           {props.children}
           {/* <Breadcrumb style={{ margin: '16px 0' }}>

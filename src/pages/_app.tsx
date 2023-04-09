@@ -1,4 +1,3 @@
-// import '@/styles/globals.css'
 import type { AppProps } from "next/app";
 import { useEffect, useState, createContext } from "react";
 import { useRouter } from "next/router";
@@ -6,6 +5,7 @@ import DemanderLayout from "@/layouts/DemanderLayout";
 import LabelerDeploy from "@/layouts/LabelerLayout";
 import LoginScreen from ".";
 import NotFound from "@/components/NotFound";
+import '@/styles/globals.css';
 
 export const TokenContext = createContext<string | null>(null);
 const App = ({ Component, pageProps }: AppProps) => {
@@ -54,7 +54,13 @@ const App = ({ Component, pageProps }: AppProps) => {
     return <Component {...pageProps} />;
   } else if (router.pathname === "/") {
     // login
-    return <LoginScreen setLoginStatus={setLoginStatus} setToken={setToken} />;
+    return (
+      <div style={{
+        background: 'red'
+      }}>
+        <LoginScreen setLoginStatus={setLoginStatus} setToken={setToken} />
+      </div>
+    );
   } else {
     // other interface
     return <NotFound />;
