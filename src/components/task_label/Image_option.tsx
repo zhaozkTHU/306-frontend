@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox, message, Card } from "antd";
 import axios from "axios";
-import { TaskInfo, ImagesClassificationProblem } from "@/const/interface";
+import { TaskInfo, ImagesClassificationProblem, isImagesClassificationProblem } from "@/const/interface";
 
 const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0); // keep current pro id
   const [chosenOptions, setchosenOptions] = useState<boolean[]>([]); // current problem's answer
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isImagesClassificationProblem);
+
   const [chosenOptionsAll, setchosenOptionsAll] = useState<Array<boolean[]>>(
-    taskInfo.task_data.map((problem) => problem.options.map(() => false))
+    filteredTaskData.map((problem) => problem.options.map(() => false))
   );
   const [loading, setLoading] = useState(false); // using while upload
   const [timer, setTimer] = useState(0);
 
-  const currentProblem = taskInfo.task_data[currentProblemIndex] as ImagesClassificationProblem;
+  const currentProblem = filteredTaskData[currentProblemIndex] as ImagesClassificationProblem;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -44,7 +46,7 @@ const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       message.warning("tagging too fast!");
       return;
     }
-    const newTaskData = [...taskInfo.task_data]; // chosen not chosen
+    const newTaskData = [...filteredTaskData]; // chosen not chosen
     const modifiedchosenOptions = chosenOptions.map((option) => (option === null ? false : option));
     if (modifiedchosenOptions.length < newTaskData[currentProblemIndex].options.length) {
       const remainingOptions =
@@ -65,7 +67,7 @@ const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     const tag_data = {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
-      tags: taskInfo.task_data.map((problem, problemIndex) => ({
+      tags: filteredTaskData.map((problem, problemIndex) => ({
         description: problem.description,
         options: problem.options,
         chosen: modifiedchosenOptionsAll[problemIndex].slice(0, problem.options.length),
@@ -96,7 +98,7 @@ const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handlePrevious = () => {
     if (currentProblemIndex > 0) {
-      const newChosenOptions = taskInfo.task_data[currentProblemIndex - 1].chosen || [];
+      const newChosenOptions = filteredTaskData[currentProblemIndex - 1].chosen || [];
       setCurrentProblemIndex((prevState) => prevState - 1);
       setchosenOptions(newChosenOptions);
     } else {
@@ -105,8 +107,8 @@ const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleNext = () => {
-    if (currentProblemIndex < taskInfo.task_data.length - 1) {
-      const newchosenOptions = taskInfo.task_data[currentProblemIndex + 1].chosen || [];
+    if (currentProblemIndex < filteredTaskData.length - 1) {
+      const newchosenOptions = filteredTaskData[currentProblemIndex + 1].chosen || [];
       setCurrentProblemIndex((prevState) => prevState + 1);
       setchosenOptions(newchosenOptions);
     } else {
