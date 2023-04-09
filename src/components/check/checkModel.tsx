@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import CheckImgClassificationProblem from "./checkImgClassificationProblem";
 import CheckTextClassificationProblem from "./checkTextClassificationProblem";
 
@@ -13,16 +13,20 @@ interface CheckModelProps {
   isShow: boolean;
 }
 
+/** 
+ * A checking model for checking interface
+ * 
+ */
 const CheckModel = (props: CheckModelProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [passedNumber, setPassedNumber] = useState<number>(0);
   const [problems, setProblems] = useState<any[]>([]);
   const router = useRouter();
-  
-  if (!props.isShow) {
-    return <p>error</p>;
-  }
-  
+
+  /**
+   * Request for the labeled data
+   * 
+   */
   useEffect(() => {
     if (!router.isReady) {
       return;
@@ -44,6 +48,11 @@ const CheckModel = (props: CheckModelProps) => {
     setRefreshing(false);
   }, [router]);
 
+
+  /**
+   * 
+   * Deal with the all checking or sampling checking
+   */
   let result = problems.slice();
   const totalNumber = problems.length;
   if (props.is_sample) {
@@ -78,7 +87,11 @@ const CheckModel = (props: CheckModelProps) => {
           } else if (props.template==="ImageClassification") {
             return (
               <CheckImgClassificationProblem
-                pass={1} 
+                description={items.description}
+                options={items.options}
+                chosen={items.chosen?items.chosen:[false]}
+                index={index}
+                setPassedNumber={setPassedNumber}
                 key={index}
               />
             )

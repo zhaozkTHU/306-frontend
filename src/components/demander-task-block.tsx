@@ -87,13 +87,14 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
       <Card
         title={props.title}
         extra={
-          <a
+          <Button
+            type="link"
             onClick={() => {
               alert("查看详情");
             }}
           >
             查看详情
-          </a>
+          </Button>
         }
       >
         <>

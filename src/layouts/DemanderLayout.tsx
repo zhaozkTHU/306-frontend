@@ -51,6 +51,7 @@ export interface DemanderLayoutProps {
 const DemanderLayout = (props: DemanderLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [recollapsed, setRecollapsed] = useState(false)
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -77,10 +78,27 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
   }
   return (
     <Layout style={{ minHeight: "100vh" }}>
+
+      {/* 
+        Sider that take up the room so that the Content
+        can collapse or not with Sider
+      */}
+      <Sider
+        collapsible
+        collapsed={recollapsed}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
+      >
+      </Sider>
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
         style={{
           overflow: "auto",
           position: "fixed",
@@ -95,6 +113,10 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
           }}
         />
         <Menu
+          style={{
+            overflow: "auto",
+            // position: "fixed",
+          }}
           theme="dark"
           defaultSelectedKeys={["info"]}
           mode="inline"
@@ -105,10 +127,8 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
           }}
         />
       </Sider>
-      <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          
-        </Header>
+      <Layout className="site-layout" >
+        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
         <Content style={{ margin: "0 16px" }}>
           {props.children}
           {/* <Breadcrumb style={{ margin: '16px 0' }}>

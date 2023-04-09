@@ -5,7 +5,7 @@ import DemanderLayout from "@/layouts/DemanderLayout";
 import LabelerDeploy from "@/layouts/LabelerLayout";
 import LoginScreen from ".";
 import NotFound from "@/components/NotFound";
-import '@/styles/globals.css';
+import "@/styles/globals.css";
 
 export const TokenContext = createContext<string | null>(null);
 const App = ({ Component, pageProps }: AppProps) => {
@@ -55,9 +55,11 @@ const App = ({ Component, pageProps }: AppProps) => {
   } else if (router.pathname === "/") {
     // login
     return (
-      <div style={{
-        background: 'red'
-      }}>
+      <div
+        style={{
+          background: "red",
+        }}
+      >
         <LoginScreen setLoginStatus={setLoginStatus} setToken={setToken} />
       </div>
     );

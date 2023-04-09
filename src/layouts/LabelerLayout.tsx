@@ -48,6 +48,7 @@ interface LabelerDeployprops {
 const LabelerDeploy = (props: LabelerDeployprops) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [recollapsed, setRecollapsed] = useState(false)
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -75,6 +76,14 @@ const LabelerDeploy = (props: LabelerDeployprops) => {
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
+        collapsed={recollapsed}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
+      ></Sider>
+      <Sider
+        collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
         style={{
@@ -100,7 +109,7 @@ const LabelerDeploy = (props: LabelerDeployprops) => {
           }}
         />
       </Sider>
-      <Layout className="site-layout" style={{ marginLeft: 200 }}>
+      <Layout className="site-layout">
         <Header style={{ padding: 0, background: colorBgContainer }} />
         <Content style={{ margin: "0 16px" }}>
           {props.children}
