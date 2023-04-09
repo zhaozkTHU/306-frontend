@@ -14,13 +14,15 @@ interface CheckModelProps {
 }
 
 const CheckModel = (props: CheckModelProps) => {
-  if (!props.isShow) {
-    return <p>error</p>;
-  }
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [passedNumber, setPassedNumber] = useState<number>(0);
   const [problems, setProblems] = useState<any[]>([]);
   const router = useRouter();
+  
+  if (!props.isShow) {
+    return <p>error</p>;
+  }
+  
   useEffect(() => {
     if (!router.isReady) {
       return;
