@@ -3,6 +3,7 @@ import { Button, Modal, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import TextClassificationComponent from "@/components/task_label/Option_tag";
 import ImagesClassificationComponent from "@/components/task_label/Image_option";
+import SoundTagComponent from "@/components/task_label/Audio_tag";
 
 interface TagBoardProps {
   task: TaskInfo;
@@ -70,7 +71,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
           tagging
         </Button>
         <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}>
-          {/* <ImagesClassificationComponent
+          <SoundTagComponent
             title={task.title}
             create_at={task.create_at}
             deadline={task.deadline}
@@ -80,7 +81,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             labeler_number={task.labeler_number}
             task_id={task.task_id}
             task_data={task.task_data}
-          /> */}
+          />
         </Modal>
       </>
     );
