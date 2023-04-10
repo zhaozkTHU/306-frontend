@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import LoginScreen from ".";
 import NotFound from "@/components/NotFound";

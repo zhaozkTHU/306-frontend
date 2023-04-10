@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander-task-block";
+import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander_task_block/demander-task-block";
 import { Empty } from "antd";
 
 const DemanderAllTask = () => {
@@ -17,7 +17,7 @@ const DemanderAllTask = () => {
         }
       })
       .then((response) => {
-        const newTasks = response.data.task_list.map((task: any) => {
+        const newTasks = response.data.demander_tasks.map((task: any) => {
           return { ...task};
         });
         setTasks(newTasks);
