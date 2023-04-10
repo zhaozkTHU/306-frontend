@@ -9,6 +9,9 @@ import {
   MonitorOutlined,
   OrderedListOutlined,
   EditOutlined,
+  TeamOutlined,
+  ReconciliationOutlined,
+  PushpinOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
@@ -52,8 +55,23 @@ const labelerItems: MenuItem[] = [
 ];
 
 const adminItems: MenuItem[] = [
-  getItem("待审核任务", "")
+  getItem("审核需求方", "check_demander", <TeamOutlined />),
+  getItem("审核任务", "check_task", <QuestionCircleOutlined />),
+  getItem("需求方账号管理", "demander_acount", <ReconciliationOutlined />),
+  getItem("标注方账号管理", "labeler_account", <PushpinOutlined />),
+  getItem("个人信息", "info", <UserOutlined />)
 ]
+
+const agentItems: MenuItem[] = [
+
+]
+
+const mapRole2Menu = {
+  "demander": demanderItems,
+  "labeler": labelerItems,
+  "admin": adminItems,
+  "agent": agentItems
+}
 
 export interface DemanderLayoutProps {
   children: any;
@@ -68,7 +86,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  if (props.role !== "demander" && props.role !== "labeler") {
+  if (props.role !== "demander" && props.role !== "labeler" && props.role !== "admin" && props.role!=="agent") {
     return (
       <Result
         status="error"
@@ -127,7 +145,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
           theme="dark"
           defaultSelectedKeys={["info"]}
           mode="inline"
-          items={props.role === "demander" ? demanderItems : labelerItems}
+          items={mapRole2Menu[props.role]}
           onSelect={(e) => {
             router.push(`/${props.role}/${e.key}`);
           }}
