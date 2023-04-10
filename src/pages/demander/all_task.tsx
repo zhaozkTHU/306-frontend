@@ -1,8 +1,13 @@
 import axios from "axios";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander-task-block";
+import { Empty } from "antd";
 
 const DemanderAllTask = () => {
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState<boolean>(true);
+  const [tasks, setTasks] = useState<DemanderTaskBlockProps[]>([]);
   useEffect(() => {
     setRefreshing(true)
     axios
@@ -12,15 +17,30 @@ const DemanderAllTask = () => {
         }
       })
       .then((response) => {
-
+        const newTasks = response.data.task_list.map((task: any) => {
+          return { ...task};
+        });
+        setTasks(newTasks);
       })
       .catch((err) => {
         console.log(err)
       })
-    }
-    
-  )
-  return (<p>DemanderAllTask</p>);
+      setRefreshing(false)
+    }, [router])
+  
+    return refreshing ? (
+      <p>Loading...</p>
+    ) : (
+      <>
+        {tasks.length ? (
+          tasks.map((task, idx) => (
+            <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing} />
+          ))
+        ) : (
+          <Empty description="暂无任务" />
+        )}
+      </>
+    );
 };
 
 export default DemanderAllTask;

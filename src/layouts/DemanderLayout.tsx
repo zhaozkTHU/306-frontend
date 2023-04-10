@@ -12,8 +12,6 @@ import {
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme, Spin, Result, Button } from "antd";
 
-// import DemanderContent from '../../components/DemanderContent'
-
 const { Header, Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];

@@ -16,7 +16,7 @@ export interface DemanderTaskBlockProps {
   labeler_number: number;
   labeler_id: number[];
   template: string;
-  isDone: boolean[]; // 对应ID的标注方是否完成标注
+  label_state: string[]; // 对应ID的标注方是否完成标注
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -35,7 +35,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
           return {
             key: `{"is_sample": false, "labeler_index": ${idx}}`,
             label: `标注者${index}号`,
-            disabled: !props.isDone[idx],
+            disabled: !(props.label_state[idx]==='checking'),
           };
         }
       ),
@@ -48,7 +48,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
           return {
             key: `{"is_sample": true, "labeler_index": ${idx}}`,
             label: `标注者${index}号`,
-            disabled: !props.isDone[idx],
+            disabled: !(props.label_state[idx]==='checking'),
           };
         }
       ),
