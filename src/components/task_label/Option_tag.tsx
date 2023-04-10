@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox, message, Card } from "antd";
 import axios from "axios";
-import { TaskInfo, TextClassificationProblem, isTextClassificationProblem } from "@/const/interface";
+import {
+  TaskInfo,
+  TextClassificationProblem,
+  isTextClassificationProblem,
+} from "@/const/interface";
 
 const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0); // keep current pro id
@@ -117,6 +121,10 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   return (
     <div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>{currentProblem.description}</div>
+        <div>{`Timer: ${timer}s`}</div>
+      </div>
       <div>{currentProblem.description}</div>
       {currentProblem.options.map((option, index) => (
         <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>

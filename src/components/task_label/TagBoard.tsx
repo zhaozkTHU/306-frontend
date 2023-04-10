@@ -61,6 +61,52 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         </Modal>
       </>
     );
+  } else if (task.template === "VideoTag") {
+    return <></>;
+  } else if (task.template === "SoundTag") {
+    return (
+      <>
+        <Button type="primary" onClick={showModal}>
+          tagging
+        </Button>
+        <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}>
+          {/* <ImagesClassificationComponent
+            title={task.title}
+            create_at={task.create_at}
+            deadline={task.deadline}
+            template={task.template}
+            reward={task.reward}
+            time={task.time}
+            labeler_number={task.labeler_number}
+            task_id={task.task_id}
+            task_data={task.task_data}
+          /> */}
+        </Modal>
+      </>
+    );
+  } else if (task.template === "FaceTag") {
+    return (
+      <>
+        <Button type="primary" onClick={showModal}>
+          tagging
+        </Button>
+        <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}>
+          {/* <ImagesClassificationComponent
+            title={task.title}
+            create_at={task.create_at}
+            deadline={task.deadline}
+            template={task.template}
+            reward={task.reward}
+            time={task.time}
+            labeler_number={task.labeler_number}
+            task_id={task.task_id}
+            task_data={task.task_data}
+          /> */}
+        </Modal>
+      </>
+    );
+  } else if (task.template === "ImageFrame") {
+    return <></>;
   } else {
     return <></>;
   }
