@@ -28,7 +28,7 @@ export interface ImageFramePromblem {
   imageUrl: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
-    leftdowm: [number, number];
+    leftdown: [number, number];
     rightup: [number, number];
   }[];
 }
