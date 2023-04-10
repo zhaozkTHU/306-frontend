@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CheckImgClassificationProblem from "./checkImgClassificationProblem";
 import CheckTextClassificationProblem from "./checkTextClassificationProblem";
 
@@ -46,7 +46,7 @@ const CheckModel = (props: CheckModelProps) => {
         console.log(err)
       });
     setRefreshing(false);
-  }, [router]);
+  }, [router, props.labeler_index, props.task_id]);
 
 
   /**
