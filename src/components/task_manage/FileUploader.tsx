@@ -7,6 +7,8 @@ import { RcFile } from "antd/es/upload";
 interface FileUploaderProps {
   urls: string[];
   onUrlListChange: (newUrlList: string[]) => void;
+  multiple?: boolean;
+  accept?: string;
 }
 
 /**
@@ -92,7 +94,9 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
 
   const uploadProps: UploadProps = {
     action: "/api/image",
+    multiple: props.multiple,
     fileList,
+    accept: props.accept,
     beforeUpload: (file) => {
       handleUpload(file);
       return false;
