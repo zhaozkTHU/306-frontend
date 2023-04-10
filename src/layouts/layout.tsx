@@ -8,11 +8,10 @@ import {
   SettingOutlined,
   MonitorOutlined,
   OrderedListOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Layout, Menu, theme, Spin, Result, Button } from "antd";
-
-// import DemanderContent from '../../components/DemanderContent'
+import { Layout, Menu, theme, Result, Button } from "antd";
 
 const { Header, Content, Sider } = Layout;
 
@@ -32,7 +31,7 @@ function getItem(
   } as MenuItem;
 }
 
-const items: MenuItem[] = [
+const demanderItems: MenuItem[] = [
   getItem("所有任务", "all_task", <OrderedListOutlined />),
   getItem("新建任务", "new_task", <PlusOutlined />),
   getItem("标注中", "labeling", <MonitorOutlined />),
@@ -42,33 +41,44 @@ const items: MenuItem[] = [
   getItem("设置", "settings", <SettingOutlined />),
 ];
 
+const labelerItems: MenuItem[] = [
+  getItem("全部任务", "all_task", <OrderedListOutlined />),
+  getItem("新任务", "new_task", <EditOutlined />),
+  getItem("标注中", "labeling", <MonitorOutlined />),
+  getItem("审核中", "checking", <QuestionCircleOutlined />),
+  getItem("已完成", "completed", <CarryOutOutlined />),
+  getItem("用户信息", "info", <UserOutlined />),
+  getItem("设置", "settings", <SettingOutlined />),
+];
+
+const adminItems: MenuItem[] = [
+  getItem("待审核任务", "")
+]
+
 export interface DemanderLayoutProps {
-  loginStatus: string;
   children: any;
-  setLoginStatus: any;
+  role: string | null;
 }
 
-const DemanderLayout = (props: DemanderLayoutProps) => {
+const MyLayout = (props: DemanderLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  // const [DemanderItem, setDemanderItem] = useState("1")
+  const [recollapsed, setRecollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  if (props.loginStatus === "waiting") {
-    return <Spin size="large" />;
-  } else if (props.loginStatus !== "demanderAlreadyLogin") {
+  if (props.role !== "demander" && props.role !== "labeler") {
     return (
       <Result
         status="error"
-        title="尚未登录"
+        title={props.role ? "未知错误，请重新登录再试" : "尚未登录"}
         extra={[
           <Button
-            key="jumpToLogin"
             onClick={() => {
               router.push("/");
             }}
+            key="jumpToLogin"
           >
             跳转到登录界面
           </Button>,
@@ -78,10 +88,25 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
   }
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      {/* 
+        Sider that take up the room so that the Content
+        can collapse or not with Sider
+      */}
+      <Sider
+        collapsible
+        collapsed={recollapsed}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
+      ></Sider>
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
         style={{
           overflow: "auto",
           position: "fixed",
@@ -96,18 +121,20 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
           }}
         />
         <Menu
+          style={{
+            overflow: "auto",
+          }}
           theme="dark"
           defaultSelectedKeys={["info"]}
           mode="inline"
-          items={items}
+          items={props.role === "demander" ? demanderItems : labelerItems}
           onSelect={(e) => {
-            router.push(`/demander/${e.key}`);
-            // setDemanderItem(e.key)
+            router.push(`/${props.role}/${e.key}`);
           }}
         />
       </Sider>
-      <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
+      <Layout className="site-layout">
+        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
         <Content style={{ margin: "0 16px" }}>
           {props.children}
           {/* <Breadcrumb style={{ margin: '16px 0' }}>
@@ -124,4 +151,4 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
   );
 };
 
-export default DemanderLayout;
+export default MyLayout;

@@ -10,10 +10,9 @@ interface CheckTextClassificationProps {
 }
 
 const CheckTextClassificationProblem = (props: CheckTextClassificationProps) => {
-  // const [source, setSource] = useState<string>("");
   const [current, setCurrent] = useState<string>("fail");
   return (
-    <Card title="问题">
+    <Card title={`题目${props.index}`}>
       <>
         <p>{props.description}</p>
         {props.options.map((option, index) => (
