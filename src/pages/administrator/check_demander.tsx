@@ -1,10 +1,8 @@
-import { message, Table } from "antd"
+import { Button, message, Table } from "antd"
 import { ColumnsType } from "antd/es/table"
 import axios from "axios"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-
-
 
 const AdministratorCheckDemander = () => {
   const router = useRouter()
@@ -14,7 +12,6 @@ const AdministratorCheckDemander = () => {
     if (!router.isReady) {
       return
     }
-    setRefreshing(true);
     axios.get("/api/demander_apply",
       {
         headers: {
@@ -42,34 +39,82 @@ const AdministratorCheckDemander = () => {
     {
       title: '用户名',
       dataIndex: 'username',
-      key: 'username'
+      key: 'username',
+      align: 'center'
     },
     {
       title: '邀请码',
       dataIndex: 'invitecode',
-      key: 'invitecode'
+      key: 'invitecode',
+      align: 'center'
+    },
+    {
+      title: '审核操作',
+      key: 'check',
+      align: 'center',
+      render: (_, record) => (
+        <>
+          <Button type="link" onClick={() => {
+            axios.post(
+              "/api/apply_result",
+              {
+                username: `${record.username}`,
+                result: true
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+            .then(() => {
+              message.success("审核结果提交成功")
+            })
+            .catch((error) => {
+              if (error.response) {
+                message.error(`审核结果提交失败，${error.response.data.message}`);
+              } else {
+                message.error("网络失败，请稍后再试");
+              }
+            })
+            .finally(() => {
+              setRefreshing(true)
+            });
+          }}>通过</Button>
+          <Button type="link" onClick={() => {
+            axios.post(
+              "/api/apply_result",
+              {
+                username: `${record.username}`,
+                result: true
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+            .then(() => {
+              message.success("审核结果提交成功")
+            })
+            .catch((error) => {
+              if (error.response) {
+                message.error(`审核结果提交失败，${error.response.data.message}`);
+              } else {
+                message.error("网络失败，请稍后再试");
+              }
+            })
+            .finally(() => {
+              setRefreshing(true)
+            });
+          }}>不通过</Button>
+        </>
+      )
     }
   ]
-  const demander = [{
-    username: "zzkk",
-    invitecode: "932hfiruebguerwuiew"
-  },
-  {
-    username: "zzkk",
-    invitecode: "932hfiruebguerwuiew"
-  },
-  {
-    username: "zzkk",
-    invitecode: "932hfiruebguerwuiew"
-  },
-  {
-    username: "zzkk",
-    invitecode: "932hfiruebguerwuiew"
-  }
-]
   return (
     <>
-      <Table columns={columns} dataSource={demander}/>
+      <Table columns={columns} dataSource={demanders}/>
     </>
   )
 }
