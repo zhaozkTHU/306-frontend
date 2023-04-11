@@ -12,11 +12,14 @@ import {
   Divider,
   ConfigProvider,
   Switch,
+  Upload,
 } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import React from "react";
 import locale from "antd/locale/zh_CN";
 import FileUploader from "./FileUploader";
+import axios from "axios";
 
 /**
  * 任务信息表单组件
@@ -38,6 +41,14 @@ const TaskInfoForm: React.FC<{
   const onFinish = () => {
     const value = form.getFieldsValue();
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
+    if (value.template === "ImagesClassification") {
+      const task_data: typeof value.task_data = value.task_data.map((v: any) => ({
+        description: v.description,
+        options: v.options.map((x: any) => x.response.url),
+      }));
+      props.onFinish({ ...value, deadline: deadline, task_data });
+      return;
+    }
     props.onFinish({ ...value, deadline: deadline });
   };
 
@@ -178,14 +189,33 @@ const TaskInfoForm: React.FC<{
                       </Form.List>
                     )}
                     {form.getFieldValue("template") === "ImagesClassification" && (
-                      <FileUploader
-                        urls={form.getFieldValue([dataField.name, "options"]) ?? []}
-                        onUrlListChange={(newUrlList) => {
-                          form.setFieldValue([dataField.name, "options"], newUrlList);
+                      <Form.Item
+                        key={dataField.key}
+                        name={[dataField.name, "options"]}
+                        rules={[{ required: true, message: "请输入选项" }]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => {
+                          console.log(e);
+                          return e?.fileList;
                         }}
-                        accept="image/{jpg,png,jpeg}"
-                        multiple
-                      />
+                      >
+                        <Upload
+                          action="/api/image"
+                          headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
+                          onRemove={(file) => {
+                            console.log(file);
+                            /** @bug 此处后端实现有问题 */
+                            // axios.delete("/api/image", {
+                            //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                            //   params: { url: file.response.url },
+                            // });
+                          }}
+                        >
+                          <Button icon={<UploadOutlined />} type="primary">
+                            提交文件
+                          </Button>
+                        </Upload>
+                      </Form.Item>
                     )}
                     {form.getFieldValue("template") === "FaceTag" && (
                       <FileUploader
