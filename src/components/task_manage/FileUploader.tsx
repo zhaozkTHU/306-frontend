@@ -7,7 +7,7 @@ import { RcFile } from "antd/es/upload";
 interface FileUploaderProps {
   urls: string[];
   onUrlListChange: (newUrlList: string[]) => void;
-  multiple?: boolean;
+  maxCount?: number;
   accept?: string;
 }
 
@@ -23,7 +23,7 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
 
   useEffect(() => {
     const initFileList: UploadFile[] = props.urls.map((url, index) => ({
-      uid: `-${index + 1}`,
+      uid: crypto.randomUUID(),
       name: url.substring(url.lastIndexOf("/") + 1),
       status: "done",
       url,
@@ -31,46 +31,55 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
     setFileList(initFileList);
   }, [props.urls]);
 
-  /**
-   * @param file 上传文件，类型为`RcFile`
-   * @description 上传文件的回调函数
-   */
-  const handleUpload = async (file: RcFile) => {
+  useEffect(() => {
+    console.log(fileList);
+    const urls = fileList.map((value) => value.url as string);
+    props.onUrlListChange(urls);
+  }, [fileList, props]);
+
+  const customRequest: UploadProps["customRequest"] = (options) => {
+    console.log(options);
     const formData = new FormData();
-    formData.append("upload_image", file);
-    let url: any;
+    formData.append("upload_image", options.file);
+    let url = "";
     axios
       .post("/api/image", formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((value) => {
         if (value.data.code === 0) url = value.data.url;
-        else message.error(`上传失败 ${value.data.message}`);
+        else {
+          message.error(`${value.data?.message}`);
+          return;
+        }
       })
       .catch((reason) => {
         console.log(reason);
-        message.error(`网络错误 ${reason?.response?.data?.message}`);
+        message.error(`${reason?.response?.data?.url}`);
+        return;
       });
-    const newFileList: UploadFile[] = [
-      ...fileList,
-      {
-        uid: file.uid,
-        name: file.name,
-        status: "done",
-        url,
-      },
-    ];
-    const newUrlList: string[] = [...props.urls, url];
-    setFileList(newFileList);
-    props.onUrlListChange(newUrlList);
+    setFileList((fileList) => {
+      let newFileList: UploadFile[] = [
+        ...fileList,
+        {
+          name: (options.file as RcFile).name as string,
+          status: "done",
+          uid: crypto.randomUUID(),
+          url,
+        },
+      ];
+      if (props.maxCount) {
+        newFileList = newFileList.slice(-props.maxCount);
+      }
+      return newFileList;
+    });
   };
 
   /**
    * @param url 上传文件的url
    * @description 删除文件的回调函数
    */
-  const handleRemove = async ({ url }: UploadFile) => {
-    let data: any;
+  const handleRemove = async (url: string) => {
     axios
       .delete("/api/image", {
         params: { url: url },
@@ -78,31 +87,39 @@ const FileUploader: React.FC<FileUploaderProps> = (props) => {
       })
       .then((value) => {
         if (value.data.code === 0) {
-          data = value.data;
           message.success("删除成功");
-        } else if (value.status === 404) message.warning("图片不存在");
+        } else if (value.status === 404) {
+          message.warning("图片不存在");
+          return;
+        }
       })
       .catch((reason) => {
         console.log(reason);
         message.error(`网络错误 ${reason?.response?.data?.message}`);
+        return;
       });
     const newFileList: UploadFile[] = fileList.filter((value) => value.url !== url);
-    const newUrlList: string[] = props.urls.filter((value) => value !== data.url);
     setFileList(newFileList);
-    props.onUrlListChange(newUrlList);
   };
 
   const uploadProps: UploadProps = {
-    action: "/api/image",
-    multiple: props.multiple,
     fileList,
     accept: props.accept,
+    customRequest,
     beforeUpload: (file) => {
-      handleUpload(file);
-      return false;
+      // 限制文件大小
+      if (file.size > 1024 * 1024 * 2) {
+        message.error("文件超过2MB");
+        return false;
+      }
+      if (props.maxCount && fileList.length >= props.maxCount) {
+        message.error(`最多只能上传${props.maxCount}个文件`);
+        return false;
+      }
+      return true;
     },
     onRemove: (file: UploadFile) => {
-      handleRemove({ url: file.url } as UploadFile);
+      handleRemove(file.url as string);
     },
   };
 

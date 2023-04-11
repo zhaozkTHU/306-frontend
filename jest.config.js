@@ -1,19 +1,30 @@
-// jest.config.js
-const nextJest = require('next/jest')
+// Jest.config.js
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
-  dir: './',
-})
+    // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
+    dir: "./"
+});
 
-// Add any custom config to be passed to Jest
-/** @type {import('jest').Config} */
-const customJestConfig = {
-  // Add more setup options before each test is run
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+// Jest.config.js
+const customConfig = {
+    // Automatically clear mock calls and instances between every test
+    "clearMocks": true,
+    // The directory where Jest should output its coverage files
+    "coverageDirectory": ".coverage",
+    // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
+    moduleNameMapper: {
+        "^@/components(.*)$": "<rootDir>/src/components$1"
+    },
+    // A list of paths to modules that run some code to configure or set up the testing framework before each test
+    "setupFilesAfterEnv": ["./jest.setup.js"],
+    // By default jest will use a node environment, so DOM elements (like document) will be undefined without this
+    "testEnvironment": "jsdom",
+    // Collect coverage with Jest Sonar Reporter
+    collectCoverage: true,
+    collectCoverageFrom: ["src/**/*.{ts,tsx}"],
+    testResultsProcessor: "jest-sonar-reporter",
+};
 
-  testEnvironment: 'jest-environment-jsdom',
-}
-
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
+module.exports = createJestConfig(customConfig);
