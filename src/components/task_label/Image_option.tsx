@@ -131,7 +131,7 @@ const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       {currentProblem.options.map((option, index) => (
         <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
           {/* <Card hoverable style={{ width: 240 }} cover={<img alt="example" src={'https://crowdsourcing-backend-306wins.app.secoder.net'+option} />} /> */}
-          <MyImage url={option}/>
+          <MyImage url={"/api/image?url="+option}/>
         </Checkbox>
       ))}
       <div>
