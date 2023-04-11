@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import Button from "antd/lib/button";
 import { useRouter } from "next/router";
 const DemanderSettings = () => {
   const router = useRouter();

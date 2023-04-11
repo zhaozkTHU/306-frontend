@@ -23,7 +23,7 @@ it("@/utils/valid: isValid", () => {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   const randomTrueInput = text;
-  expect(isValid(randomTrueInput)).toBeTruthy();
+  expect(isValid(randomTrueInput, true)).toBeTruthy();
 
   const insert_times = Math.floor(1 + Math.random() * 1000);
   for (let i = 0; i < insert_times; i++) {
@@ -32,7 +32,7 @@ it("@/utils/valid: isValid", () => {
     text = text.slice(0, insert_position) + bad[insert_ch] + text.slice(insert_position);
   }
   const randomFalseInput = text;
-  expect(isValid(randomFalseInput)).toBeFalsy();
+  expect(isValid(randomFalseInput, true)).toBeFalsy();
 });
 
 it("1 + 1 === 2", () => {
