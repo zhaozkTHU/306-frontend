@@ -2255,10 +2255,10 @@ ansi-styles@^5.0.0:
   resolved "https://registry.npmmirror.com/ansi-styles/-/ansi-styles-5.2.0.tgz#07449690ad45777d1924ac2abb2fc8895dba836b"
   integrity sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==
 
-antd@^5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-5.4.0.tgz#e6e2b469b551a0bc58435f3a353e97372e98125c"
-  integrity sha512-eWCNFUGMuuHu2wufbq7yzPzwSesO2Our0AnCjCkom646wHw2TOUhfS58FeUSlV/Hhjb+ZLEvdy/mC+vJUb+EXg==
+antd@5.3.1:
+  version "5.3.1"
+  resolved "https://registry.npmmirror.com/antd/-/antd-5.3.1.tgz#f28ccd7959f0060e6b0e89a1852340ada5c328ca"
+  integrity sha512-PaGlqMsINgyR5CMeqwnMqupXOKqSY/MdLXgKg4m1Z+3IByIx5XZGg53FNDviE/3jp+ClgFya9eGKQ67i3Q5phQ==
   dependencies:
     "@ant-design/colors" "^7.0.0"
     "@ant-design/cssinjs" "^1.7.1"
@@ -2772,6 +2772,11 @@ core-js-compat@^3.25.1:
   integrity sha512-QmchCua884D8wWskMX8tW5ydINzd8oSJVx38lx/pVkFGqztxt73GYre3pm/hyYq8bPf+MW5In4I/uRShFDsbrA==
   dependencies:
     browserslist "^4.21.5"
+
+core-js@^3.2.1:
+  version "3.30.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.30.0.tgz#64ac6f83bc7a49fd42807327051701d4b1478dea"
+  integrity sha512-hQotSSARoNh1mYPi9O2YaWeiq/cEB95kOrFb4NCrO4RIFt1qqNpKsaE+vy/L3oiqvND5cThqXzUU3r9F7Efztg==
 
 cosmiconfig@^7.0.0:
   version "7.1.0"
@@ -4650,7 +4655,7 @@ lodash.tonumber@^4.0.3:
   resolved "https://registry.npmmirror.com/lodash.tonumber/-/lodash.tonumber-4.0.3.tgz#0b96b31b35672793eb7f5a63ee791f1b9e9025d9"
   integrity sha512-SY0SwuPOHRwKcCNTdsntPYb+Zddz5mDUIVFABzRMqmAiL41pMeyoQFGxYAw5zdc9NnH4pbJqiqqp5ckfxa+zSA==
 
-lodash@^4.0.1, lodash@^4.17.15, lodash@^4.17.21:
+lodash@^4.0.1, lodash@^4.17.11, lodash@^4.17.15, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmmirror.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==

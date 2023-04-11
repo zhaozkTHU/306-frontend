@@ -1,28 +1,29 @@
 import { Card, Button, Dropdown, Modal, Space } from "antd";
 import type { MenuProps } from "antd";
-import { transTime } from "../utils/valid";
+import { transTime } from "../../utils/valid";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction, useState } from "react";
-import CheckModel from "./check/checkModel";
-import DataExportCallback from "./data_export/dataExport";
-import UpdateTask from "./task_manage/update-task";
+import CheckModel from "../check/checkModel";
+import DataExportCallback from "../data_export/dataExport";
+import UpdateTask from "../task_manage/update-task";
 
 export interface DemanderTaskBlockProps {
   task_id: number;
   create_at: number;
   deadline: number;
   title: string;
-  state: string;
+  state: string[];
   labeler_number: number;
   labeler_id: number[];
   template: string;
-  isDone: boolean[]; // 对应ID的标注方是否完成标注
+  label_state: string[]; // 对应ID的标注方是否完成标注
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
   const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false)
   const [labelerId, setLabelerId] = useState<number>(-1);
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isSample, setisSample] = useState<boolean>(false);
@@ -35,7 +36,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
           return {
             key: `{"is_sample": false, "labeler_index": ${idx}}`,
             label: `标注者${index}号`,
-            disabled: !props.isDone[idx],
+            disabled: !(props.label_state[idx] === "checking"),
           };
         }
       ),
@@ -48,7 +49,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
           return {
             key: `{"is_sample": true, "labeler_index": ${idx}}`,
             label: `标注者${index}号`,
-            disabled: !props.isDone[idx],
+            disabled: !(props.label_state[idx] === "checking"),
           };
         }
       ),
@@ -64,13 +65,10 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         onCancel={() => {
           setIsCheckModalOpen(false);
         }}
+        footer={null}
       >
         <CheckModel
-          is_sample={isSample}
-          task_id={props.task_id}
-          labeler_index={labelerId}
-          template={props.template}
-          isShow={isShow}
+          is_sample={isSample} task_id={props.task_id} labeler_index={labelerId} template={props.template} isShow={isShow}
         />
       </Modal>
       <Modal
@@ -81,19 +79,28 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         onCancel={() => {
           setIsUpdateModalOpen(false);
         }}
+        footer={null}
       >
         <UpdateTask taskId={props.task_id} />
+      </Modal>
+      <Modal
+        open={isDetailModalOpen}
+        onOk={() => {
+          setIsDetailModalOpen(false);
+        }}
+        onCancel={() => {
+          setIsDetailModalOpen(false);
+        }}
+        footer={null}
+      >
+
       </Modal>
       <Card
         title={props.title}
         extra={
-          <a
-            onClick={() => {
-              alert("查看详情");
-            }}
-          >
+          <Button type="link" onClick={() => {setIsDetailModalOpen(true)}}>
             查看详情
-          </a>
+          </Button>
         }
       >
         <>
@@ -113,7 +120,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
                 },
               }}
             >
-              审核
+              审核任务
             </Dropdown.Button>
             <Dropdown.Button
               icon={<DownloadOutlined />}
@@ -141,6 +148,13 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
               }}
             >
               修改任务
+            </Button>
+            <Button
+              // onClick={() => {
+              //   setIsUpdateModalOpen(true);
+              // }}
+            >
+              删除任务
             </Button>
           </Space>
         </>
