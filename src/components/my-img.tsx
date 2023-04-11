@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 
 interface MyImageProps {
   url: string,
-  token: string,
   style?: any,
   alt?: string
 }
@@ -16,7 +15,7 @@ const MyImage = (props: MyImageProps) => {
     axios.get(`${props.url}`, {
       responseType: 'arraybuffer', // 将响应数据解析为 ArrayBuffer 类型
       headers: {
-        'Authorization': `Bearer ${props.token}`
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
       }
     }
     ).then(response => {
