@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { Button, Form, Input, Carousel, Divider, Modal } from "antd";
+import { Button, Form, Input, Divider, Modal } from "antd";
 import { isValid } from "@/utils/valid";
 import CryptoJS from "crypto-js";
 import axios from "axios";
@@ -22,7 +22,7 @@ const LoginScreen = (props: LoginScreenPorps) => {
   const router = useRouter();
   const CarouselRef = useRef<any>(null);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState<boolean>(false);
-  const [preUsername, setPreUsername] = useState<string>("")
+  const [preUsername, setPreUsername] = useState<string>("");
   return (
     <div
       style={{
@@ -43,7 +43,7 @@ const LoginScreen = (props: LoginScreenPorps) => {
         }}
         footer={null}
       >
-        <Register setUsername={setPreUsername} setModalOpen={setIsRegisterModalOpen}/>
+        <Register setUsername={setPreUsername} setModalOpen={setIsRegisterModalOpen} />
       </Modal>
       <h1 style={{ textAlign: "center", marginTop: "5%", color: "rgba(62, 132, 239, 0.953)" }}>
         306众包平台
@@ -86,12 +86,11 @@ const LoginScreen = (props: LoginScreenPorps) => {
           >
             <ProCard
               colSpan={"5%"}
-              style={{ height: "100%", backgroundColor: "rgba(255, 255, 255, 0)"}}
+              style={{ height: "100%", backgroundColor: "rgba(255, 255, 255, 0)" }}
               onClick={() => {
                 CarouselRef.current?.prev?.();
               }}
-            >
-            </ProCard>
+            ></ProCard>
             <ProCard
               colSpan={"90%"}
               style={{ height: "100%", backgroundColor: "rgba(255, 255, 255, 0)" }}
@@ -158,12 +157,21 @@ const LoginScreen = (props: LoginScreenPorps) => {
                   { required: true, message: "用户名不能为空" },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
-                      if (!value || (isValid(value) && value.length <= 50 && value.length >= 3)) {
+                      if (
+                        !value ||
+                        (isValid(value, true) && value.length <= 50 && value.length >= 3)
+                      ) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("用户名只包含字母、数字、下划线且长度不超过50不小于3")
-                      );
+                      if(value&&!isValid(value, true)) {
+                        return Promise.reject(new Error("用户名只包含字母、数字、下划线"))
+                      }
+                      if (value&&value.length > 50) {
+                        return Promise.reject(new Error("用户名长度不超过50"))
+                      }
+                      if (value&&value.length < 3) {
+                        return Promise.reject(new Error("用户名长度不小于3"))
+                      }
                     },
                   }),
                 ]}
@@ -181,12 +189,21 @@ const LoginScreen = (props: LoginScreenPorps) => {
                   { required: true, message: "密码不能为空" },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
-                      if (!value || (isValid(value) && value.length <= 50 && value.length >= 5)) {
+                      if (
+                        !value ||
+                        (isValid(value, true) && value.length <= 50 && value.length >= 3)
+                      ) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("密码只包含字母、数字、下划线且长度不超过50不小于5")
-                      );
+                      if(value&&!isValid(value, true)) {
+                        return Promise.reject(new Error("密码只包含字母、数字、下划线"))
+                      }
+                      if (value&&value.length > 50) {
+                        return Promise.reject(new Error("密码长度不超过50"))
+                      }
+                      if (value&&value.length < 3) {
+                        return Promise.reject(new Error("密码长度不小于3"))
+                      }
                     },
                   }),
                 ]}

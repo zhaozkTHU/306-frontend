@@ -26,7 +26,7 @@ const DemanderAllTask = () => {
         console.log(err)
       })
       setRefreshing(false)
-    }, [router])
+    }, [router, refreshing])
   
     return refreshing ? (
       <p>Loading...</p>

@@ -21,7 +21,11 @@ const App = ({ Component, pageProps }: AppProps) => {
   if (!router.isReady) {
     return;
   }
-  if (router.pathname.startsWith("/demander/") || router.pathname.startsWith("/labeler/")) {
+  if (
+    router.pathname.startsWith("/demander/") ||
+    router.pathname.startsWith("/labeler/") ||
+    router.pathname.startsWith("/administrator/")
+  ) {
     return (
       // <RoleContext.Provider value={role}>
       <MyLayout role={role}>

@@ -1,17 +1,18 @@
-
 /**
- * 
- * @param s 
+ *
+ * @param s
  * @returns if the string s only contains 1-9, a-z, A-Z, _
  */
-export const isValid = (s: string): boolean => {
-  return /^[0-9a-zA-Z_]{1,}$/.test(s);
+export const isValid = (s: string, isStrict: boolean): boolean => {
+  if (isStrict) {
+    return /^[0-9a-zA-Z_]{1,}$/.test(s);
+  }
+  return /^[0-9a-zA-Z_\'\-\$\*\(\)\^\%\=]{1,}$/.test(s);
 };
 
-
 /**
- * 
- * @param time 
+ *
+ * @param time
  * @returns the yyyy-mm-dd hh:mm:ss of the timestamp
  */
 export const transTime = (time: number): string => {
@@ -30,16 +31,15 @@ export const transTime = (time: number): string => {
   }`;
 };
 
-
 /**
- * 
- * @param arr 
- * @param ele 
+ *
+ * @param arr
+ * @param ele
  * @returns if ele in arr
  */
 export const isIn = (arr: any[], ele: any): boolean => {
-  for (let i=0;i<arr.length;i++) {
-    if (i===arr[i]) {
+  for (let i = 0; i < arr.length; i++) {
+    if (i === arr[i]) {
       return true;
     }
   }

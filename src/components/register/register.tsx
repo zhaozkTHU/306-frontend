@@ -69,7 +69,7 @@ const Register = (props: RegisterProps) => {
             { required: true, message: "用户名不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || (isValid(value) && value.length <= 50 && value.length >= 3)) {
+                if (!value || (isValid(value, true) && value.length <= 50 && value.length >= 3)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
@@ -92,7 +92,7 @@ const Register = (props: RegisterProps) => {
             { required: true, message: "密码不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || (isValid(value) && value.length <= 50 && value.length >= 5)) {
+                if (!value || (isValid(value, true) && value.length <= 50 && value.length >= 5)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
@@ -136,7 +136,7 @@ const Register = (props: RegisterProps) => {
           <Select placeholder="选择身份">
             <Option value="demander">需求方</Option>
             <Option value="labeler">标注方</Option>
-            <Option value="admin">管理员</Option>
+            <Option value="administrator">管理员</Option>
           </Select>
         </Form.Item>
         <p>邀请码(选择管理员必填):</p>
@@ -146,18 +146,27 @@ const Register = (props: RegisterProps) => {
             { required: false},
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if(value&&isValid(value)) {
+                if(value&&getFieldValue("role")==="administrator"&&isValid(value, false)) {
                   return Promise.resolve();
                 }
-                if (!value&&getFieldValue("role")!=="admin") {
-                  return Promise.resolve();
-                }
-                if(value&&!isValid(value)) {
+                if(value&&getFieldValue("role")==="administrator"&&!isValid(value, false)) {
                   return Promise.reject(
-                    new Error("用户名只包含字母、数字、下划线且长度不超过50不小于3")
+                    new Error("管理员邀请码错误")
                   );
                 }
-                if(!value&&getFieldValue("role")==="admin") {
+                if(value&&getFieldValue("role")!=="administrator"&&isValid(value, true)) {
+                  return Promise.resolve();
+                }
+                if(value&&getFieldValue("role")!=="administrator"&&!isValid(value, true)) {
+                  return Promise.reject(
+                    new Error("普通用户邀请码只包含字母、数字、下划线")
+                  );
+                }
+                if (!value&&getFieldValue("role")!=="administrator") {
+                  return Promise.resolve();
+                }
+                
+                if(!value&&getFieldValue("role")==="administrator") {
                   return Promise.reject(
                     new Error("注册管理员必须包含邀请码")
                   );
