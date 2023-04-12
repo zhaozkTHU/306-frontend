@@ -1,5 +1,5 @@
 import { Card, Checkbox, Radio, RadioChangeEvent, Image, Divider } from "antd";
-import { Dispatch, Key, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MyImage from "../my-img";
 
 interface CheckImgClassificationProps {
@@ -21,7 +21,7 @@ const CheckImgClassificationProblem = (props: CheckImgClassificationProps) => {
         {props.options.map((option, index) => (
           <div key={index}>
             <Checkbox defaultChecked={props.chosen[index]} disabled={true}>
-              <MyImage url={`/api/image?url=${option}`}  />
+              <MyImage url={`/api/image?url=${option}` }  style={{width: '10%'}}/>
             </Checkbox>
             <Divider />
           </div>

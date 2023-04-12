@@ -33,9 +33,6 @@ const App = ({ Component, pageProps }: AppProps) => {
       </MyLayout>
       // </RoleContext.Provider>
     );
-  } else if (router.pathname.startsWith("/register")) {
-    // register, no deploy
-    return <Component {...pageProps} />;
   } else if (router.pathname === "/") {
     // login
     return <LoginScreen setRole={setRole} />;
