@@ -9,7 +9,7 @@ const DemanderAllTask = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [tasks, setTasks] = useState<DemanderTaskBlockProps[]>([]);
   useEffect(() => {
-    setRefreshing(true)
+    // setRefreshing(true)
     axios
       .get("/api/task", {
         headers: {
@@ -26,7 +26,7 @@ const DemanderAllTask = () => {
         console.log(err)
       })
       setRefreshing(false)
-    }, [router])
+    }, [router, refreshing])
   
     return refreshing ? (
       <p>Loading...</p>

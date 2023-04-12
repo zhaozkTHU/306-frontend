@@ -1,7 +1,8 @@
 import { Button } from "antd";
+import { message } from "antd/lib";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CheckImgClassificationProblem from "./checkImgClassificationProblem";
 import CheckTextClassificationProblem from "./checkTextClassificationProblem";
 
@@ -11,6 +12,7 @@ interface CheckModelProps {
   is_sample: boolean;
   template: string;
   isShow: boolean;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 /** 
@@ -84,7 +86,7 @@ const CheckModel = (props: CheckModelProps) => {
                 key={index}
               />
             )
-          } else if (props.template==="ImageClassification") {
+          } else if (props.template==="ImagesClassification") {
             return (
               <CheckImgClassificationProblem
                 description={items.description}
@@ -116,7 +118,20 @@ const CheckModel = (props: CheckModelProps) => {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
             }
-          );
+          )
+          .then(() => {
+            message.success("审核结果提交成功")
+          })
+          .catch((error) => {
+            if (error.response) {
+              message.error(`审核结果提交失败，${error.response.data.message}`);
+            } else {
+              message.error("网络失败，请稍后再试");
+            }
+          })
+          .finally(() => {
+            props.setRefreshing(true)
+          });
         }}
       >
         合格
@@ -138,7 +153,21 @@ const CheckModel = (props: CheckModelProps) => {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
             }
-          );
+          )
+          .then(() => {
+            message.success("审核结果提交成功")
+          })
+          .catch((error) => {
+            if (error.response) {
+              message.error(`审核结果提交失败，${error.response.data.message}`);
+            } else {
+              message.error("网络失败，请稍后再试");
+            }
+          })
+          .finally(() => {
+            props.setRefreshing(true)
+          })
+          ;
         }}
       >
         不合格

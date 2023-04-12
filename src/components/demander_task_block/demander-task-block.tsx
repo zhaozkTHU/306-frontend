@@ -1,11 +1,13 @@
-import { Card, Button, Dropdown, Modal, Space } from "antd";
+import { Card, Button, Dropdown, Modal, Space, message } from "antd";
 import type { MenuProps } from "antd";
 import { transTime } from "../../utils/valid";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DownloadOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction, useState } from "react";
 import CheckModel from "../check/checkModel";
 import DataExportCallback from "../data_export/dataExport";
 import UpdateTask from "../task_manage/update-task";
+import DemanderTaskDetail from "./demander-task-detail";
+import axios from "axios";
 
 export interface DemanderTaskBlockProps {
   task_id: number;
@@ -23,7 +25,8 @@ export interface DemanderTaskBlockProps {
 const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
   const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [labelerId, setLabelerId] = useState<number>(-1);
   const [isShow, setIsShow] = useState<boolean>(false);
   const [isSample, setisSample] = useState<boolean>(false);
@@ -68,7 +71,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         footer={null}
       >
         <CheckModel
-          is_sample={isSample} task_id={props.task_id} labeler_index={labelerId} template={props.template} isShow={isShow}
+          is_sample={isSample} task_id={props.task_id} labeler_index={labelerId} template={props.template} isShow={isShow} setRefreshing={props.setRefreshing}
         />
       </Modal>
       <Modal
@@ -93,8 +96,43 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         }}
         footer={null}
       >
-
+        <DemanderTaskDetail />
       </Modal>
+      <Modal
+        title="确认删除该任务？"
+        // closeIcon={<ExclamationCircleOutlined/>}
+        open={isDeleteModalOpen}
+        onOk={() => {
+          axios
+            .delete(`/api/task/`, {
+              headers: {
+                Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+              },
+              params: { task_id: props.task_id },
+            })
+            .then(() => {
+              message.success("删除成功")
+              props.setRefreshing(true)
+            })
+            .catch((err) => {
+              if(err.response) {
+                message.error(`删除失败，${err.response.data.message}`)
+              } else {
+                message.error("删除失败，网络错误")
+              }
+            })
+            .finally(() => {
+              setIsDeleteModalOpen(false);
+            })
+          
+        }}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+        }}
+      >   
+      此操作不可回退
+      </Modal>
+      
       <Card
         title={props.title}
         extra={
@@ -150,9 +188,26 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
               修改任务
             </Button>
             <Button
-              // onClick={() => {
-              //   setIsUpdateModalOpen(true);
-              // }}
+              onClick={() => {
+                setIsDeleteModalOpen(true)
+                // axios
+                // .delete(`/api/task/`, {
+                //   headers: {
+                //     Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+                //   },
+                //   params: { task_id: props.task_id },
+                // })
+                // .then(() => {
+                //   message.success("删除成功")
+                // })
+                // .catch((err) => {
+                //   if(err.response) {
+                //     message.error(`删除失败，${err.response.data.message}`)
+                //   } else {
+                //     message.error("删除失败，网络错误")
+                //   }
+                // })
+              }}
             >
               删除任务
             </Button>

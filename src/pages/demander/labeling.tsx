@@ -9,7 +9,6 @@ const DemanderLabeling = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [tasks, setTasks] = useState<DemanderTaskBlockProps[]>([]);
   useEffect(() => {
-    setRefreshing(true);
     axios
       .get("/api/task/labeling", {
         headers: {
@@ -26,7 +25,7 @@ const DemanderLabeling = () => {
         console.log(err);
       });
     setRefreshing(false);
-  }, [router]);
+  }, [router, refreshing]);
 
   return refreshing ? (
     <p>Loading...</p>
