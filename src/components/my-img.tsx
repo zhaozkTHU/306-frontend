@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-
+import { Image } from "antd";
 interface MyImageProps {
   url: string;
   style?: any;
@@ -28,7 +28,9 @@ const MyImage = (props: MyImageProps) => {
       });
   }, []);
 
-  return <img src={imageUrl} alt={props.alt} style={props.style} />;
-};
+  return (
+    <Image src={imageUrl} alt={props.alt} style={{maxWidth: '100%', minWidth: '100%'}}/>
+  );
+}
 
 export default MyImage;

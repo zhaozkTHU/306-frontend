@@ -115,3 +115,16 @@ export function isSoundTagProblem(data: any): data is SoundTagProblem {
         (data.data.input === undefined || typeof data.data.input === "string")))
   );
 }
+export function isVideoTagProblem(data: any): data is VideoTagProblem {
+  return (
+    typeof data.videoUrl === "string" &&
+    typeof data.description === "string" &&
+    Array.isArray(data.choice) &&
+    data.choice.every((c: any) => {
+      return typeof c.text === "string" && typeof c.needInput === "boolean";
+    }) &&
+    (data.data === undefined ||
+      (typeof data.data.choiceIndex === "number" &&
+        (data.data.input === undefined || typeof data.data.input === "string")))
+  );
+}

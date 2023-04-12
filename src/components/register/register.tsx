@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { useRouter } from "next/router";
 import { Button, Form, Input, message, Select } from "antd";
-import { LockOutlined, UserOutlined, LinkOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined, LinkOutlined, HighlightOutlined } from "@ant-design/icons";
 import { isValid } from "@/utils/valid";
 import CryptoJS from "crypto-js";
 import axios from "axios";
@@ -23,7 +22,6 @@ const Register = (props: RegisterProps) => {
       {contextHolder}
       <Form
         name="basic"
-        style={{}}
         initialValues={{ remember: true }}
         onFinish={(values) => {
           const hashPassword = CryptoJS.SHA256(values.password).toString();
@@ -33,6 +31,7 @@ const Register = (props: RegisterProps) => {
               password: hashPassword,
               invitecode: values.invitecode,
               role: values.role,
+              email: values.email
             })
             .then((response) => {
               console.log(response.data);
@@ -136,6 +135,31 @@ const Register = (props: RegisterProps) => {
             <Option value="administrator">管理员</Option>
           </Select>
         </Form.Item>
+
+
+        <p>电子邮箱: </p>
+        <Form.Item
+        name="email"
+        rules={[
+          {
+            type: 'email',
+            message: '邮箱格式不正确',
+          },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if(!value&&getFieldValue("role") === "demander") {
+                return Promise.reject(new Error("注册需求方必填"));
+              }
+              return Promise.resolve();
+            },
+          }),
+          ]}>
+        <Input
+            prefix={<HighlightOutlined className="site-form-item-icon" />}
+            placeholder="电子邮箱"
+        />
+        </Form.Item>
+
         <p>邀请码(选择管理员必填):</p>
         <Form.Item
           name="invitecode"
