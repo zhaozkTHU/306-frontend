@@ -17,6 +17,7 @@ interface FileUploaderProps {
  * @param props.onUrlListChange 上传文件url列表改变时的回调函数
  * @returns   上传文件组件
  * @private
+ * @deprecated 使用`Form.Item`与`Upload`组件代替
  */
 const FileUploader: React.FC<FileUploaderProps> = (props) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);

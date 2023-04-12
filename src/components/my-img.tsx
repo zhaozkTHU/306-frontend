@@ -28,7 +28,9 @@ const MyImage = (props: MyImageProps) => {
       });
   }, []);
 
-  return <Image src={imageUrl} alt={props.alt} style={{ maxWidth: "100%", minWidth: "100%" }} />;
-};
+  return (
+    <Image src={imageUrl} alt={props.alt} style={{maxWidth: '100%', minWidth: '100%'}}/>
+  );
+}
 
 export default MyImage;
