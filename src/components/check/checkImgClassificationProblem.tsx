@@ -1,5 +1,5 @@
 import { Card, Checkbox, Radio, RadioChangeEvent, Image, Divider } from "antd";
-import { Dispatch, Key, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import MyImage from "../my-img";
 
 interface CheckImgClassificationProps {
