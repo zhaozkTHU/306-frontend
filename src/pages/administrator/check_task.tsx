@@ -16,16 +16,15 @@ const AdministratorCheckTask = () => {
     task_id: -1,title:'',create_at:0,deadline:0,template:'TextClassification',reward:0,time:0,labeler_number:0,demander_id:-1,task_data:[]
   });
   useEffect(() => {
-    if(!router.isReady) {
+    if (!router.isReady) {
       return;
     }
-    axios.get("/api/undistribute",
-      {
+    axios
+      .get("/api/undistribute", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
-    )
+      })
       .then((response) => {
         const newTasks = response.data.tasks;
         setTasks(newTasks);
@@ -149,4 +148,4 @@ const AdministratorCheckTask = () => {
   )
 }
 
-export default AdministratorCheckTask
+export default AdministratorCheckTask;

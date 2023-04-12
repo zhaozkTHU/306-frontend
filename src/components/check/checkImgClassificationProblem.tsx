@@ -18,14 +18,14 @@ const CheckImgClassificationProblem = (props: CheckImgClassificationProps) => {
       <>
         <h1>{props.description}</h1>
         <Image.PreviewGroup>
-        {props.options.map((option, index) => (
-          <div key={index}>
-            <Checkbox defaultChecked={props.chosen[index]} disabled={true}>
-              <MyImage url={`/api/image?url=${option}` }  style={{width: '10%'}}/>
-            </Checkbox>
-            <Divider />
-          </div>
-        ))}
+          {props.options.map((option, index) => (
+            <div key={index}>
+              <Checkbox defaultChecked={props.chosen[index]} disabled={true}>
+                <MyImage url={`/api/image?url=${option}`} />
+              </Checkbox>
+              <Divider />
+            </div>
+          ))}
         </Image.PreviewGroup>
         <Radio.Group
           defaultValue="fail"

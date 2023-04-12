@@ -15,9 +15,9 @@ interface CheckModelProps {
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
-/** 
+/**
  * A checking model for checking interface
- * 
+ *
  */
 const CheckModel = (props: CheckModelProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
@@ -27,7 +27,7 @@ const CheckModel = (props: CheckModelProps) => {
 
   /**
    * Request for the labeled data
-   * 
+   *
    */
   useEffect(() => {
     if (!router.isReady) {
@@ -45,24 +45,23 @@ const CheckModel = (props: CheckModelProps) => {
         setProblems(newProblems);
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
       });
     setRefreshing(false);
   }, [router, props.labeler_index, props.task_id]);
 
-
   /**
-   * 
+   *
    * Deal with the all checking or sampling checking
    */
   let result = problems.slice();
   const totalNumber = problems.length;
   if (props.is_sample) {
-    for (let i=result.length-1;i>0;i--) {
+    for (let i = result.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [result[i], result[j]] = [result[j], result[i]];
     }
-    result = result.slice(0, Math.ceil(totalNumber/3));
+    result = result.slice(0, Math.ceil(totalNumber / 3));
   }
 
   const checkedNumber: number = result.length;
@@ -75,63 +74,63 @@ const CheckModel = (props: CheckModelProps) => {
         <p>Loading...</p>
       ) : (
         result.map((items, index) => {
-          if (props.template==="TextClassification") {
+          if (props.template === "TextClassification") {
             return (
               <CheckTextClassificationProblem
                 description={items.description}
                 options={items.options}
-                chosen={items.chosen?items.chosen:[false]}
+                chosen={items.chosen ? items.chosen : [false]}
                 index={index}
                 setPassedNumber={setPassedNumber}
                 key={index}
               />
-            )
-          } else if (props.template==="ImagesClassification") {
+            );
+          } else if (props.template === "ImagesClassification") {
             return (
               <CheckImgClassificationProblem
                 description={items.description}
                 options={items.options}
-                chosen={items.chosen?items.chosen:[false]}
+                chosen={items.chosen ? items.chosen : [false]}
                 index={index}
                 setPassedNumber={setPassedNumber}
                 key={index}
               />
-            )
+            );
           }
-          
         })
       )}
       <Button
         size="large"
         block
         onClick={() => {
-          axios.post(
-            "/api/checking",
-            {
-              task_id: props.task_id,
-              labeler_id: props.labeler_index,
-              is_passed: true,
-              correct_number: props.is_sample?undefined:passedNumber,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+          axios
+            .post(
+              "/api/checking",
+              {
+                task_id: props.task_id,
+                labeler_id: props.labeler_index,
+                is_passed: true,
+                correct_number: props.is_sample ? undefined : passedNumber,
               },
-            }
-          )
-          .then(() => {
-            message.success("审核结果提交成功")
-          })
-          .catch((error) => {
-            if (error.response) {
-              message.error(`审核结果提交失败，${error.response.data.message}`);
-            } else {
-              message.error("网络失败，请稍后再试");
-            }
-          })
-          .finally(() => {
-            props.setRefreshing(true)
-          });
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+            .then(() => {
+              message.success("审核结果提交成功");
+            })
+            .catch((error) => {
+              if (error.response) {
+                message.error(`审核结果提交失败，${error.response.data.message}`);
+              } else {
+                message.error("网络失败，请稍后再试");
+              }
+            })
+            .finally(() => {
+              props.setRefreshing(true);
+            });
         }}
       >
         合格
@@ -140,34 +139,34 @@ const CheckModel = (props: CheckModelProps) => {
         size="large"
         block
         onClick={() => {
-          axios.post(
-            "/api/checking",
-            {
-              task_id: props.task_id,
-              labeler_id: props.labeler_index,
-              is_passed: false,
-              correct_number: props.is_sample?undefined:passedNumber,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+          axios
+            .post(
+              "/api/checking",
+              {
+                task_id: props.task_id,
+                labeler_id: props.labeler_index,
+                is_passed: false,
+                correct_number: props.is_sample ? undefined : passedNumber,
               },
-            }
-          )
-          .then(() => {
-            message.success("审核结果提交成功")
-          })
-          .catch((error) => {
-            if (error.response) {
-              message.error(`审核结果提交失败，${error.response.data.message}`);
-            } else {
-              message.error("网络失败，请稍后再试");
-            }
-          })
-          .finally(() => {
-            props.setRefreshing(true)
-          })
-          ;
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+            .then(() => {
+              message.success("审核结果提交成功");
+            })
+            .catch((error) => {
+              if (error.response) {
+                message.error(`审核结果提交失败，${error.response.data.message}`);
+              } else {
+                message.error("网络失败，请稍后再试");
+              }
+            })
+            .finally(() => {
+              props.setRefreshing(true);
+            });
         }}
       >
         不合格

@@ -1,4 +1,11 @@
-import { TaskInfo } from "@/const/interface";
+import {
+  FaceTagProblem,
+  ImageFramePromblem,
+  ImagesClassificationProblem,
+  SoundTagProblem,
+  TaskInfo,
+  VideoTagProblem,
+} from "@/const/interface";
 import {
   Form,
   message,
@@ -13,13 +20,34 @@ import {
   ConfigProvider,
   Switch,
   Upload,
+  UploadProps,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import React from "react";
 import locale from "antd/locale/zh_CN";
-import FileUploader from "./FileUploader";
 import axios from "axios";
+
+const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
+  action: "/api/image",
+  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  beforeUpload: (file) => {
+    const isValid = file.type.startsWith(fileType);
+    if (!isValid) {
+      message.error(`${file.name} 文件格式错误`);
+    }
+    return isValid || Upload.LIST_IGNORE;
+  },
+  onRemove: async (file) => {
+    console.log(file);
+    /** @bug 此处后端实现有问题 */
+    await axios.delete("/api/image", {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      params: { url: file.response.url },
+    });
+    return true;
+  },
+});
 
 /**
  * 任务信息表单组件
@@ -41,15 +69,49 @@ const TaskInfoForm: React.FC<{
   const onFinish = () => {
     const value = form.getFieldsValue();
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
-    if (value.template === "ImagesClassification") {
-      const task_data: typeof value.task_data = value.task_data.map((v: any) => ({
-        description: v.description,
-        options: v.options.map((x: any) => x.response.url),
-      }));
-      props.onFinish({ ...value, deadline: deadline, task_data });
-      return;
+    let task_data: typeof value.task_data;
+    switch (value.template) {
+      case "ImagesClassification": {
+        task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+          ...v,
+          options: v.options.map((x: any) => x?.response?.url),
+        }));
+        break;
+      }
+      case "FaceTag": {
+        task_data = (value.task_data as FaceTagProblem[]).map((v) => ({
+          ...v,
+          faceImageUrl: (v.faceImageUrl[0] as any)?.response?.url,
+        }));
+        break;
+      }
+      case "ImageFrame": {
+        task_data = (value.task_data as ImageFramePromblem[]).map((v) => ({
+          ...v,
+          imageUrl: (v.imageUrl[0] as any)?.response?.url,
+        }));
+        break;
+      }
+      case "TextClassification": {
+        task_data = value.task_data;
+        break;
+      }
+      case "SoundTag": {
+        task_data = (value.task_data as SoundTagProblem[]).map((v) => ({
+          ...v,
+          soundUrl: (v.soundUrl[0] as any)?.response?.url,
+        }));
+        break;
+      }
+      case "VideoTag": {
+        task_data = (value.task_data as VideoTagProblem[]).map((v) => ({
+          ...v,
+          videoUrl: (v.videoUrl[0] as any)?.response?.url,
+        }));
+        break;
+      }
     }
-    props.onFinish({ ...value, deadline: deadline });
+    props.onFinish({ ...value, deadline, task_data });
   };
 
   return (
@@ -192,58 +254,61 @@ const TaskInfoForm: React.FC<{
                       <Form.Item
                         key={dataField.key}
                         name={[dataField.name, "options"]}
-                        rules={[{ required: true, message: "请输入选项" }]}
+                        rules={[{ required: true, message: "请上传文件" }]}
                         valuePropName="fileList"
                         getValueFromEvent={(e) => {
                           console.log(e);
                           return e?.fileList;
                         }}
                       >
-                        <Upload
-                          action="/api/image"
-                          headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
-                          onRemove={(file) => {
-                            console.log(file);
-                            /** @bug 此处后端实现有问题 */
-                            // axios.delete("/api/image", {
-                            //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                            //   params: { url: file.response.url },
-                            // });
-                          }}
-                        >
-                          <Button icon={<UploadOutlined />} type="primary">
-                            提交文件
-                          </Button>
+                        <Upload {...UploadPropsByType("image")}>
+                          <Button icon={<UploadOutlined />}>提交文件</Button>
                         </Upload>
                       </Form.Item>
                     )}
                     {form.getFieldValue("template") === "FaceTag" && (
-                      <FileUploader
-                        urls={[form.getFieldValue([dataField.name, "faceImageUrl"])]}
-                        onUrlListChange={(newUrlList) => {
-                          form.setFieldValue([dataField.name, "faceImageUrl"], newUrlList[0]);
+                      <Form.Item
+                        key={dataField.key}
+                        name={[dataField.name, "faceImageUrl"]}
+                        rules={[{ required: true, message: "请上传文件" }]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => {
+                          return e?.fileList;
                         }}
-                        accept="image/{jpg,png,jpeg}"
-                      />
+                      >
+                        <Upload {...UploadPropsByType("image")} maxCount={1}>
+                          <Button icon={<UploadOutlined />}>提交文件</Button>
+                        </Upload>
+                      </Form.Item>
                     )}
                     {form.getFieldValue("template") === "ImageFrame" && (
-                      <FileUploader
-                        urls={[form.getFieldValue([dataField.name, "imageUrl"])]}
-                        onUrlListChange={(newUrlList) => {
-                          form.setFieldValue([dataField.name, "faceImageUrl"], newUrlList[0]);
+                      <Form.Item
+                        key={dataField.key}
+                        name={[dataField.name, "imageUrl"]}
+                        rules={[{ required: true, message: "请上传文件" }]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => {
+                          return e?.fileList;
                         }}
-                        accept="image/{jpg,png,jpeg}"
-                      />
+                      >
+                        <Upload {...UploadPropsByType("image")} maxCount={1}>
+                          <Button icon={<UploadOutlined />}>提交文件</Button>
+                        </Upload>
+                      </Form.Item>
                     )}
                     {form.getFieldValue("template") === "SoundTag" && (
                       <>
-                        <FileUploader
-                          urls={[form.getFieldValue([dataField.name, "soundUrl"])]}
-                          onUrlListChange={(newUrlList) => {
-                            form.setFieldValue([dataField.name, "soundUrl"], newUrlList[0]);
-                          }}
-                          accept="audio/{mp3,wav}"
-                        />
+                        <Form.Item
+                          key={dataField.key}
+                          name={[dataField.name, "imageUrl"]}
+                          rules={[{ required: true, message: "请上传文件" }]}
+                          valuePropName="fileList"
+                          getValueFromEvent={(e) => e?.fileList}
+                        >
+                          <Upload {...UploadPropsByType("audio")} maxCount={1}>
+                            <Button icon={<UploadOutlined />}>提交文件</Button>
+                          </Upload>
+                        </Form.Item>
                         <Form.List name={[dataField.name, "choice"]}>
                           {(optFields, { add: optAdd, remove: optRemove }) => (
                             <>
@@ -289,13 +354,17 @@ const TaskInfoForm: React.FC<{
                     )}
                     {form.getFieldValue("template") === "VideoTag" && (
                       <>
-                        <FileUploader
-                          urls={[form.getFieldValue([dataField.name, "soundUrl"])]}
-                          onUrlListChange={(newUrlList) => {
-                            form.setFieldValue([dataField.name, "soundUrl"], newUrlList[0]);
-                          }}
-                          accept="video/{mp4}"
-                        />
+                        <Form.Item
+                          key={dataField.key}
+                          name={[dataField.name, "videoUrl"]}
+                          rules={[{ required: true, message: "请上传文件" }]}
+                          valuePropName="fileList"
+                          getValueFromEvent={(e) => e?.fileList}
+                        >
+                          <Upload {...UploadPropsByType("audio")} maxCount={1}>
+                            <Button icon={<UploadOutlined />}>提交文件</Button>
+                          </Upload>
+                        </Form.Item>
                         <Form.List name={[dataField.name, "choice"]}>
                           {(optFields, { add: optAdd, remove: optRemove }) => (
                             <>

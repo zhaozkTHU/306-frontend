@@ -71,7 +71,12 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
         footer={null}
       >
         <CheckModel
-          is_sample={isSample} task_id={props.task_id} labeler_index={labelerId} template={props.template} isShow={isShow} setRefreshing={props.setRefreshing}
+          is_sample={isSample}
+          task_id={props.task_id}
+          labeler_index={labelerId}
+          template={props.template}
+          isShow={isShow}
+          setRefreshing={props.setRefreshing}
         />
       </Modal>
       <Modal
@@ -111,32 +116,36 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
               params: { task_id: props.task_id },
             })
             .then(() => {
-              message.success("删除成功")
-              props.setRefreshing(true)
+              message.success("删除成功");
+              props.setRefreshing(true);
             })
             .catch((err) => {
-              if(err.response) {
-                message.error(`删除失败，${err.response.data.message}`)
+              if (err.response) {
+                message.error(`删除失败，${err.response.data.message}`);
               } else {
-                message.error("删除失败，网络错误")
+                message.error("删除失败，网络错误");
               }
             })
             .finally(() => {
               setIsDeleteModalOpen(false);
-            })
-          
+            });
         }}
         onCancel={() => {
           setIsDeleteModalOpen(false);
         }}
-      >   
-      此操作不可回退
+      >
+        此操作不可回退
       </Modal>
-      
+
       <Card
         title={props.title}
         extra={
-          <Button type="link" onClick={() => {setIsDetailModalOpen(true)}}>
+          <Button
+            type="link"
+            onClick={() => {
+              setIsDetailModalOpen(true);
+            }}
+          >
             查看详情
           </Button>
         }
@@ -189,7 +198,7 @@ const DemanderTaskBlock = (props: DemanderTaskBlockProps) => {
             </Button>
             <Button
               onClick={() => {
-                setIsDeleteModalOpen(true)
+                setIsDeleteModalOpen(true);
                 // axios
                 // .delete(`/api/task/`, {
                 //   headers: {
