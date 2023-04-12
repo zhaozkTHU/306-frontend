@@ -36,7 +36,11 @@ const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps =
     if (!isValid) {
       message.error(`${file.name} 文件格式错误`);
     }
-    return isValid || Upload.LIST_IGNORE;
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error(`${file.name} 文件大小超过2MB`);
+    }
+    return isLt2M || isValid || Upload.LIST_IGNORE;
   },
   onRemove: async (file) => {
     console.log(file);
