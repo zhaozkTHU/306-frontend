@@ -8,9 +8,9 @@ const SoundTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState<string | null>(null);
   const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isSoundTagProblem);
-  const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<{ choiceIndex: number; input?: string }>> (
-    filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 })
-  );
+  const [chosenOptionsAll, setChosenOptionsAll] = useState<
+    Array<{ choiceIndex: number; input?: string }>
+  >(filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 }));
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
 
@@ -115,10 +115,10 @@ const SoundTagComponent: React.FC<TaskInfo> = (taskInfo) => {
             {option.text}
             {option.needInput && (
               <Input
-              style={{ marginLeft: 8 }}
-              value={chosenOptionIndex === index ? inputValue || "" : ""}
-              onChange={handleInputChange}
-              disabled={chosenOptionIndex !== index}
+                style={{ marginLeft: 8 }}
+                value={chosenOptionIndex === index ? inputValue || "" : ""}
+                onChange={handleInputChange}
+                disabled={chosenOptionIndex !== index}
               />
             )}
           </Radio>

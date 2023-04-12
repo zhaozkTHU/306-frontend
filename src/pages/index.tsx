@@ -163,14 +163,14 @@ const LoginScreen = (props: LoginScreenPorps) => {
                       ) {
                         return Promise.resolve();
                       }
-                      if(value&&!isValid(value, true)) {
-                        return Promise.reject(new Error("用户名只包含字母、数字、下划线"))
+                      if (value && !isValid(value, true)) {
+                        return Promise.reject(new Error("用户名只包含字母、数字、下划线"));
                       }
-                      if (value&&value.length > 50) {
-                        return Promise.reject(new Error("用户名长度不超过50"))
+                      if (value && value.length > 50) {
+                        return Promise.reject(new Error("用户名长度不超过50"));
                       }
-                      if (value&&value.length < 3) {
-                        return Promise.reject(new Error("用户名长度不小于3"))
+                      if (value && value.length < 3) {
+                        return Promise.reject(new Error("用户名长度不小于3"));
                       }
                     },
                   }),
@@ -195,14 +195,14 @@ const LoginScreen = (props: LoginScreenPorps) => {
                       ) {
                         return Promise.resolve();
                       }
-                      if(value&&!isValid(value, true)) {
-                        return Promise.reject(new Error("密码只包含字母、数字、下划线"))
+                      if (value && !isValid(value, true)) {
+                        return Promise.reject(new Error("密码只包含字母、数字、下划线"));
                       }
-                      if (value&&value.length > 50) {
-                        return Promise.reject(new Error("密码长度不超过50"))
+                      if (value && value.length > 50) {
+                        return Promise.reject(new Error("密码长度不超过50"));
                       }
-                      if (value&&value.length < 3) {
-                        return Promise.reject(new Error("密码长度不小于3"))
+                      if (value && value.length < 3) {
+                        return Promise.reject(new Error("密码长度不小于3"));
                       }
                     },
                   }),
