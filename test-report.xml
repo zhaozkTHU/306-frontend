@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="/Users/zhangziying/Desktop/306-frontend/src/tests/test.test.ts">
+    <testCase name="src/utils/valid.ts: Timestamp to string" duration="1"/>
+    <testCase name="@/utils/valid: isValid" duration="1"/>
+    <testCase name="1 + 1 === 2" duration="0"/>
+  </file>
+</testExecutions>

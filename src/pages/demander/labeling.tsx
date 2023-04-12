@@ -1,14 +1,16 @@
-import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander-task-block";
+import DemanderTaskBlock, {
+  DemanderTaskBlockProps,
+} from "@/components/demander_task_block/demander-task-block";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Empty } from "antd";
 
 const DemanderLabeling = () => {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [tasks, setTasks] = useState<DemanderTaskBlockProps[]>([]);
   useEffect(() => {
-    setRefreshing(true);
     axios
       .get("/api/task/labeling", {
         headers: {
@@ -25,12 +27,20 @@ const DemanderLabeling = () => {
         console.log(err);
       });
     setRefreshing(false);
-  }, [router]);
+  }, [router, refreshing]);
 
   return refreshing ? (
     <p>Loading...</p>
   ) : (
-    tasks.map((task, idx) => <DemanderTaskBlock {...task} key={idx} />)
+    <>
+      {tasks.length ? (
+        tasks.map((task, idx) => (
+          <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing} />
+        ))
+      ) : (
+        <Empty description="暂无标注中的任务" />
+      )}
+    </>
   );
 };
 

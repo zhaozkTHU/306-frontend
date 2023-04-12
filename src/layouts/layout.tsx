@@ -8,11 +8,13 @@ import {
   SettingOutlined,
   MonitorOutlined,
   OrderedListOutlined,
+  EditOutlined,
+  TeamOutlined,
+  ReconciliationOutlined,
+  PushpinOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Layout, Menu, theme, Spin, Result, Button } from "antd";
-
-// import DemanderContent from '../../components/DemanderContent'
+import { Layout, Menu, theme, Result, Button } from "antd";
 
 const { Header, Content, Sider } = Layout;
 
@@ -32,7 +34,7 @@ function getItem(
   } as MenuItem;
 }
 
-const items: MenuItem[] = [
+const demanderItems: MenuItem[] = [
   getItem("所有任务", "all_task", <OrderedListOutlined />),
   getItem("新建任务", "new_task", <PlusOutlined />),
   getItem("标注中", "labeling", <MonitorOutlined />),
@@ -42,33 +44,63 @@ const items: MenuItem[] = [
   getItem("设置", "settings", <SettingOutlined />),
 ];
 
+const labelerItems: MenuItem[] = [
+  getItem("全部任务", "all_task", <OrderedListOutlined />),
+  getItem("新任务", "new_task", <EditOutlined />),
+  getItem("标注中", "labeling", <MonitorOutlined />),
+  getItem("审核中", "checking", <QuestionCircleOutlined />),
+  getItem("已完成", "completed", <CarryOutOutlined />),
+  getItem("用户信息", "info", <UserOutlined />),
+  getItem("设置", "settings", <SettingOutlined />),
+];
+
+const administratorItems: MenuItem[] = [
+  getItem("审核需求方权限", "check_demander", <TeamOutlined />),
+  getItem("审核发布任务", "check_task", <QuestionCircleOutlined />),
+  getItem("需求方账号管理", "demander_account", <ReconciliationOutlined />),
+  getItem("标注方账号管理", "labeler_account", <PushpinOutlined />),
+  getItem("个人信息", "info", <UserOutlined />),
+  getItem("设置", "settings", <SettingOutlined />),
+];
+
+const agentItems: MenuItem[] = [];
+
+const mapRole2Menu = {
+  demander: demanderItems,
+  labeler: labelerItems,
+  administrator: administratorItems,
+  agent: agentItems,
+};
+
 export interface DemanderLayoutProps {
-  loginStatus: string;
   children: any;
-  setLoginStatus: any;
+  role: string | null;
 }
 
-const DemanderLayout = (props: DemanderLayoutProps) => {
+const MyLayout = (props: DemanderLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  // const [DemanderItem, setDemanderItem] = useState("1")
+  const [recollapsed, setRecollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  if (props.loginStatus === "waiting") {
-    return <Spin size="large" />;
-  } else if (props.loginStatus !== "demanderAlreadyLogin") {
+  if (
+    props.role !== "demander" &&
+    props.role !== "labeler" &&
+    props.role !== "administrator" &&
+    props.role !== "agent"
+  ) {
     return (
       <Result
         status="error"
-        title="尚未登录"
+        title={props.role ? "未知错误，请重新登录再试" : "尚未登录"}
         extra={[
           <Button
-            key="jumpToLogin"
             onClick={() => {
               router.push("/");
             }}
+            key="jumpToLogin"
           >
             跳转到登录界面
           </Button>,
@@ -78,10 +110,25 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
   }
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      {/* 
+        Sider that take up the room so that the Content
+        can collapse or not with Sider
+      */}
+      <Sider
+        collapsible
+        collapsed={recollapsed}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
+      ></Sider>
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+        onCollapse={(value) => {
+          setCollapsed(value);
+          setRecollapsed(value);
+        }}
         style={{
           overflow: "auto",
           position: "fixed",
@@ -96,18 +143,20 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
           }}
         />
         <Menu
+          style={{
+            overflow: "auto",
+          }}
           theme="dark"
           defaultSelectedKeys={["info"]}
           mode="inline"
-          items={items}
+          items={mapRole2Menu[props.role]}
           onSelect={(e) => {
-            router.push(`/demander/${e.key}`);
-            // setDemanderItem(e.key)
+            router.push(`/${props.role}/${e.key}`);
           }}
         />
       </Sider>
-      <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
+      <Layout className="site-layout">
+        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
         <Content style={{ margin: "0 16px" }}>
           {props.children}
           {/* <Breadcrumb style={{ margin: '16px 0' }}>
@@ -124,4 +173,4 @@ const DemanderLayout = (props: DemanderLayoutProps) => {
   );
 };
 
-export default DemanderLayout;
+export default MyLayout;

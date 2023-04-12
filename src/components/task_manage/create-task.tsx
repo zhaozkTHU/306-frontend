@@ -1,33 +1,34 @@
 import TaskInfoForm from "./task-info-form";
 import { TaskInfo } from "@/const/interface";
-import { useState } from "react";
 import React from "react";
 import { message } from "antd";
 import axios from "axios";
 
+/**
+ * 创建任务组件
+ * @returns 创建任务组件
+ */
 const CreateTask: React.FC = () => {
-  const [taskInfo, setTaskInfo] = useState<TaskInfo>({} as TaskInfo);
   const onFinish = (info: TaskInfo) => {
-    const time = new Date().valueOf();
-    setTaskInfo({
-      ...info,
-      create_at: time,
-    });
     axios
-      .post("/api/task", taskInfo, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
+      .post(
+        "/api/task",
+        { ...info, create_at: new Date().valueOf() },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      )
       .then((value) => {
         if (value.data.code === 0) message.success("发布成功");
-        else message.success("发布失败");
+        else message.error(value.data.reason);
       })
       .catch((reason) => {
         console.log(reason);
-        message.error("网络错误");
+        message.error(`网络错误 ${reason?.response?.data?.message}`);
       });
   };
 
-  return <TaskInfoForm taskInfo={taskInfo} onFinish={(info: TaskInfo) => onFinish(info)} />;
+  return <TaskInfoForm taskInfo={{} as TaskInfo} onFinish={(info: TaskInfo) => onFinish(info)} />;
 };
 
 export default CreateTask;

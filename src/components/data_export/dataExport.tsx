@@ -1,6 +1,11 @@
 import { message } from "antd";
 import axios from "axios";
 
+/**
+ * 导出数据的回调函数
+ * @param taskId 任务id
+ * @param merge 是否合并数据
+ */
 export const DataExportCallback = (taskId: number, merge: boolean) => {
   axios
     .post(
@@ -26,12 +31,12 @@ export const DataExportCallback = (taskId: number, merge: boolean) => {
         URL.revokeObjectURL(url);
         message.success("导出成功");
       } else {
-        message.error("导出失败");
+        message.error(`导出失败 ${value.data?.message}`);
       }
     })
     .catch((reason) => {
       console.log(reason);
-      message.error("网络错误");
+      message.error(`网络错误 ${reason?.response?.data?.message}`);
     });
 };
 

@@ -1,33 +1,29 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/router";
-import { Button, Form, Input, Select } from "antd";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Form, Input, message, Select } from "antd";
+import { LockOutlined, UserOutlined, LinkOutlined } from "@ant-design/icons";
 import { isValid } from "@/utils/valid";
 import CryptoJS from "crypto-js";
 import axios from "axios";
+import { Option } from "antd/lib/mentions";
 
 const onFinishFailed = (errorInfo: any) => {
   console.log("Failed:", errorInfo);
 };
 
-// register interface
-const RegisterScreen = () => {
-  const router = useRouter();
-  const { Option } = Select;
+interface RegisterProps {
+  setUsername: Dispatch<SetStateAction<string>>;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+}
 
+const Register = (props: RegisterProps) => {
+  const [messageApi, contextHolder] = message.useMessage();
   return (
-    <div
-      style={{
-        position: "fixed",
-        left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)",
-      }}
-    >
-      <h2 style={{ textAlign: "center" }}>注册一个 306 账号</h2>
+    <div>
+      {contextHolder}
       <Form
         name="basic"
-        style={{ maxWidth: 216 }}
+        style={{}}
         initialValues={{ remember: true }}
         onFinish={(values) => {
           const hashPassword = CryptoJS.SHA256(values.password).toString();
@@ -35,23 +31,37 @@ const RegisterScreen = () => {
             .post("/api/user/register", {
               username: values.username,
               password: hashPassword,
+              invitecode: values.invitecode,
               role: values.role,
             })
             .then((response) => {
               console.log(response.data);
-              router.push("/register/success");
+              props.setUsername(values.username);
+              messageApi.open({
+                type: "success",
+                content: "注册成功",
+              });
+              props.setModalOpen(false);
             })
             .catch((error) => {
               if (error.response) {
-                alert(`注册失败，${error.response.data.message}`);
+                messageApi.open({
+                  type: "error",
+                  content: `注册失败，${error.response.data.message}`,
+                });
+                console.log(error.response.data.message);
               } else {
-                alert("网络错误，请稍后重试");
+                messageApi.open({
+                  type: "error",
+                  content: `注册失败，网络错误`,
+                });
               }
             });
         }}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
+        <h2 style={{ textAlign: "center" }}>注册一个 306 账号</h2>
         <p>用户名: </p>
         <Form.Item
           name="username"
@@ -59,7 +69,7 @@ const RegisterScreen = () => {
             { required: true, message: "用户名不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || (isValid(value) && value.length <= 50 && value.length >= 3)) {
+                if (!value || (isValid(value, true) && value.length <= 50 && value.length >= 3)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
@@ -69,11 +79,7 @@ const RegisterScreen = () => {
             }),
           ]}
         >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="用户名"
-            // style={{width:"400px"}}
-          />
+          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
         </Form.Item>
 
         <p>密码: </p>
@@ -83,7 +89,7 @@ const RegisterScreen = () => {
             { required: true, message: "密码不能为空" },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || (isValid(value) && value.length <= 50 && value.length >= 5)) {
+                if (!value || (isValid(value, true) && value.length <= 50 && value.length >= 5)) {
                   return Promise.resolve();
                 }
                 return Promise.reject(
@@ -127,18 +133,47 @@ const RegisterScreen = () => {
           <Select placeholder="选择身份">
             <Option value="demander">需求方</Option>
             <Option value="labeler">标注方</Option>
+            <Option value="administrator">管理员</Option>
           </Select>
+        </Form.Item>
+        <p>邀请码(选择管理员必填):</p>
+        <Form.Item
+          name="invitecode"
+          rules={[
+            { required: false },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (value && getFieldValue("role") === "administrator" && isValid(value, false)) {
+                  return Promise.resolve();
+                }
+                if (value && getFieldValue("role") === "administrator" && !isValid(value, false)) {
+                  return Promise.reject(new Error("管理员邀请码错误"));
+                }
+                if (value && getFieldValue("role") !== "administrator" && isValid(value, true)) {
+                  return Promise.resolve();
+                }
+                if (value && getFieldValue("role") !== "administrator" && !isValid(value, true)) {
+                  return Promise.reject(new Error("普通用户邀请码只包含字母、数字、下划线"));
+                }
+                if (!value && getFieldValue("role") !== "administrator") {
+                  return Promise.resolve();
+                }
+
+                if (!value && getFieldValue("role") === "administrator") {
+                  return Promise.reject(new Error("注册管理员必须包含邀请码"));
+                }
+              },
+            }),
+          ]}
+        >
+          <Input prefix={<LinkOutlined className="site-form-item-icon" />} placeholder="邀请码" />
         </Form.Item>
         <Button type="primary" htmlType="submit" block>
           注册
-        </Button>
-        <p style={{ textAlign: "center" }}>已经有账号?</p>
-        <Button type="primary" htmlType="button" block onClick={() => router.push("/")}>
-          登录
         </Button>
       </Form>
     </div>
   );
 };
 
-export default RegisterScreen;
+export default Register;

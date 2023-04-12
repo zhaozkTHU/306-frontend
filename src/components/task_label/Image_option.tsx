@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Card } from "antd";
+import { Button, Checkbox, message } from "antd";
 import axios from "axios";
 import {
   TaskInfo,
-  TextClassificationProblem,
-  isTextClassificationProblem,
+  ImagesClassificationProblem,
+  isImagesClassificationProblem,
 } from "@/const/interface";
+import MyImage from "../my-img";
 
-const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
+const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0); // keep current pro id
   const [chosenOptions, setchosenOptions] = useState<boolean[]>([]); // current problem's answer
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTextClassificationProblem);
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isImagesClassificationProblem);
+
   const [chosenOptionsAll, setchosenOptionsAll] = useState<Array<boolean[]>>(
     filteredTaskData.map((problem) => problem.options.map(() => false))
   );
   const [loading, setLoading] = useState(false); // using while upload
   const [timer, setTimer] = useState(0);
 
-  const currentProblem = filteredTaskData[currentProblemIndex] as TextClassificationProblem;
+  const currentProblem = filteredTaskData[currentProblemIndex] as ImagesClassificationProblem;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -125,10 +127,10 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         <div>{currentProblem.description}</div>
         <div>{`Timer: ${timer}s`}</div>
       </div>
-      <div>{currentProblem.description}</div>
       {currentProblem.options.map((option, index) => (
         <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-          {option}
+          {/* <Card hoverable style={{ width: 240 }} cover={<img alt="example" src={'https://crowdsourcing-backend-306wins.app.secoder.net'+option} />} /> */}
+          <MyImage url={"/api/image?url=" + option} />
         </Checkbox>
       ))}
       <div>
@@ -141,4 +143,4 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   );
 };
 
-export default TextClassificationComponent;
+export default ImagesClassificationComponent;

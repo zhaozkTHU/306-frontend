@@ -10,13 +10,24 @@ import {
   Col,
   Button,
   Divider,
+  ConfigProvider,
+  Switch,
+  Upload,
 } from "antd";
-import ConfigProvider from "antd/lib/config-provider";
+import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import React from "react";
 import locale from "antd/locale/zh_CN";
+import FileUploader from "./FileUploader";
+import axios from "axios";
 
-// task_manage内部使用
+/**
+ * 任务信息表单组件
+ * @param props.taskInfo 任务信息
+ * @param props.onFinish 表单提交时的回调函数
+ * @returns 任务信息表单组件
+ * @private
+ */
 const TaskInfoForm: React.FC<{
   taskInfo?: TaskInfo;
   onFinish: (info: TaskInfo) => void;
@@ -30,6 +41,14 @@ const TaskInfoForm: React.FC<{
   const onFinish = () => {
     const value = form.getFieldsValue();
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
+    if (value.template === "ImagesClassification") {
+      const task_data: typeof value.task_data = value.task_data.map((v: any) => ({
+        description: v.description,
+        options: v.options.map((x: any) => x.response.url),
+      }));
+      props.onFinish({ ...value, deadline: deadline, task_data });
+      return;
+    }
     props.onFinish({ ...value, deadline: deadline });
   };
 
@@ -41,6 +60,11 @@ const TaskInfoForm: React.FC<{
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
+        initialValues={
+          props.taskInfo
+            ? { ...props.taskInfo, deadline: dayjs(props.taskInfo.deadline) }
+            : undefined
+        }
       >
         <Form.Item
           label="任务标题"
@@ -55,12 +79,17 @@ const TaskInfoForm: React.FC<{
           rules={[{ required: true, message: "请选择任务模板" }]}
         >
           <Radio.Group
+            size="small"
             onChange={(_) => {
               form.setFieldsValue({ ...form.getFieldsValue(), task_data: [] });
             }}
           >
-            <Radio value="TextClassification">文字分类</Radio>
-            <Radio value="ImagesClassification">图片分类</Radio>
+            <Radio.Button value="TextClassification">文字分类</Radio.Button>
+            <Radio.Button value="ImagesClassification">图片分类</Radio.Button>
+            <Radio.Button value="FaceTag">人脸骨骼打点</Radio.Button>
+            <Radio.Button value="ImageFrame">图片框选</Radio.Button>
+            <Radio.Button value="SoundTag">语音标注</Radio.Button>
+            <Radio.Button value="VideoTag">视频标注</Radio.Button>
           </Radio.Group>
         </Form.Item>
         <Form.Item
@@ -98,54 +127,155 @@ const TaskInfoForm: React.FC<{
         </Form.Item>
         <Form.Item label="任务数据" rules={[{ required: true, message: "请输入任务数据" }]}>
           <Form.List name="task_data">
-            {(dataFields, { add: dataAdd, remove: dataRemove }) => {
-              return (
-                <>
-                  <Button onClick={() => dataAdd()} type="primary">
-                    添加题目
-                  </Button>
-                  {dataFields.map((dataField, index) => (
-                    <div key={index}>
-                      <Divider orientation="left">{`题目${index + 1}`}</Divider>
-                      <Row>
-                        <Col>
-                          <Form.Item
-                            key={dataField.key}
-                            name={[dataField.name, "description"]}
-                            rules={[{ required: true, message: "请输入描述" }]}
-                          >
-                            <Input addonBefore="题目描述" />
-                          </Form.Item>
-                        </Col>
-                        <Col>
-                          <Button onClick={() => dataRemove(index)} type="primary" danger>
-                            删除题目
-                          </Button>
-                        </Col>
-                      </Row>
+            {(dataFields, { add: dataAdd, remove: dataRemove }) => (
+              <>
+                <Button
+                  onClick={() => dataAdd()}
+                  type="primary"
+                  disabled={form.getFieldValue("template") === undefined}
+                >
+                  添加题目
+                </Button>
+                {dataFields.map((dataField, index) => (
+                  <div key={index}>
+                    <Divider orientation="left">{`题目${index + 1}`}</Divider>
+                    <Row>
+                      <Col>
+                        <Form.Item
+                          key={dataField.key}
+                          name={[dataField.name, "description"]}
+                          rules={[{ required: true, message: "请输入描述" }]}
+                        >
+                          <Input addonBefore="题目描述" />
+                        </Form.Item>
+                      </Col>
+                      <Col>
+                        <Button onClick={() => dataRemove(index)} type="primary" danger>
+                          删除题目
+                        </Button>
+                      </Col>
+                    </Row>
+                    {form.getFieldValue("template") === "TextClassification" && (
                       <Form.List name={[dataField.name, "options"]}>
-                        {(optFields, { add: optAdd, remove: optRemove }) => {
-                          return (
+                        {(optFields, { add: optAdd, remove: optRemove }) => (
+                          <>
+                            <Button onClick={() => optAdd()}>添加选项</Button>
+                            {optFields.map((optField, optIndex) => (
+                              <div key={optIndex}>
+                                <Row>
+                                  <Col>
+                                    <Form.Item
+                                      {...optField}
+                                      rules={[
+                                        {
+                                          required: true,
+                                          message: "请输入选项",
+                                        },
+                                      ]}
+                                    >
+                                      <Input addonBefore={`选项${optIndex + 1}`} />
+                                    </Form.Item>
+                                  </Col>
+                                  <Col>
+                                    <Button onClick={() => optRemove(optIndex)} danger>
+                                      -
+                                    </Button>
+                                  </Col>
+                                </Row>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </Form.List>
+                    )}
+                    {form.getFieldValue("template") === "ImagesClassification" && (
+                      <Form.Item
+                        key={dataField.key}
+                        name={[dataField.name, "options"]}
+                        rules={[{ required: true, message: "请输入选项" }]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => {
+                          console.log(e);
+                          return e?.fileList;
+                        }}
+                      >
+                        <Upload
+                          action="/api/image"
+                          headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
+                          onRemove={(file) => {
+                            console.log(file);
+                            /** @bug 此处后端实现有问题 */
+                            // axios.delete("/api/image", {
+                            //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                            //   params: { url: file.response.url },
+                            // });
+                          }}
+                        >
+                          <Button icon={<UploadOutlined />} type="primary">
+                            提交文件
+                          </Button>
+                        </Upload>
+                      </Form.Item>
+                    )}
+                    {form.getFieldValue("template") === "FaceTag" && (
+                      <FileUploader
+                        urls={[form.getFieldValue([dataField.name, "faceImageUrl"])]}
+                        onUrlListChange={(newUrlList) => {
+                          form.setFieldValue([dataField.name, "faceImageUrl"], newUrlList[0]);
+                        }}
+                        accept="image/{jpg,png,jpeg}"
+                      />
+                    )}
+                    {form.getFieldValue("template") === "ImageFrame" && (
+                      <FileUploader
+                        urls={[form.getFieldValue([dataField.name, "imageUrl"])]}
+                        onUrlListChange={(newUrlList) => {
+                          form.setFieldValue([dataField.name, "faceImageUrl"], newUrlList[0]);
+                        }}
+                        accept="image/{jpg,png,jpeg}"
+                      />
+                    )}
+                    {form.getFieldValue("template") === "SoundTag" && (
+                      <>
+                        <FileUploader
+                          urls={[form.getFieldValue([dataField.name, "soundUrl"])]}
+                          onUrlListChange={(newUrlList) => {
+                            form.setFieldValue([dataField.name, "soundUrl"], newUrlList[0]);
+                          }}
+                          accept="audio/{mp3,wav}"
+                        />
+                        <Form.List name={[dataField.name, "choice"]}>
+                          {(optFields, { add: optAdd, remove: optRemove }) => (
                             <>
                               <Button onClick={() => optAdd()}>添加选项</Button>
-                              {optFields.map((optField, optIndex) => (
-                                <div key={optIndex}>
+                              {optFields.map((optField, choiceIndex) => (
+                                <div key={choiceIndex}>
                                   <Row>
                                     <Col>
                                       <Form.Item
-                                        {...optField}
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message: "请输入选项",
-                                          },
-                                        ]}
+                                        name={[optField.name, "text"]}
+                                        key={optField.key}
+                                        rules={[{ required: true, message: "请输入文字描述" }]}
                                       >
-                                        <Input addonBefore={`选项${optIndex + 1}`} />
+                                        <Input />
                                       </Form.Item>
                                     </Col>
                                     <Col>
-                                      <Button onClick={() => optRemove(optIndex)} danger>
+                                      <Form.Item
+                                        name={[optField.name, "needInput"]}
+                                        key={optField.key}
+                                        rules={[
+                                          { required: true, message: "请选择是否需要标注方输入" },
+                                        ]}
+                                      >
+                                        <Switch
+                                          checkedChildren="需要用户输入"
+                                          unCheckedChildren="不需用户输入"
+                                        />
+                                      </Form.Item>
+                                    </Col>
+                                    <Col>
+                                      <Button onClick={() => optRemove(choiceIndex)} danger>
                                         -
                                       </Button>
                                     </Col>
@@ -153,14 +283,66 @@ const TaskInfoForm: React.FC<{
                                 </div>
                               ))}
                             </>
-                          );
-                        }}
-                      </Form.List>
-                    </div>
-                  ))}
-                </>
-              );
-            }}
+                          )}
+                        </Form.List>
+                      </>
+                    )}
+                    {form.getFieldValue("template") === "VideoTag" && (
+                      <>
+                        <FileUploader
+                          urls={[form.getFieldValue([dataField.name, "soundUrl"])]}
+                          onUrlListChange={(newUrlList) => {
+                            form.setFieldValue([dataField.name, "soundUrl"], newUrlList[0]);
+                          }}
+                          accept="video/{mp4}"
+                        />
+                        <Form.List name={[dataField.name, "choice"]}>
+                          {(optFields, { add: optAdd, remove: optRemove }) => (
+                            <>
+                              <Button onClick={() => optAdd()}>添加选项</Button>
+                              {optFields.map((optField, choiceIndex) => (
+                                <div key={choiceIndex}>
+                                  <Row>
+                                    <Col>
+                                      <Form.Item
+                                        name={[optField.name, "text"]}
+                                        key={optField.key}
+                                        rules={[{ required: true, message: "请输入文字描述" }]}
+                                      >
+                                        <Input />
+                                      </Form.Item>
+                                    </Col>
+                                    <Col>
+                                      <Form.Item
+                                        name={[optField.name, "needInput"]}
+                                        key={optField.key}
+                                        rules={[
+                                          { required: true, message: "请选择是否需要标注方输入" },
+                                        ]}
+                                      >
+                                        <Switch
+                                          checkedChildren="需要用户输入"
+                                          unCheckedChildren="不需用户输入"
+                                        />
+                                      </Form.Item>
+                                    </Col>
+                                    <Col>
+                                      <Button onClick={() => optRemove(choiceIndex)} danger>
+                                        -
+                                      </Button>
+                                    </Col>
+                                  </Row>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                        </Form.List>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
           </Form.List>
         </Form.Item>
         <Button
