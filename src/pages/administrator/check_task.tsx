@@ -1,25 +1,23 @@
 import { message } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 const AdministratorCheckTask = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const router = useRouter();
   useEffect(() => {
-    if(!router.isReady) {
+    if (!router.isReady) {
       return;
     }
-    axios.get("/api/undistribute",
-      {
+    axios
+      .get("/api/undistribute", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
-    )
+      })
       .then((response) => {
         const newDemanders = response.data.data;
-        
       })
       .catch((error) => {
         if (error.response) {
@@ -30,10 +28,9 @@ const AdministratorCheckTask = () => {
       })
       .finally(() => {
         setRefreshing(false);
-      })
-      ;
-  },[router, refreshing])
-  return <p>AdministratorCheckTask</p>
-}
+      });
+  }, [router, refreshing]);
+  return <p>AdministratorCheckTask</p>;
+};
 
-export default AdministratorCheckTask
+export default AdministratorCheckTask;

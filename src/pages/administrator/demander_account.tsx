@@ -1,5 +1,5 @@
 const AdministratorDemanderAccount = () => {
-  return <p>AdministratorDemanderAccount</p>
-}
+  return <p>AdministratorDemanderAccount</p>;
+};
 
-export default AdministratorDemanderAccount
+export default AdministratorDemanderAccount;

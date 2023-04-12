@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import DemanderTaskBlock, { DemanderTaskBlockProps } from "@/components/demander_task_block/demander-task-block";
+import DemanderTaskBlock, {
+  DemanderTaskBlockProps,
+} from "@/components/demander_task_block/demander-task-block";
 import { Empty } from "antd";
 
 const DemanderAllTask = () => {
@@ -14,33 +16,33 @@ const DemanderAllTask = () => {
       .get("/api/task", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }
+        },
       })
       .then((response) => {
         const newTasks = response.data.demander_tasks.map((task: any) => {
-          return { ...task};
+          return { ...task };
         });
         setTasks(newTasks);
       })
       .catch((err) => {
-        console.log(err)
-      })
-      setRefreshing(false)
-    }, [router, refreshing])
-  
-    return refreshing ? (
-      <p>Loading...</p>
-    ) : (
-      <>
-        {tasks.length ? (
-          tasks.map((task, idx) => (
-            <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing} />
-          ))
-        ) : (
-          <Empty description="暂无任务" />
-        )}
-      </>
-    );
+        console.log(err);
+      });
+    setRefreshing(false);
+  }, [router, refreshing]);
+
+  return refreshing ? (
+    <p>Loading...</p>
+  ) : (
+    <>
+      {tasks.length ? (
+        tasks.map((task, idx) => (
+          <DemanderTaskBlock {...task} key={idx} setRefreshing={setRefreshing} />
+        ))
+      ) : (
+        <Empty description="暂无任务" />
+      )}
+    </>
+  );
 };
 
 export default DemanderAllTask;

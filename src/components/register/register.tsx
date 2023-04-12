@@ -12,8 +12,8 @@ const onFinishFailed = (errorInfo: any) => {
 };
 
 interface RegisterProps {
-  setUsername: Dispatch<SetStateAction<string>>,
-  setModalOpen: Dispatch<SetStateAction<boolean>>
+  setUsername: Dispatch<SetStateAction<string>>;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const Register = (props: RegisterProps) => {
@@ -38,21 +38,21 @@ const Register = (props: RegisterProps) => {
               console.log(response.data);
               props.setUsername(values.username);
               messageApi.open({
-                type: 'success',
-                content: '注册成功',
+                type: "success",
+                content: "注册成功",
               });
-              props.setModalOpen(false)
+              props.setModalOpen(false);
             })
             .catch((error) => {
               if (error.response) {
                 messageApi.open({
-                  type: 'error',
+                  type: "error",
                   content: `注册失败，${error.response.data.message}`,
                 });
-                console.log(error.response.data.message)
+                console.log(error.response.data.message);
               } else {
                 messageApi.open({
-                  type: 'error',
+                  type: "error",
                   content: `注册失败，网络错误`,
                 });
               }
@@ -79,10 +79,7 @@ const Register = (props: RegisterProps) => {
             }),
           ]}
         >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="用户名"
-          />
+          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
         </Form.Item>
 
         <p>密码: </p>
@@ -143,49 +140,40 @@ const Register = (props: RegisterProps) => {
         <Form.Item
           name="invitecode"
           rules={[
-            { required: false},
+            { required: false },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if(value&&getFieldValue("role")==="administrator"&&isValid(value, false)) {
+                if (value && getFieldValue("role") === "administrator" && isValid(value, false)) {
                   return Promise.resolve();
                 }
-                if(value&&getFieldValue("role")==="administrator"&&!isValid(value, false)) {
-                  return Promise.reject(
-                    new Error("管理员邀请码错误")
-                  );
+                if (value && getFieldValue("role") === "administrator" && !isValid(value, false)) {
+                  return Promise.reject(new Error("管理员邀请码错误"));
                 }
-                if(value&&getFieldValue("role")!=="administrator"&&isValid(value, true)) {
+                if (value && getFieldValue("role") !== "administrator" && isValid(value, true)) {
                   return Promise.resolve();
                 }
-                if(value&&getFieldValue("role")!=="administrator"&&!isValid(value, true)) {
-                  return Promise.reject(
-                    new Error("普通用户邀请码只包含字母、数字、下划线")
-                  );
+                if (value && getFieldValue("role") !== "administrator" && !isValid(value, true)) {
+                  return Promise.reject(new Error("普通用户邀请码只包含字母、数字、下划线"));
                 }
-                if (!value&&getFieldValue("role")!=="administrator") {
+                if (!value && getFieldValue("role") !== "administrator") {
                   return Promise.resolve();
                 }
-                
-                if(!value&&getFieldValue("role")==="administrator") {
-                  return Promise.reject(
-                    new Error("注册管理员必须包含邀请码")
-                  );
+
+                if (!value && getFieldValue("role") === "administrator") {
+                  return Promise.reject(new Error("注册管理员必须包含邀请码"));
                 }
               },
             }),
           ]}
         >
-          <Input
-            prefix={<LinkOutlined className="site-form-item-icon" />}
-            placeholder="邀请码"
-          />
+          <Input prefix={<LinkOutlined className="site-form-item-icon" />} placeholder="邀请码" />
         </Form.Item>
         <Button type="primary" htmlType="submit" block>
           注册
         </Button>
       </Form>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
