@@ -18,14 +18,14 @@ export interface ImagesClassificationProblem {
 
 export interface FaceTagProblem {
   description: string;
-  faceImageUrl: string;
+  url: string;
   /** 点坐标数组 */
   data?: [number, number][];
 }
 
 export interface ImageFramePromblem {
   description: string;
-  imageUrl: string;
+  url: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
     leftdown: [number, number];
@@ -36,9 +36,9 @@ export interface ImageFramePromblem {
 /**
  * @see 文档中标注示例
  */
-export interface SoundTagProblem {
+export interface TagProblem {
   description: string;
-  soundUrl: string;
+  url: string;
   /** 有些选项需要标注方填写 */
   choice: {
     text: string;
@@ -48,15 +48,6 @@ export interface SoundTagProblem {
     choiceIndex: number;
     input?: string;
   };
-}
-
-/**
- * @interface 修改自`SoundTagProblem`，将`soundUrl`改为`videoUrl`
- * @see `SoundTagProblem`
- */
-export interface VideoTagProblem extends Omit<SoundTagProblem, "soundUrl"> {
-  description: string;
-  videoUrl: string;
 }
 
 export interface TaskInfo {
@@ -80,8 +71,7 @@ export interface TaskInfo {
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
     | ImageFramePromblem[]
-    | SoundTagProblem[]
-    | VideoTagProblem[];
+    | TagProblem[];
 }
 
 export interface TextClassificationData {
@@ -102,7 +92,7 @@ export function isImagesClassificationProblem(data: any): data is TextClassifica
     (data.chosen === undefined || Array.isArray(data.chosen))
   );
 }
-export function isSoundTagProblem(data: any): data is SoundTagProblem {
+export function isSoundTagProblem(data: any): data is TagProblem {
   return (
     typeof data.soundUrl === "string" &&
     typeof data.description === "string" &&
@@ -115,7 +105,7 @@ export function isSoundTagProblem(data: any): data is SoundTagProblem {
         (data.data.input === undefined || typeof data.data.input === "string")))
   );
 }
-export function isVideoTagProblem(data: any): data is VideoTagProblem {
+export function isVideoTagProblem(data: any): data is TagProblem {
   return (
     typeof data.videoUrl === "string" &&
     typeof data.description === "string" &&
