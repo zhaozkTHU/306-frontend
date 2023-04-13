@@ -2,9 +2,8 @@ import {
   FaceTagProblem,
   ImageFramePromblem,
   ImagesClassificationProblem,
-  SoundTagProblem,
+  TagProblem,
   TaskInfo,
-  VideoTagProblem,
 } from "@/const/interface";
 import {
   Form,
@@ -24,7 +23,7 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useState } from "react";
 import locale from "antd/locale/zh_CN";
 import axios from "axios";
 
@@ -35,15 +34,16 @@ const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps =
     const isValid = file.type.startsWith(fileType);
     if (!isValid) {
       message.error(`${file.name} 文件格式错误`);
+      return Upload.LIST_IGNORE;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       message.error(`${file.name} 文件大小超过2MB`);
+      return Upload.LIST_IGNORE;
     }
-    return isLt2M || isValid || Upload.LIST_IGNORE;
+    return true;
   },
   onRemove: async (file) => {
-    console.log(file);
     /** @bug 此处后端实现有问题 */
     await axios.delete("/api/image", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -64,6 +64,7 @@ const TaskInfoForm: React.FC<{
   taskInfo?: TaskInfo;
   onFinish: (info: TaskInfo) => void;
 }> = (props) => {
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<TaskInfo>();
   if (props.taskInfo !== undefined) {
     form.setFieldsValue(props.taskInfo);
@@ -71,7 +72,9 @@ const TaskInfoForm: React.FC<{
   }
 
   const onFinish = () => {
+    setLoading(true);
     const value = form.getFieldsValue();
+    console.log(value);
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
     let task_data: typeof value.task_data;
     switch (value.template) {
@@ -85,14 +88,14 @@ const TaskInfoForm: React.FC<{
       case "FaceTag": {
         task_data = (value.task_data as FaceTagProblem[]).map((v) => ({
           ...v,
-          faceImageUrl: (v.faceImageUrl[0] as any)?.response?.url,
+          url: (v.url[0] as any)?.response?.url,
         }));
         break;
       }
       case "ImageFrame": {
         task_data = (value.task_data as ImageFramePromblem[]).map((v) => ({
           ...v,
-          imageUrl: (v.imageUrl[0] as any)?.response?.url,
+          url: (v.url[0] as any)?.response?.url,
         }));
         break;
       }
@@ -101,21 +104,22 @@ const TaskInfoForm: React.FC<{
         break;
       }
       case "SoundTag": {
-        task_data = (value.task_data as SoundTagProblem[]).map((v) => ({
+        task_data = (value.task_data as TagProblem[]).map((v) => ({
           ...v,
-          soundUrl: (v.soundUrl[0] as any)?.response?.url,
+          url: (v.url[0] as any)?.response?.url,
         }));
         break;
       }
       case "VideoTag": {
-        task_data = (value.task_data as VideoTagProblem[]).map((v) => ({
+        task_data = (value.task_data as TagProblem[]).map((v) => ({
           ...v,
-          videoUrl: (v.videoUrl[0] as any)?.response?.url,
+          url: (v.url[0] as any)?.response?.url,
         }));
         break;
       }
     }
     props.onFinish({ ...value, deadline, task_data });
+    setLoading(false);
   };
 
   return (
@@ -273,7 +277,7 @@ const TaskInfoForm: React.FC<{
                     {form.getFieldValue("template") === "FaceTag" && (
                       <Form.Item
                         key={dataField.key}
-                        name={[dataField.name, "faceImageUrl"]}
+                        name={[dataField.name, "url"]}
                         rules={[{ required: true, message: "请上传文件" }]}
                         valuePropName="fileList"
                         getValueFromEvent={(e) => {
@@ -288,7 +292,7 @@ const TaskInfoForm: React.FC<{
                     {form.getFieldValue("template") === "ImageFrame" && (
                       <Form.Item
                         key={dataField.key}
-                        name={[dataField.name, "imageUrl"]}
+                        name={[dataField.name, "url"]}
                         rules={[{ required: true, message: "请上传文件" }]}
                         valuePropName="fileList"
                         getValueFromEvent={(e) => {
@@ -304,7 +308,7 @@ const TaskInfoForm: React.FC<{
                       <>
                         <Form.Item
                           key={dataField.key}
-                          name={[dataField.name, "imageUrl"]}
+                          name={[dataField.name, "url"]}
                           rules={[{ required: true, message: "请上传文件" }]}
                           valuePropName="fileList"
                           getValueFromEvent={(e) => e?.fileList}
@@ -360,7 +364,7 @@ const TaskInfoForm: React.FC<{
                       <>
                         <Form.Item
                           key={dataField.key}
-                          name={[dataField.name, "videoUrl"]}
+                          name={[dataField.name, "url"]}
                           rules={[{ required: true, message: "请上传文件" }]}
                           valuePropName="fileList"
                           getValueFromEvent={(e) => e?.fileList}
@@ -420,6 +424,7 @@ const TaskInfoForm: React.FC<{
         </Form.Item>
         <Button
           type="primary"
+          loading={loading}
           onClick={() => {
             form.submit();
           }}
