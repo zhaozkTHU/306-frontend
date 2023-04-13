@@ -3,19 +3,19 @@ import { Button, Radio, Input, message, Space, Divider } from "antd";
 import axios from "axios";
 import {
   TaskInfo,
-  SoundTagProblem,
-  VideoTagProblem,
+  TagProblem,
+  TagProblem,
   isSoundTagProblem,
   isVideoTagProblem,
 } from "@/const/interface";
 import MyAudio from "../my-audio";
 import MyVideo from "../my-video";
 
-function hasSoundUrl(problem: SoundTagProblem | VideoTagProblem): problem is SoundTagProblem {
-  return (problem as SoundTagProblem).soundUrl !== undefined;
+function hasSoundUrl(problem: TagProblem | TagProblem): problem is TagProblem {
+  return (problem as TagProblem).url !== undefined;
 }
-function hasVideoUrl(problem: SoundTagProblem | VideoTagProblem): problem is VideoTagProblem {
-  return (problem as VideoTagProblem).videoUrl !== undefined;
+function hasVideoUrl(problem: TagProblem | TagProblem): problem is TagProblem {
+  return (problem as TagProblem).url !== undefined;
 }
 
 const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
@@ -37,8 +37,8 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const currentProblem =
     taskInfo.template === "SoundTag"
-      ? (filteredTaskData[currentProblemIndex] as SoundTagProblem)
-      : (filteredTaskData[currentProblemIndex] as VideoTagProblem);
+      ? (filteredTaskData[currentProblemIndex] as TagProblem)
+      : (filteredTaskData[currentProblemIndex] as TagProblem);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -133,7 +133,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
           <div>{currentProblem.description}</div>
           <div>{`Timer: ${timer}s`}</div>
         </div>
-        <MyAudio url={"/api/audio?url=" + currentProblem.soundUrl} controls />
+        <MyAudio url={"/api/audio?url=" + currentProblem.url} controls />
         <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
           {currentProblem.choice.map((option, index) => (
             <Radio key={index} value={index}>
@@ -167,7 +167,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
           <div>{`Timer: ${timer}s`}</div>
         </div>
         <Divider />
-        <MyVideo url={"/api/video?url=" + currentProblem.videoUrl} controls />
+        <MyVideo url={"/api/video?url=" + currentProblem.url} controls />
         <Divider />
         <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
           {currentProblem.choice.map((option, index) => (
