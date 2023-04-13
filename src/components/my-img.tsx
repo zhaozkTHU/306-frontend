@@ -1,10 +1,8 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Image } from "antd";
-interface MyImageProps {
+import { Image, ImageProps } from "antd";
+interface MyImageProps extends Omit<ImageProps, "src"> {
   url: string;
-  style?: any;
-  alt?: string;
 }
 
 const MyImage = (props: MyImageProps) => {
@@ -12,8 +10,9 @@ const MyImage = (props: MyImageProps) => {
 
   useEffect(() => {
     axios
-      .get(`${props.url}`, {
+      .get("/api/image", {
         responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
+        params: { url: props.url },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -26,11 +25,9 @@ const MyImage = (props: MyImageProps) => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [props.url]);
 
-  return (
-    <Image src={imageUrl} alt={props.alt} style={{maxWidth: '100%', minWidth: '100%'}}/>
-  );
-}
+  return <Image src={imageUrl} {...props} alt={props.alt}/>;
+};
 
 export default MyImage;
