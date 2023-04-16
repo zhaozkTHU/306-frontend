@@ -1,36 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Button, Radio, Input, message, Divider } from "antd";
 import axios from "axios";
-import {
-  TaskInfo,
-  TagProblem,
-  isSoundTagProblem,
-  isVideoTagProblem,
-} from "@/const/interface";
+import { TaskInfo, TagProblem, isTagProblem } from "@/const/interface";
 import MyAudio from "../my-audio";
 import MyVideo from "../my-video";
-
-function hasSoundUrl(problem: TagProblem | TagProblem): problem is TagProblem {
-  return (problem as TagProblem).url !== undefined;
-}
-function hasVideoUrl(problem: TagProblem | TagProblem): problem is TagProblem {
-  return (problem as TagProblem).url !== undefined;
-}
 
 const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState<string | null>(null);
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter((item) => {
-    if (taskInfo.template === "SoundTag") {
-      return isSoundTagProblem(item);
-    } else if (taskInfo.template === "VideoTag") {
-      return isVideoTagProblem(item);
-    }
-  });
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTagProblem);
   const [chosenOptionsAll, setChosenOptionsAll] = useState<
     Array<{ choiceIndex: number; input?: string }>
   >(filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 }));
+  const [savedProblems, setSavedProblems] = useState<boolean[]>(
+    new Array(filteredTaskData.length).fill(false)
+  );
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
 
@@ -62,6 +47,11 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleSave = () => {
+    const firstSaveKey = `firstSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
+    if (!localStorage.getItem(firstSaveKey)) {
+      localStorage.setItem(firstSaveKey, JSON.stringify(timer));
+    }
+
     if (timer < taskInfo.time) {
       message.warning("标记太快了！");
       return;
@@ -76,11 +66,16 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleUpload = async () => {
+    const allSaved = savedProblems.every((problemSaved) => problemSaved);
+    if (!allSaved) {
+      message.warning("未保存所有题目答案");
+      return;
+    }
     const tag_data = {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
-        soundUrl: problem.soundUrl,
+        soundUrl: problem.url,
         description: problem.description,
         choice: problem.choice,
         data: chosenOptionsAll[problemIndex],
@@ -125,7 +120,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  if (taskInfo.template == "SoundTag" && hasSoundUrl(currentProblem)) {
+  if (taskInfo.template == "SoundTag") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -158,12 +153,18 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
       </div>
     );
-  } else if (taskInfo.template == "VideoTag" && hasVideoUrl(currentProblem)) {
+  } else if (taskInfo.template == "VideoTag") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>{currentProblem.description}</div>
-          <div>{`Timer: ${timer}s`}</div>
+          <div
+          style={{
+            color: timer < taskInfo.time ? "red" : "green",
+          }}
+        >
+          {`Timer: ${timer}s`}
+        </div>
         </div>
         <Divider />
         <MyVideo url={"/api/video?url=" + currentProblem.url} controls />

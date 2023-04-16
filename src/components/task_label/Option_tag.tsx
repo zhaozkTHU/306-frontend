@@ -14,6 +14,9 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [chosenOptionsAll, setchosenOptionsAll] = useState<Array<boolean[]>>(
     filteredTaskData.map((problem) => problem.options.map(() => false))
   );
+  const [savedProblems, setSavedProblems] = useState<boolean[]>(
+    new Array(filteredTaskData.length).fill(false)
+  );
   const [loading, setLoading] = useState(false); // using while upload
   const [timer, setTimer] = useState(0);
 
@@ -45,6 +48,10 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleSave = () => {
+    const firstSaveKey = `firstSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
+    if (!localStorage.getItem(firstSaveKey)) {
+      localStorage.setItem(firstSaveKey, JSON.stringify(timer));
+    }
     if (timer < taskInfo.time) {
       message.warning("tagging too fast!");
       return;
@@ -60,10 +67,20 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
     newTaskData[currentProblemIndex].chosen = modifiedchosenOptions;
     setchosenOptionsAll(newTaskData.map((problem) => problem.chosen || []));
+    const newSavedProblems = [...savedProblems];
+    newSavedProblems[currentProblemIndex] = true;
+    setSavedProblems(newSavedProblems);
+
     message.success("Saved!");
   };
 
   const handleUpload = async () => {
+    const allSaved = savedProblems.every((problemSaved) => problemSaved);
+    if (!allSaved) {
+      message.warning("未保存所有题目答案");
+      return;
+    }
+
     const modifiedchosenOptionsAll = chosenOptionsAll.map((problem) =>
       problem.map((option) => (option === null ? false : option))
     );
@@ -123,7 +140,13 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>{currentProblem.description}</div>
-        <div>{`Timer: ${timer}s`}</div>
+        <div
+          style={{
+            color: timer < taskInfo.time ? "red" : "green",
+          }}
+        >
+          {`Timer: ${timer}s`}
+        </div>
       </div>
       <div>{currentProblem.description}</div>
       {currentProblem.options.map((option, index) => (
