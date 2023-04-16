@@ -1,4 +1,3 @@
-import { message } from "antd";
 import axios from "axios";
 
 /**
@@ -14,8 +13,7 @@ const DataExportCallback = async (taskId: number, merge: boolean) => {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       params: { task_id: taskId, merge },
     });
-  }
-  catch (reason) {
+  } catch (reason) {
     throw new Error((reason as any)?.data?.message);
   }
   if (value.data.code === 0) {
