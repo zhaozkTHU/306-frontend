@@ -27,7 +27,7 @@ const MyImage = (props: MyImageProps) => {
       });
   }, [props.url]);
 
-  return <Image src={imageUrl} {...props} alt={props.alt}/>;
+  return <Image src={imageUrl} {...props} alt={props.alt} />;
 };
 
 export default MyImage;

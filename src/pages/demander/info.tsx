@@ -28,7 +28,7 @@ const DemanderInfo = () => {
         console.log(err);
       });
     setRefreshing(false);
-  });
+  }, []);
   return refreshing ? (
     <p>loading</p>
   ) : (
