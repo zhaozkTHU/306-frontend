@@ -78,6 +78,13 @@ export interface TextClassificationData {
   label_data: boolean[][];
 }
 
+export function isClassificationProblem(data: any): data is TextClassificationProblem {
+  return (
+    typeof data.description === "string" &&
+    Array.isArray(data.options) &&
+    (data.chosen === undefined || Array.isArray(data.chosen))
+  );
+}
 export function isTextClassificationProblem(data: any): data is TextClassificationProblem {
   return (
     typeof data.description === "string" &&

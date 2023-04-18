@@ -120,7 +120,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  if (taskInfo.template == "SoundTag") {
+  if (taskInfo.template === "SoundTag") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -153,7 +153,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
       </div>
     );
-  } else if (taskInfo.template == "VideoTag") {
+  } else if (taskInfo.template === "VideoTag") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -195,7 +195,9 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
       </div>
     );
   } else {
-    return <>error type!</>;
+    return (
+      <div>Error: Invalid task type!</div>
+    );
   }
 };
 

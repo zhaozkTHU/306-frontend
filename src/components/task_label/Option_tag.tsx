@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Card } from "antd";
+import { Button, Checkbox, message } from "antd";
 import axios from "axios";
 import {
   TaskInfo,
   TextClassificationProblem,
-  isTextClassificationProblem,
+  isClassificationProblem,
 } from "@/const/interface";
+import MyImage from "../my-img";
+
+interface ClassificationProblem {
+  description: string;
+  options: string[];
+  chosen?: boolean[];
+}
 
 const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0); // keep current pro id
   const [chosenOptions, setchosenOptions] = useState<boolean[]>([]); // current problem's answer
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTextClassificationProblem);
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isClassificationProblem);
   const [chosenOptionsAll, setchosenOptionsAll] = useState<Array<boolean[]>>(
     filteredTaskData.map((problem) => problem.options.map(() => false))
   );
@@ -20,7 +27,7 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [loading, setLoading] = useState(false); // using while upload
   const [timer, setTimer] = useState(0);
 
-  const currentProblem = filteredTaskData[currentProblemIndex] as TextClassificationProblem;
+  const currentProblem = filteredTaskData[currentProblemIndex] as ClassificationProblem;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,7 +47,6 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     setchosenOptionsAll((prevState) => {
       const newState = [...prevState];
       newState[currentProblemIndex][index] = e.target.checked;
-      // newState[currentProblemIndex][index] = e.target.checked !== null ? e.target.checked : false;  // incase of null instwad of false
       return newState.map((problemOptions) =>
         problemOptions.map((option) => (option === null ? false : option))
       );
@@ -136,32 +142,64 @@ const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+  if (taskInfo.template === "TextClassification") {
+    return (
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div>{currentProblem.description}</div>
+          <div
+            style={{
+              color: timer < taskInfo.time ? "red" : "green",
+            }}
+          >
+            {`Timer: ${timer}s`}
+          </div>
+        </div>
         <div>{currentProblem.description}</div>
-        <div
-          style={{
-            color: timer < taskInfo.time ? "red" : "green",
-          }}
-        >
-          {`Timer: ${timer}s`}
+        {currentProblem.options.map((option, index) => (
+          <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
+            {option}
+          </Checkbox>
+        ))}
+        <div>
+          <Button onClick={handlePrevious}>Previous</Button>
+          <Button onClick={handleNext}>Next</Button>
+          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleUpload}>Upload</Button>
         </div>
       </div>
-      <div>{currentProblem.description}</div>
-      {currentProblem.options.map((option, index) => (
-        <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-          {option}
-        </Checkbox>
-      ))}
+    );
+  } else if (taskInfo.template === "ImagesClassification") {
+    return (
       <div>
-        <Button onClick={handlePrevious}>Previous</Button>
-        <Button onClick={handleNext}>Next</Button>
-        <Button onClick={handleSave}>Save</Button>
-        <Button onClick={handleUpload}>Upload</Button>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div>{currentProblem.description}</div>
+          <div
+            style={{
+              color: timer < taskInfo.time ? "red" : "green",
+            }}
+          >
+            {`Timer: ${timer}s`}
+          </div>
+        </div>
+        {currentProblem.options.map((option, index) => (
+          <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
+            <MyImage url={"/api/image?url=" + option} />
+          </Checkbox>
+        ))}
+        <div>
+          <Button onClick={handlePrevious}>Previous</Button>
+          <Button onClick={handleNext}>Next</Button>
+          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleUpload}>Upload</Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div>Error: Invalid task type!</div>
+    );
+  }
 };
 
 export default TextClassificationComponent;

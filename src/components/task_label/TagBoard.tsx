@@ -20,7 +20,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
   if (!task) {
     return <div></div>;
   }
-  if (task.template === "TextClassification") {
+  if (task.template === "TextClassification" || task.template === "ImagesClassification") {
     return (
       <>
         <Button type="primary" onClick={showModal}>
@@ -28,27 +28,6 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         </Button>
         <Modal title="Text Classification" open={open} onCancel={handleCancel} footer={null}>
           <TextClassificationComponent
-            title={task.title}
-            create_at={task.create_at}
-            deadline={task.deadline}
-            template={task.template}
-            reward={task.reward}
-            time={task.time}
-            labeler_number={task.labeler_number}
-            task_id={task.task_id}
-            task_data={task.task_data}
-          />
-        </Modal>
-      </>
-    );
-  } else if (task.template === "ImagesClassification") {
-    return (
-      <>
-        <Button type="primary" onClick={showModal}>
-          tagging
-        </Button>
-        <Modal title="Text Classification" open={open} onCancel={handleCancel} footer={null}>
-          <ImagesClassificationComponent
             title={task.title}
             create_at={task.create_at}
             deadline={task.deadline}
