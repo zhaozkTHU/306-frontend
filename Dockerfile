@@ -1,4 +1,3 @@
-# TODO Start: [Student] Complete Dockerfile
 # Stage 0: build
 FROM node:18 AS build
 
@@ -26,4 +25,3 @@ COPY --from=build opt/frontend/out ./dist
 COPY /nginx/default.conf /etc/nginx/conf.d
 
 EXPOSE 80
-# TODO End
