@@ -29,7 +29,7 @@ const MyAudio = (props: MyAudioProps) => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [props.url]);
 
   return (
     <Paragraph style={props.style}>
