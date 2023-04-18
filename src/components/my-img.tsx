@@ -28,9 +28,8 @@ const MyImage = (props: MyImageProps) => {
         console.error(error);
       });
   }, []);
-
   return (
-    <Image src={imageUrl} alt={props.alt} style={{maxWidth: '100%', minWidth: '100%'}}/>
+    <Image src={imageUrl} alt={"图片加载失败"} style={{maxWidth: '100%', minWidth: '100%'}}/>
   );
 }
 
