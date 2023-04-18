@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Table, Button, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import axios from "axios";
 
-interface TaskListProps {
-  requestType: string;
-}
-const TaskList: React.FC<TaskListProps> = (requestTypeProps) => {
+const DistributeList: React.FC = () => {
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(false);
 
   const fetchTasks = () => {
+    if (isMounted.current) {
+      return;
+    }
     const token = localStorage.getItem("token");
     setLoading(true);
     axios
-      .get(`/api/${requestTypeProps.requestType}`, { headers: { Authorization: `Bearer ${token}` } })
+      .get("/api/distribute", { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         const tasks_json = response.data;
         const task: TaskInfo[] = [
@@ -108,4 +109,4 @@ const TaskTable: React.FC<TaskTableProps> = ({ tasks, columns, loading }) => {
   return <Table dataSource={tasks} columns={columns} loading={loading} rowKey="task_id" />;
 };
 
-export default TaskList;
+export default DistributeList;
