@@ -1,7 +1,7 @@
-import TaskList from "@/components/task_label/Tasklist";
+import DistributeList from "@/components/task_label/Distributelist";
 
 const LabelerNewTask = () => {
-  return <TaskList />;
+  return <DistributeList />;
 };
 
 export default LabelerNewTask;

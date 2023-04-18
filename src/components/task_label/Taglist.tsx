@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Modal, message } from "antd";
+import { Button, Table, message } from "antd";
 import { TaskInfo } from "@/const/interface";
 import TagBoard from "./TagBoard";
 import axios from "axios";
