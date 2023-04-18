@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Button, Modal, message } from "antd";
+import React, { useState } from "react";
+import { Button, Modal } from "antd";
 import { TaskInfo } from "@/const/interface";
 import ClassificationComponent from "@/components/task_label/Option_tag";
 import SVTagComponent from "@/components/task_label/Audio_Video_tag";

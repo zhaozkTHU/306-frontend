@@ -3,7 +3,6 @@ import { Button, Checkbox, message, Modal } from "antd";
 import axios from "axios";
 import {
   TaskInfo,
-  TextClassificationProblem,
   isClassificationProblem,
 } from "@/const/interface";
 import MyImage from "../my-img";
@@ -110,7 +109,9 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       title: "Confirm Upload",
       content: "Are you sure you want to upload the answers?",
       onOk: handleConfirmedUpload,
-      onCancel: () => {},
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
     });
   };
   const handleConfirmedUpload = async () => {
@@ -166,7 +167,9 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         title: "Unsaved Changes",
         content: "You have unsaved changes. Are you sure you want to switch questions?",
         onOk: handleConfirmedPrevious,
-        onCancel: () => {},
+        onCancel: () => {
+          Modal.destroyAll(); // 关闭所有弹窗
+        },
       });
     } else {
       handleConfirmedPrevious();
@@ -188,7 +191,9 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         title: "Unsaved Changes",
         content: "You have unsaved changes. Are you sure you want to switch questions?",
         onOk: handleConfirmedNext,
-        onCancel: () => {},
+        onCancel: () => {
+          Modal.destroyAll(); // 关闭所有弹窗
+        },
       });
     } else {
       handleConfirmedNext();
