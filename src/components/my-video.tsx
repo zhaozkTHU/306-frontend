@@ -30,7 +30,7 @@ const MyVideo = (props: MyVideoProps) => {
       .catch((error) => {
         console.error(error);
       });
-  }, [props.url]);
+  }, []);
 
   return (
     <Paragraph style={props.style}>

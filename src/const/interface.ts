@@ -78,13 +78,6 @@ export interface TextClassificationData {
   label_data: boolean[][];
 }
 
-export function isClassificationProblem(data: any): data is TextClassificationProblem {
-  return (
-    typeof data.description === "string" &&
-    Array.isArray(data.options) &&
-    (data.chosen === undefined || Array.isArray(data.chosen))
-  );
-}
 export function isTextClassificationProblem(data: any): data is TextClassificationProblem {
   return (
     typeof data.description === "string" &&
@@ -99,9 +92,22 @@ export function isImagesClassificationProblem(data: any): data is TextClassifica
     (data.chosen === undefined || Array.isArray(data.chosen))
   );
 }
-export function isTagProblem(data: any): data is TagProblem {
+export function isSoundTagProblem(data: any): data is TagProblem {
   return (
     typeof data.soundUrl === "string" &&
+    typeof data.description === "string" &&
+    Array.isArray(data.choice) &&
+    data.choice.every((c: any) => {
+      return typeof c.text === "string" && typeof c.needInput === "boolean";
+    }) &&
+    (data.data === undefined ||
+      (typeof data.data.choiceIndex === "number" &&
+        (data.data.input === undefined || typeof data.data.input === "string")))
+  );
+}
+export function isVideoTagProblem(data: any): data is TagProblem {
+  return (
+    typeof data.videoUrl === "string" &&
     typeof data.description === "string" &&
     Array.isArray(data.choice) &&
     data.choice.every((c: any) => {

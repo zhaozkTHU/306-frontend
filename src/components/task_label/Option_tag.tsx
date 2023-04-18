@@ -1,36 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal } from "antd";
+import { Button, Checkbox, message, Card } from "antd";
 import axios from "axios";
 import {
   TaskInfo,
-  isClassificationProblem,
+  TextClassificationProblem,
+  isTextClassificationProblem,
 } from "@/const/interface";
-import MyImage from "../my-img";
 
-interface ClassificationProblem {
-  description: string;
-  options: string[];
-  chosen?: boolean[];
-}
-
-const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
+const TextClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0); // keep current pro id
   const [chosenOptions, setchosenOptions] = useState<boolean[]>([]); // current problem's answer
-  const [uploadCompleted, setUploadCompleted] = useState(false);
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isClassificationProblem);
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTextClassificationProblem);
   const [chosenOptionsAll, setchosenOptionsAll] = useState<Array<boolean[]>>(
     filteredTaskData.map((problem) => problem.options.map(() => false))
   );
-  const [savedProblems, setSavedProblems] = useState<boolean[]>(
-    new Array(filteredTaskData.length).fill(false)
-  );
   const [loading, setLoading] = useState(false); // using while upload
   const [timer, setTimer] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
 
-  const currentProblem = filteredTaskData[currentProblemIndex] as ClassificationProblem;
+  const currentProblem = filteredTaskData[currentProblemIndex] as TextClassificationProblem;
 
-  // single problem count
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prevTimer) => prevTimer + 1);
@@ -39,29 +27,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       clearInterval(interval);
     };
   }, [currentProblemIndex]);
-  // task ddl count
-  useEffect(() => {
-    const countdown = setInterval(() => {
-      const remainingTime = taskInfo.deadline - Date.now();
-      setTimeRemaining(remainingTime);
-      if (remainingTime <= 0) {
-        clearInterval(countdown);
-        message.warning("Deadline reached!");
-      }
-    }, 1000);
-    return () => {
-      clearInterval(countdown);
-    };
-  }, [taskInfo.deadline]);
 
-  const isCurrentProblemSaved = () => savedProblems[currentProblemIndex];
-  const formatTimeRemaining = (milliseconds:number) => {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours}h ${minutes}m ${seconds}s`;
-  };
   const handleCheckboxChange = (index: number) => (e: any) => {
     setchosenOptions((prevState) => {
       const newState = [...prevState];
@@ -71,6 +37,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     setchosenOptionsAll((prevState) => {
       const newState = [...prevState];
       newState[currentProblemIndex][index] = e.target.checked;
+      // newState[currentProblemIndex][index] = e.target.checked !== null ? e.target.checked : false;  // incase of null instwad of false
       return newState.map((problemOptions) =>
         problemOptions.map((option) => (option === null ? false : option))
       );
@@ -78,10 +45,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleSave = () => {
-    const firstSaveKey = `firstSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
-    if (!localStorage.getItem(firstSaveKey)) {
-      localStorage.setItem(firstSaveKey, JSON.stringify(timer));
-    }
     if (timer < taskInfo.time) {
       message.warning("tagging too fast!");
       return;
@@ -97,34 +60,10 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
     newTaskData[currentProblemIndex].chosen = modifiedchosenOptions;
     setchosenOptionsAll(newTaskData.map((problem) => problem.chosen || []));
-    const newSavedProblems = [...savedProblems];
-    newSavedProblems[currentProblemIndex] = true;
-    setSavedProblems(newSavedProblems);
-
     message.success("Saved!");
   };
 
-  const handleUpload = () => {
-    Modal.confirm({
-      title: "Confirm Upload",
-      content: "Are you sure you want to upload the answers?",
-      onOk: handleConfirmedUpload,
-      onCancel: () => {
-        Modal.destroyAll(); // 关闭所有弹窗
-      },
-    });
-  };
-  const handleConfirmedUpload = async () => {
-    if (taskInfo.deadline - Date.now() <= 0) {
-      message.error("任务已过期,无法上传标注");
-      return;
-    }
-    const allSaved = savedProblems.every((problemSaved) => problemSaved);
-    if (!allSaved) {
-      message.warning("未保存所有题目答案");
-      return;
-    }
-
+  const handleUpload = async () => {
     const modifiedchosenOptionsAll = chosenOptionsAll.map((problem) =>
       problem.map((option) => (option === null ? false : option))
     );
@@ -151,7 +90,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       )
       .then(() => {
         message.success("Uploaded!");
-        setUploadCompleted(true);
         setLoading(false);
       })
       .catch((error) => {
@@ -162,20 +100,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handlePrevious = () => {
-    if (!isCurrentProblemSaved()) {
-      Modal.confirm({
-        title: "Unsaved Changes",
-        content: "You have unsaved changes. Are you sure you want to switch questions?",
-        onOk: handleConfirmedPrevious,
-        onCancel: () => {
-          Modal.destroyAll(); // 关闭所有弹窗
-        },
-      });
-    } else {
-      handleConfirmedPrevious();
-    }
-  };
-  const handleConfirmedPrevious = () => {
     if (currentProblemIndex > 0) {
       const newChosenOptions = filteredTaskData[currentProblemIndex - 1].chosen || [];
       setCurrentProblemIndex((prevState) => prevState - 1);
@@ -186,20 +110,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleNext = () => {
-    if (!isCurrentProblemSaved()) {
-      Modal.confirm({
-        title: "Unsaved Changes",
-        content: "You have unsaved changes. Are you sure you want to switch questions?",
-        onOk: handleConfirmedNext,
-        onCancel: () => {
-          Modal.destroyAll(); // 关闭所有弹窗
-        },
-      });
-    } else {
-      handleConfirmedNext();
-    }
-  };
-  const handleConfirmedNext = () => {
     if (currentProblemIndex < filteredTaskData.length - 1) {
       const newchosenOptions = filteredTaskData[currentProblemIndex + 1].chosen || [];
       setCurrentProblemIndex((prevState) => prevState + 1);
@@ -209,88 +119,26 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  if (taskInfo.template === "TextClassification") {
-    return (
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>{currentProblem.description}</div>
-          <div
-            style={{
-              color: timer < taskInfo.time ? "red" : "green",
-            }}
-          >
-            {`Timer: ${timer}s`}
-          </div>
-          <div>
-            {`Total time remaining: `}
-            <span style={{ color: timeRemaining > 0 ? "green" : "red"}} >
-              {formatTimeRemaining(timeRemaining)}
-            </span>
-          </div>
-        </div>
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>{currentProblem.description}</div>
-        {currentProblem.options.map((option, index) => (
-          <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-            {option}
-          </Checkbox>
-        ))}
-        <div>
-          <Button onClick={handlePrevious}>Previous</Button>
-          <Button onClick={handleNext}>Next</Button>
-          <Button onClick={handleSave}>Save</Button>
-          <Button 
-            onClick={handleUpload}
-            disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-            type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-          >
-            {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
-          </Button>
-        </div>
+        <div>{`Timer: ${timer}s`}</div>
       </div>
-    );
-  } else if (taskInfo.template === "ImagesClassification") {
-    return (
+      <div>{currentProblem.description}</div>
+      {currentProblem.options.map((option, index) => (
+        <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
+          {option}
+        </Checkbox>
+      ))}
       <div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>{currentProblem.description}</div>
-          <div
-            style={{
-              color: timer < taskInfo.time ? "red" : "green",
-            }}
-          >
-            {`Timer: ${timer}s`}
-          </div>
-          <div>
-            {`Total time remaining: `}
-            <span style={{ color: timeRemaining > 0 ? "green" : "red"}} >
-              {formatTimeRemaining(timeRemaining)}
-            </span>
-          </div>
-        </div>
-        {currentProblem.options.map((option, index) => (
-          <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-            <MyImage url={"/api/image?url=" + option} />
-          </Checkbox>
-        ))}
-        <div>
-          <Button onClick={handlePrevious}>Previous</Button>
-          <Button onClick={handleNext}>Next</Button>
-          <Button onClick={handleSave}>Save</Button>
-          <Button 
-            onClick={handleUpload}
-            disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-            type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-          >
-            {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
-          </Button>
-        </div>
+        <Button onClick={handlePrevious}>Previous</Button>
+        <Button onClick={handleNext}>Next</Button>
+        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={handleUpload}>Upload</Button>
       </div>
-    );
-  } else {
-    return (
-      <div>Error: Invalid task type!</div>
-    );
-  }
+    </div>
+  );
 };
 
-export default ClassificationComponent;
+export default TextClassificationComponent;
