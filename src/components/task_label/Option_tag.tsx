@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal } from "antd";
+import { Button, Checkbox, message, Modal, Steps } from "antd";
 import axios from "axios";
 import {
   TaskInfo,
@@ -29,6 +29,16 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
 
   const currentProblem = filteredTaskData[currentProblemIndex] as ClassificationProblem;
+
+  const { Step } = Steps;
+
+  const handleStepClick = (index: number) => {
+    setCurrentProblemIndex(index);
+    setchosenOptions(filteredTaskData[index].chosen || []);
+  };
+
+  const completedProblemsCount = savedProblems.filter((saved) => saved).length;
+  const totalProblemsCount = filteredTaskData.length;
 
   // single problem count
   useEffect(() => {
@@ -209,10 +219,22 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  if (taskInfo.template === "TextClassification") {
+  if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Steps current={currentProblemIndex} size="small" progressDot>
+            {filteredTaskData.map((_, index) => (
+              <Step
+                key={index}
+                status={savedProblems[index] ? "finish" : "wait"}
+                onClick={() => handleStepClick(index)}
+              />
+            ))}
+          </Steps>
+          <div>
+            Completed: {completedProblemsCount}/{totalProblemsCount}
+          </div>
           <div>{currentProblem.description}</div>
           <div
             style={{
@@ -228,48 +250,11 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
             </span>
           </div>
         </div>
-        <div>{currentProblem.description}</div>
         {currentProblem.options.map((option, index) => (
           <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-            {option}
-          </Checkbox>
-        ))}
-        <div>
-          <Button onClick={handlePrevious}>Previous</Button>
-          <Button onClick={handleNext}>Next</Button>
-          <Button onClick={handleSave}>Save</Button>
-          <Button 
-            onClick={handleUpload}
-            disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-            type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-          >
-            {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
-          </Button>
-        </div>
-      </div>
-    );
-  } else if (taskInfo.template === "ImagesClassification") {
-    return (
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>{currentProblem.description}</div>
-          <div
-            style={{
-              color: timer < taskInfo.time ? "red" : "green",
-            }}
-          >
-            {`Timer: ${timer}s`}
-          </div>
-          <div>
-            {`Total time remaining: `}
-            <span style={{ color: timeRemaining > 0 ? "green" : "red"}} >
-              {formatTimeRemaining(timeRemaining)}
-            </span>
-          </div>
-        </div>
-        {currentProblem.options.map((option, index) => (
-          <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-            <MyImage url={"/api/image?url=" + option} />
+            { taskInfo.template === "ImagesClassification" ? 
+              (<MyImage url={"/api/image?url=" + option} />) : (option)
+            }
           </Checkbox>
         ))}
         <div>

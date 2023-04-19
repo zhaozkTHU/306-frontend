@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Radio, Input, message, Divider } from "antd";
+import { Button, Radio, Input, message, Modal, Steps } from "antd";
 import axios from "axios";
 import { TaskInfo, TagProblem, isTagProblem } from "@/const/interface";
 import MyAudio from "../my-audio";
@@ -120,55 +120,16 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  if (taskInfo.template === "SoundTag") {
+  if (taskInfo.template === "SoundTag" || taskInfo.template === "VideoTag") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>{currentProblem.description}</div>
           <div>{`Timer: ${timer}s`}</div>
         </div>
-        <MyAudio url={"/api/audio?url=" + currentProblem.url} controls />
-        <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
-          {currentProblem.choice.map((option, index) => (
-            <Radio key={index} value={index}>
-              {option.text}
-              {option.needInput && (
-                <Input
-                  style={{ marginLeft: 8 }}
-                  value={chosenOptionIndex === index ? inputValue || "" : ""}
-                  onChange={handleInputChange}
-                  disabled={chosenOptionIndex !== index}
-                />
-              )}
-            </Radio>
-          ))}
-        </Radio.Group>
-        <div>
-          <Button onClick={handlePrevious}>上一题</Button>
-          <Button onClick={handleNext}>下一题</Button>
-          <Button onClick={handleSave}>保存</Button>
-          <Button onClick={handleUpload} loading={loading}>
-            上传
-          </Button>
-        </div>
-      </div>
-    );
-  } else if (taskInfo.template === "VideoTag") {
-    return (
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>{currentProblem.description}</div>
-          <div
-          style={{
-            color: timer < taskInfo.time ? "red" : "green",
-          }}
-        >
-          {`Timer: ${timer}s`}
-        </div>
-        </div>
-        <Divider />
-        <MyVideo url={"/api/video?url=" + currentProblem.url} controls />
-        <Divider />
+        { taskInfo.template === "SoundTag" ? 
+          (<MyAudio url={"/api/audio?url=" + currentProblem.url} controls />) : (<MyVideo url={"/api/video?url=" + currentProblem.url} controls />)
+        }
         <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
           {currentProblem.choice.map((option, index) => (
             <Radio key={index} value={index}>
