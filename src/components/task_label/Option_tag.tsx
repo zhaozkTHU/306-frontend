@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal, Steps } from "antd";
+import { Button, Checkbox, message, Modal, Steps, Divider, Space } from "antd";
+import { SaveOutlined, UploadOutlined, RightCircleOutlined, LeftCircleOutlined } from '@ant-design/icons';
 import axios from "axios";
 import {
   TaskInfo,
@@ -222,20 +223,21 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
     return (
       <div>
+        <Steps current={currentProblemIndex}>
+          {filteredTaskData.map((_, index) => (
+            <Step
+              key={index}
+              status={savedProblems[index] ? "finish" : "wait"}
+              onClick={() => handleStepClick(index)}
+            />
+          ))}
+        </Steps>
+        <Divider />
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Steps current={currentProblemIndex} size="small" progressDot>
-            {filteredTaskData.map((_, index) => (
-              <Step
-                key={index}
-                status={savedProblems[index] ? "finish" : "wait"}
-                onClick={() => handleStepClick(index)}
-              />
-            ))}
-          </Steps>
           <div>
             Completed: {completedProblemsCount}/{totalProblemsCount}
           </div>
-          <div>{currentProblem.description}</div>
+          
           <div
             style={{
               color: timer < taskInfo.time ? "red" : "green",
@@ -250,6 +252,8 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
             </span>
           </div>
         </div>
+        <Divider />
+        <div>{currentProblem.description}</div>
         {currentProblem.options.map((option, index) => (
           <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
             { taskInfo.template === "ImagesClassification" ? 
@@ -257,17 +261,28 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
             }
           </Checkbox>
         ))}
+        <Divider />
         <div>
-          <Button onClick={handlePrevious}>Previous</Button>
-          <Button onClick={handleNext}>Next</Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Space>
+          <Button onClick={handlePrevious} icon={<LeftCircleOutlined />}>Previous</Button>
+          <Button onClick={handleNext} icon={<RightCircleOutlined />}>Next</Button>
+          <Button 
+            onClick={handleSave}
+            disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
+            type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
+            icon={<SaveOutlined />}
+          >
+            {timeRemaining <= 0 ? "Deadline passed" : isCurrentProblemSaved() ? "Saved" : "Save"}
+          </Button>
           <Button 
             onClick={handleUpload}
             disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
             type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
+            icon={<UploadOutlined />}
           >
             {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
           </Button>
+          </Space>
         </div>
       </div>
     );
