@@ -238,7 +238,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               labeler_index={labelerId}
               is_sample={isSample}
               template={detail.template}
-              setRefreshing={setRefreshing} />
+              setIsCheckModalOpen={setIsCheckModalOpen} />
           </Modal>
           {detail.pass_check ? <></> : <Alert message="该任务尚未通过管理员审核!" type="warning" showIcon />}
           <h3>任务详情</h3>

@@ -178,7 +178,7 @@ const AdministratorCheckTask = () => {
           <Collapse>
             <Panel key={""} header={"点击此处查看题目详情"}>
               {taskDetail.task_data.map((problem, idx) => 
-                <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator"/>
+                <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator" key={idx}/>
               )}
             </Panel>
           </Collapse>

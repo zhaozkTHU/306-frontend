@@ -93,7 +93,7 @@ const Register = (props: RegisterProps) => {
   }
 
   const postVeriCode = async (_email: string, _vericode: number) => {
-    axios.post("/api/verify", {
+    axios.post("/api/vertify", {
       email: _email,
       captcha: _vericode
     })
@@ -273,6 +273,36 @@ const Register = (props: RegisterProps) => {
                   </Form.Item>
                 </Grid>
                 <Grid item xs={12}>
+                <Form.Item
+                  name="invitecode"
+                  rules={[
+                    { required: false },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (value && getFieldValue("role") === "administrator" && isValid(value, false)) {
+                          return Promise.resolve();
+                        }
+                        if (value && getFieldValue("role") === "administrator" && !isValid(value, false)) {
+                          return Promise.reject(new Error("管理员邀请码错误"));
+                        }
+                        if (value && getFieldValue("role") !== "administrator" && isValid(value, true)) {
+                          return Promise.resolve();
+                        }
+                        if (value && getFieldValue("role") !== "administrator" && !isValid(value, true)) {
+                          return Promise.reject(new Error("普通用户邀请码只包含字母、数字、下划线"));
+                        }
+                        if (!value && getFieldValue("role") !== "administrator") {
+                          return Promise.resolve();
+                        }
+
+                        if (!value && getFieldValue("role") === "administrator") {
+                          return Promise.reject(new Error("注册管理员必须包含邀请码"));
+                        }
+                      },
+                    }),
+                  ]}
+                >
+
                   <TextField
                     fullWidth
                     name="invitecode"
@@ -280,6 +310,7 @@ const Register = (props: RegisterProps) => {
                     type="invitecode"
                     id="invitecode"
                   />
+                  </Form.Item>
                 </Grid>
                 <Grid item xs={12}>
                   <Form.Item>
