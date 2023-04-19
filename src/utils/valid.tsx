@@ -49,7 +49,7 @@ export const isIn = (arr: any[], ele: any): boolean => {
 };
 
 /**
- * 
+ *
  * @brief delete a task by the task_id
  * @param taskid
  */

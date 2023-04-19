@@ -1,4 +1,4 @@
-import { Button, message, Table } from "antd";
+import { Button, message, Spin, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -123,9 +123,9 @@ const AdministratorCheckDemander = () => {
     },
   ];
   return (
-    <>
+    <Spin spinning={refreshing} tip="加载中...">
       <Table columns={columns} dataSource={demanders} />
-    </>
+    </Spin>
   );
 };
 

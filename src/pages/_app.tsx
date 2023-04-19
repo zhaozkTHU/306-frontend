@@ -37,7 +37,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     );
   } else if (router.pathname === "/") {
     // login
-    return <LoginScreen setRole={setRole}/>
+    return <LoginScreen setRole={setRole} />;
   } else {
     // other interface
     return <NotFound />;

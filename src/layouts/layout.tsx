@@ -13,7 +13,7 @@ import {
   ReconciliationOutlined,
   PushpinOutlined,
   HighlightOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
@@ -125,7 +125,6 @@ const MyLayout = (props: DemanderLayoutProps) => {
           setCollapsed(value);
           setRecollapsed(value);
         }}
-        
       ></Sider>
       <Sider
         collapsible
@@ -138,6 +137,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
           overflow: "auto",
           position: "fixed",
           height: "100vh",
+          // backgroundColor:"#273d6e",
         }}
         theme="dark"
       >
@@ -151,6 +151,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
         <Menu
           style={{
             overflow: "auto",
+            background: "rgba(0, 0, 0, 0)",
           }}
           theme="dark"
           defaultSelectedKeys={["info"]}
@@ -162,10 +163,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
         />
       </Sider>
       <Layout className="site-layout">
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-
-
-        </Header>
+        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
         <Content style={{ margin: "0 16px" }}>
           {props.children}
           {/* <Breadcrumb style={{ margin: '16px 0' }}>
@@ -176,7 +174,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        <Footer style={{ textAlign: 'center' }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
   );

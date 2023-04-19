@@ -1,8 +1,9 @@
-import { Button } from "antd";
+import { Button, Radio, RadioChangeEvent } from "antd";
 import { message } from "antd/lib";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import Problem from "../demander_problem/problem";
 import CheckImgClassificationProblem from "./checkImgClassificationProblem";
 import CheckTextClassificationProblem from "./checkTextClassificationProblem";
 
@@ -11,7 +12,6 @@ interface CheckModelProps {
   labeler_index: number;
   is_sample: boolean;
   template: string;
-  isShow: boolean;
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -30,10 +30,10 @@ const CheckModel = (props: CheckModelProps) => {
    *
    */
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-    setRefreshing(true);
+    // if (!router.isReady) {
+    //   return;
+    // }
+    // setRefreshing(true);
     axios
       .get(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, {
         headers: {
@@ -49,7 +49,9 @@ const CheckModel = (props: CheckModelProps) => {
       });
     setRefreshing(false);
   }, [router, props.labeler_index, props.task_id]);
-
+  useEffect(() => {
+    result = problems.slice();
+  }, [problems])
   /**
    *
    * Deal with the all checking or sampling checking
@@ -73,31 +75,49 @@ const CheckModel = (props: CheckModelProps) => {
       {refreshing ? (
         <p>Loading...</p>
       ) : (
-        result.map((items, index) => {
-          if (props.template === "TextClassification") {
-            return (
-              <CheckTextClassificationProblem
-                description={items.description}
-                options={items.options}
-                chosen={items.chosen ? items.chosen : [false]}
-                index={index}
-                setPassedNumber={setPassedNumber}
-                key={index}
-              />
-            );
-          } else if (props.template === "ImagesClassification") {
-            return (
-              <CheckImgClassificationProblem
-                description={items.description}
-                options={items.options}
-                chosen={items.chosen ? items.chosen : [false]}
-                index={index}
-                setPassedNumber={setPassedNumber}
-                key={index}
-              />
-            );
-          }
-        })
+        result.map((items, index) => 
+          // if (props.template === "TextClassification") {
+          //   return (
+          //     <CheckTextClassificationProblem
+          //       description={items.description}
+          //       options={items.options}
+          //       chosen={items.chosen ? items.chosen : [false]}
+          //       index={index}
+          //       setPassedNumber={setPassedNumber}
+          //       key={index}
+          //     />
+          //   );
+          // } else if (props.template === "ImagesClassification") {
+          //   return (
+          //     <CheckImgClassificationProblem
+          //       description={items.description}
+          //       options={items.options}
+          //       chosen={items.chosen ? items.chosen : [false]}
+          //       index={index}
+          //       setPassedNumber={setPassedNumber}
+          //       key={index}
+          //     />
+          //   );
+          // }
+          <>
+            <Problem problem={items} index={index} template={`${props.template}`} showto="demander"/>
+            <Radio.Group
+              defaultValue="fail"
+              onChange={(e: RadioChangeEvent) => {
+                // const s = current;
+                // const c = e.target.value;
+                if (e.target.value === "pass") {
+                  setPassedNumber((b) => b + 1);
+                } else if (e.target.value === "fail") {
+                  setPassedNumber((b) => b - 1);
+                }
+              }}
+            >
+              <Radio value="pass">合格</Radio>
+              <Radio value="fail">不合格</Radio>
+            </Radio.Group>
+          </>
+        )
       )}
       <Button
         size="large"

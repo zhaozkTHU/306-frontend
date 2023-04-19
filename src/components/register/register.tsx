@@ -196,6 +196,7 @@ const Register = (props: RegisterProps) => {
                       id="password"
                       label="密码"
                       name="password"
+                      type="password"
                     />
                   </Form.Item>
                 </Grid>
@@ -222,6 +223,7 @@ const Register = (props: RegisterProps) => {
                       id="confirm"
                       label="确认密码"
                       name="confirm"
+                      type="password"
                     />
                   </Form.Item>
                 </Grid>

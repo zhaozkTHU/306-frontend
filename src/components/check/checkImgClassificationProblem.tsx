@@ -21,7 +21,7 @@ const CheckImgClassificationProblem = (props: CheckImgClassificationProps) => {
           {props.options.map((option, index) => (
             <div key={index}>
               <Checkbox defaultChecked={props.chosen[index]} disabled={true}>
-                <MyImage url={`/api/image?url=${option}`} />
+                <MyImage url={`${option}`} />
               </Checkbox>
               <Divider />
             </div>

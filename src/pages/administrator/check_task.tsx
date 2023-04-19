@@ -1,11 +1,12 @@
 import { TaskInfo } from "@/const/interface";
-import { Button, Descriptions, message, Modal } from "antd";
+import { Button, Collapse, Descriptions, message, Modal, Spin } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { Table } from "antd/lib";
 import { transTime } from "@/utils/valid";
+import Problem from "@/components/demander_problem/problem";
 
 const AdministratorCheckTask = () => {
   const router = useRouter();
@@ -49,6 +50,8 @@ const AdministratorCheckTask = () => {
         setRefreshing(false);
       });
   }, [router, refreshing]);
+
+  const { Panel } = Collapse;
   const columns: ColumnsType<any> = [
     {
       title: "标题",
@@ -150,26 +153,39 @@ const AdministratorCheckTask = () => {
     },
   ];
   return (
-    <>
+    <Spin spinning={refreshing} tip="加载中...">
       <Modal
         open={taskDetailModalOpen}
         onCancel={() => setTaskDetailModalOpen(false)}
         footer={null}
-        title={taskDetail.title}
+        // title={taskDetail.title}
+        width={"100%"}
+        centered
       >
         <>
-          <p>创建人ID: {taskDetail.demander_id}</p>
-          <p>创建时间: {transTime(taskDetail.create_at)}</p>
-          <p>截止时间: {transTime(taskDetail.deadline)}</p>
-          <p>任务模板: {taskDetail.template}</p>
-          <p>单题奖励: {taskDetail.reward}</p>
-          <p>单题限时: {taskDetail.time}</p>
-          <p>标注者人数: {taskDetail.labeler_number}</p>
-          <p>任务详情:</p>
+        <h3>基本信息</h3>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="标题" span={2}>{taskDetail.title}</Descriptions.Item>
+            <Descriptions.Item label="创建时间" span={1}>{transTime(taskDetail.create_at)}</Descriptions.Item>
+            <Descriptions.Item label="截止时间" span={1}>{transTime(taskDetail.deadline)}</Descriptions.Item>
+            <Descriptions.Item label="创建人ID" span={1}>{taskDetail.demander_id}</Descriptions.Item>
+            <Descriptions.Item label="模板" span={1}>{taskDetail.template}</Descriptions.Item>
+            <Descriptions.Item label="单题奖励" span={1}>{taskDetail.reward}</Descriptions.Item>
+            <Descriptions.Item label="单题限时" span={1}>{taskDetail.time}</Descriptions.Item>
+            <Descriptions.Item label="标注者人数" span={1}>{taskDetail.labeler_number}</Descriptions.Item>
+          </Descriptions>
+          <h3>题目详情</h3>
+          <Collapse>
+            <Panel key={""} header={"点击此处查看题目详情"}>
+              {taskDetail.task_data.map((problem, idx) => 
+                <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator"/>
+              )}
+            </Panel>
+          </Collapse>
         </>
       </Modal>
       <Table columns={columns} dataSource={tasks} />
-    </>
+    </Spin>
   );
 };
 

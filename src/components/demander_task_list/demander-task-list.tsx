@@ -11,7 +11,6 @@ import LabelerStateTag from "./demander-task-labeler-state";
 import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
 
-
 interface DemanderTaskTableEntry {
   task_id: number;
   create_at: number;
@@ -225,6 +224,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           footer={null}
           width={"100%"}
           destroyOnClose={true}
+          centered
         >
           <Modal
             open={isCheckModalOpen}
@@ -238,7 +238,6 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               labeler_index={labelerId}
               is_sample={isSample}
               template={detail.template}
-              isShow={false}
               setRefreshing={setRefreshing} />
           </Modal>
           {detail.pass_check ? <></> : <Alert message="该任务尚未通过管理员审核!" type="warning" showIcon />}
