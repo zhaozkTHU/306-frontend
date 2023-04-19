@@ -1,5 +1,5 @@
-const AdministratorLabelerAccount = () => {
-  return <p>AdministratorLabelerAccount</p>;
-};
+const AdminLabelerAccount = () => {
+  return <>AdminLabelerAccount</>
+}
 
-export default AdministratorLabelerAccount;
+export default AdminLabelerAccount;
