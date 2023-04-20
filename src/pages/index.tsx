@@ -1,38 +1,55 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
-import { Button, Form, Input, Divider, Modal } from "antd";
-import { isValid } from "@/utils/valid";
-import CryptoJS from "crypto-js";
+import Avatar from "@mui/material/Avatar";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import PersonIcon from "@mui/icons-material/Person";
+import Typography from "@mui/material/Typography";
+import { Form, message, Button, Spin, Modal, Divider, Carousel } from "antd";
 import axios from "axios";
-import { ProCard } from "@ant-design/pro-components";
-import LoginAd from "@/components/login-ad";
+import { isValid } from "@/utils/valid";
+import { useRouter } from "next/router";
+import CryptoJS from "crypto-js";
 import Register from "@/components/register/register";
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log("Failed:", errorInfo);
-};
 
 interface LoginScreenPorps {
   setRole: Dispatch<SetStateAction<string | null>>;
 }
 
-// login interface
-const LoginScreen = (props: LoginScreenPorps) => {
+export default function LoginScreen(props: LoginScreenPorps) {
   const router = useRouter();
-  const CarouselRef = useRef<any>(null);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState<boolean>(false);
-  const [preUsername, setPreUsername] = useState<string>("");
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const login = async (values: { username: string; hashPassword: string }) => {
+    axios
+      .post("api/user/login", {
+        username: values.username,
+        password: values.hashPassword,
+      })
+      .then((response) => {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.role);
+        props.setRole(response.data.role);
+        router.push(`/${response.data.role}/info`);
+        message.success("登录成功");
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`登录失败，${error.response.data.message}`);
+        } else {
+          message.error("网络失败，请稍后再试");
+        }
+      })
+      .finally(() => {
+        setRefreshing(false);
+      });
+  };
   return (
-    <div
-      style={{
-        position: "fixed",
-        width: "100%",
-        height: "100%",
-        backgroundSize: "100% 100%",
-        backgroundColor: "rgba(199, 192, 234, 0.1)",
-      }}
-    >
+    <Spin spinning={refreshing} tip="加载中，请稍后">
       <Modal
         open={isRegisterModalOpen}
         onOk={() => {
@@ -41,116 +58,58 @@ const LoginScreen = (props: LoginScreenPorps) => {
         onCancel={() => {
           setIsRegisterModalOpen(false);
         }}
-        footer={null}
+        footer={false}
+        destroyOnClose={true}
+        style={{ top: "0" }}
+        centered
       >
-        <Register setUsername={setPreUsername} setModalOpen={setIsRegisterModalOpen} />
+        <Register setModalOpen={setIsRegisterModalOpen} />
       </Modal>
-      <h1 style={{ textAlign: "center", marginTop: "5%", color: "rgba(62, 132, 239, 0.953)" }}>
-        306众包平台
-      </h1>
-      <div
-        style={{
-          zIndex: -1,
-          position: "absolute",
-          left: "0",
-          top: "0",
-          bottom: "0",
-          right: "0",
-          margin: "auto",
-          width: "55%",
-          height: "60%",
-          backgroundColor: "rgba(0, 0, 0, 0)",
-        }}
-      >
-        <ProCard
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0)",
-            borderRadius: "100%",
-            height: "100%",
-            width: "100%",
+      <Grid container component="main" sx={{ height: "100vh" }}>
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            // backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundRepeat: "no-repeat",
+            backgroundColor: (t) =>
+              t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
-          split="vertical"
         >
-          <ProCard
-            colSpan={"60%"}
-            style={{
-              height: "100%",
-              boxSizing: "border-box",
-              backgroundColor: "rgba(255, 255, 255, 0.5)",
-              borderTopLeftRadius: "4%",
-              borderBottomLeftRadius: "4%",
+          
+        </Grid>
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
-            hoverable
-            bordered
-            // hoverable={false}
           >
-            <ProCard
-              colSpan={"5%"}
-              style={{ height: "100%", backgroundColor: "rgba(255, 255, 255, 0)" }}
-              onClick={() => {
-                CarouselRef.current?.prev?.();
-              }}
-            ></ProCard>
-            <ProCard
-              colSpan={"90%"}
-              style={{ height: "100%", backgroundColor: "rgba(255, 255, 255, 0)" }}
-            >
-              <LoginAd ref={CarouselRef} />
-            </ProCard>
-            <ProCard
-              colSpan={"5%"}
-              style={{ height: "100%", backgroundColor: "rgba(255, 255, 255, 0)" }}
-              onClick={() => {
-                CarouselRef.current?.next?.();
-              }}
-            ></ProCard>
-          </ProCard>
-          <ProCard
-            colSpan={"40%"}
-            style={{
-              backgroundColor: "rgba(129, 193, 233, 0.129)",
-              height: "100%",
-              borderTopRightRadius: "6%",
-              borderBottomRightRadius: "6%",
-            }}
-            // hoverable={false}
-          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <PersonIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              登录
+            </Typography>
+            <Divider />
             <Form
               name="basic"
-              style={{
-                width: "100%",
-                backgroundColor: "rgba(255, 255, 255, 0)",
-              }}
               initialValues={{ remember: true }}
               onFinish={(values) => {
+                setRefreshing(true);
                 const hashPassword = CryptoJS.SHA256(values.password).toString();
-                axios
-                  .post("api/user/login", {
-                    username: values.username,
-                    password: hashPassword,
-                  })
-                  .then((response) => {
-                    localStorage.setItem("token", response.data.token);
-                    localStorage.setItem("role", response.data.role);
-                    props.setRole(response.data.role);
-                    router.push(`/${response.data.role}/info`);
-                  })
-                  .catch((error) => {
-                    if (error.response) {
-                      alert(`登录失败，${error.response.data.message}`);
-                    } else {
-                      alert("网络失败，请稍后再试");
-                    }
-                  });
+                login({ username: values.username, hashPassword: hashPassword });
               }}
-              onFinishFailed={onFinishFailed}
+              // onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
-              <h2 style={{ textAlign: "center", color: "rgba(62, 132, 239, 0.99)", margin: "0%" }}>
-                登录
-              </h2>
-              <Divider />
-              <p style={{ color: "rgba(62, 132, 239, 0.953)" }}>用户名:</p>
               <Form.Item
                 name="username"
                 rules={[
@@ -176,13 +135,15 @@ const LoginScreen = (props: LoginScreenPorps) => {
                   }),
                 ]}
               >
-                <Input
-                  defaultValue={preUsername}
-                  prefix={<UserOutlined className="site-form-item-icon" />}
-                  placeholder="用户名"
+                <TextField
+                  margin="normal"
+                  fullWidth
+                  id="username"
+                  label="用户名"
+                  name="username"
+                  autoFocus
                 />
               </Form.Item>
-              <p style={{ color: "rgba(62, 132, 239, 0.953)" }}>密码:</p>
               <Form.Item
                 name="password"
                 rules={[
@@ -208,29 +169,52 @@ const LoginScreen = (props: LoginScreenPorps) => {
                   }),
                 ]}
               >
-                <Input.Password
-                  placeholder="密码"
-                  prefix={<LockOutlined className="site-form-item-icon" />}
+                <TextField
+                  margin="normal"
+                  fullWidth
+                  name="password"
+                  label="密码"
+                  type="password"
+                  id="password"
                 />
               </Form.Item>
-              <Button type="primary" htmlType="submit" block>
-                登录
-              </Button>
-              <p style={{ textAlign: "center" }}>还没有306账号?</p>
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="我已阅读并同意用户服务协议"
+                required
+              />
               <Button
                 type="primary"
-                htmlType="button"
                 block
-                onClick={() => setIsRegisterModalOpen(true)}
+                htmlType="submit"
+                size="large"
+                style={{
+                  backgroundColor: "#3b5999",
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                }}
               >
-                注册
+                登录
               </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Button type="link">忘记密码?</Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setIsRegisterModalOpen(true);
+                    }}
+                  >
+                    还没有306账号? 注册一个
+                  </Button>
+                </Grid>
+              </Grid>
             </Form>
-          </ProCard>
-        </ProCard>
-      </div>
-    </div>
+          </Box>
+        </Grid>
+      </Grid>
+    </Spin>
   );
-};
-
-export default LoginScreen;
+}

@@ -12,11 +12,13 @@ import {
   TeamOutlined,
   ReconciliationOutlined,
   PushpinOutlined,
+  HighlightOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content, Sider, Footer } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -40,6 +42,7 @@ const demanderItems: MenuItem[] = [
   getItem("标注中", "labeling", <MonitorOutlined />),
   getItem("待审核", "checking", <QuestionCircleOutlined />),
   getItem("已完成", "completed", <CarryOutOutlined />),
+  getItem("管理员审核", "adminchecking", <HighlightOutlined />),
   getItem("用户信息", "info", <UserOutlined />),
   getItem("设置", "settings", <SettingOutlined />),
 ];
@@ -59,6 +62,7 @@ const administratorItems: MenuItem[] = [
   getItem("审核发布任务", "check_task", <QuestionCircleOutlined />),
   getItem("需求方账号管理", "demander_account", <ReconciliationOutlined />),
   getItem("标注方账号管理", "labeler_account", <PushpinOutlined />),
+  getItem("举报管理", "report", <ExclamationCircleOutlined />),
   getItem("个人信息", "info", <UserOutlined />),
   getItem("设置", "settings", <SettingOutlined />),
 ];
@@ -133,7 +137,9 @@ const MyLayout = (props: DemanderLayoutProps) => {
           overflow: "auto",
           position: "fixed",
           height: "100vh",
+          // backgroundColor:"#273d6e",
         }}
+        theme="dark"
       >
         <div
           style={{
@@ -145,6 +151,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
         <Menu
           style={{
             overflow: "auto",
+            background: "rgba(0, 0, 0, 0)",
           }}
           theme="dark"
           defaultSelectedKeys={["info"]}
@@ -167,7 +174,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer> */}
+        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
   );
