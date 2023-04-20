@@ -25,7 +25,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal title="Text Classification" open={open} onCancel={handleCancel} footer={null}>
+        <Modal title="Classification" open={open} onCancel={handleCancel} footer={null}>
           <ClassificationComponent
             title={task.title}
             create_at={task.create_at}
