@@ -19,7 +19,8 @@ const onFinishFailed = (errorInfo: any) => {
 };
 
 interface RegisterProps {
-  setModalOpen: Dispatch<SetStateAction<boolean>>;
+  setModalOpen: Dispatch<SetStateAction<boolean>>,
+  CarouselRef: React.MutableRefObject<any>
 }
 
 const Register = (props: RegisterProps) => {
@@ -27,7 +28,7 @@ const Register = (props: RegisterProps) => {
   const [refrshing, setRefreshing] = useState<boolean>(false);
   const [isVerifyDisabled, setIsVerifyDisabled] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(60);
-  const CarouselRef = useRef<any>(null);
+  // const CarouselRef = useRef<any>(null);
   useEffect(() => {
     if(!isVerifyDisabled) {
       return;
@@ -54,7 +55,7 @@ const Register = (props: RegisterProps) => {
       .then((response) => {
         console.log(response.data);
         message.success("注册成功");
-        CarouselRef.current?.next?.();
+        props.CarouselRef.current?.next?.();
       })
       .catch((error) => {
         if (error.response) {
@@ -117,7 +118,7 @@ const Register = (props: RegisterProps) => {
   return (
     <Spin spinning={refrshing}>
     <Container component="main" maxWidth="xs">
-      <Carousel ref={CarouselRef} dots={false}>
+      <Carousel ref={props.CarouselRef} dots={false}>
         <div>
           <Box
             sx={{
@@ -334,6 +335,15 @@ const Register = (props: RegisterProps) => {
               >
                 注册
               </Button>
+              <Grid container>
+              <Grid item xs>
+              </Grid>
+              <Grid item>
+                <Button type="link" onClick={() => {
+                  props.CarouselRef.current?.goTo(2, true);
+                }}>已经注册? 前往验证</Button>
+              </Grid>
+              </Grid>
             </Form>
           </Box>
         </div>
@@ -390,6 +400,80 @@ const Register = (props: RegisterProps) => {
               </Grid>
             </Form>
           </Box>
+        </div>
+        <div>
+        <Box
+            sx={{
+              marginTop: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              验证邮箱
+            </Typography>
+            <Divider></Divider>
+            <p>请在下面输入您要验证的邮箱地址</p>
+            <Form
+              name="basic"
+              initialValues={{ remember: true }}
+              onFinish={(values) => {
+                setEamil(values.email)
+                props.CarouselRef.current?.prev();
+              }}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+              style={{minWidth: "100%"}}
+            >
+              <Grid item xs={24}>
+                  <Form.Item
+                    name="email"
+                    rules={[
+                      {
+                        required: true,
+                        type: 'email',
+                        message: '邮箱格式不正确',
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (!value && getFieldValue("role") === "demander") {
+                            return Promise.reject(new Error("注册需求方必填"));
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}>
+                    <TextField
+                      fullWidth
+                      id="email"
+                      label="电子邮箱"
+                      name="email"
+                      autoComplete="email"
+                    />
+                  </Form.Item>
+                </Grid>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  size="large"
+                  style={{
+                    backgroundColor: "#3b5999"
+                  }}
+                >前往验证</Button>
+                <Grid container>
+              <Grid item xs>
+                <p></p>
+              </Grid>
+              <Grid item>
+                <Button type="link" onClick={() => {
+                  props.CarouselRef.current?.goTo(0, true);
+                }}>还未注册? 先去注册</Button>
+              </Grid>
+              </Grid>
+            </Form>
+        </Box>
         </div>
       </Carousel>
     </Container>

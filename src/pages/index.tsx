@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
-import { Form, message, Button, Spin, Modal, Divider, Carousel } from "antd";
+import { Form, message, Button, Spin, Modal, Divider } from "antd";
 import axios from "axios";
 import { isValid } from "@/utils/valid";
 import { useRouter } from "next/router";
@@ -23,7 +23,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
   const router = useRouter();
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
+  const CarouselRef = useRef<any>(null);
   const login = async (values: { username: string; hashPassword: string }) => {
     axios
       .post("api/user/login", {
@@ -63,7 +63,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         style={{ top: "0" }}
         centered
       >
-        <Register setModalOpen={setIsRegisterModalOpen} />
+        <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <Grid
@@ -72,15 +72,14 @@ export default function LoginScreen(props: LoginScreenPorps) {
           sm={4}
           md={7}
           sx={{
-            // backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundImage: 'url(/logo/306.png)',
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-        >
-          
+        > 
         </Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
@@ -207,7 +206,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                       setIsRegisterModalOpen(true);
                     }}
                   >
-                    还没有306账号? 注册一个
+                    注册或验证
                   </Button>
                 </Grid>
               </Grid>

@@ -14,10 +14,12 @@ import {
   PushpinOutlined,
   HighlightOutlined,
   ExclamationCircleOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
-
+import Image from 'next/image'
 const { Header, Content, Sider, Footer } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -37,34 +39,34 @@ function getItem(
 }
 
 const demanderItems: MenuItem[] = [
-  getItem("所有任务", "all_task", <OrderedListOutlined />),
-  getItem("新建任务", "new_task", <PlusOutlined />),
-  getItem("标注中", "labeling", <MonitorOutlined />),
-  getItem("待审核", "checking", <QuestionCircleOutlined />),
-  getItem("已完成", "completed", <CarryOutOutlined />),
-  getItem("管理员审核", "adminchecking", <HighlightOutlined />),
-  getItem("用户信息", "info", <UserOutlined />),
-  getItem("设置", "settings", <SettingOutlined />),
+  getItem("所有任务", "/demander/all_task", <OrderedListOutlined />),
+  getItem("新建任务", "/demander/new_task", <PlusOutlined />),
+  getItem("标注中", "/demander/labeling", <MonitorOutlined />),
+  getItem("待审核", "/demander/checking", <QuestionCircleOutlined />),
+  getItem("已完成", "/demander/completed", <CarryOutOutlined />),
+  getItem("管理员审核", "/demander/adminchecking", <HighlightOutlined />),
+  getItem("用户信息", "/demander/info", <UserOutlined />),
+  getItem("设置", "/demander/settings", <SettingOutlined />),
 ];
 
 const labelerItems: MenuItem[] = [
-  getItem("全部任务", "all_task", <OrderedListOutlined />),
-  getItem("新任务", "new_task", <EditOutlined />),
-  getItem("标注中", "labeling", <MonitorOutlined />),
-  getItem("审核中", "checking", <QuestionCircleOutlined />),
-  getItem("已完成", "completed", <CarryOutOutlined />),
-  getItem("用户信息", "info", <UserOutlined />),
-  getItem("设置", "settings", <SettingOutlined />),
+  getItem("全部任务", "/labeler/all_task", <OrderedListOutlined />),
+  getItem("新任务", "/labeler/new_task", <EditOutlined />),
+  getItem("标注中", "/labeler/labeling", <MonitorOutlined />),
+  getItem("审核中", "/labeler/checking", <QuestionCircleOutlined />),
+  getItem("已完成", "/labeler/completed", <CarryOutOutlined />),
+  getItem("用户信息", "/labeler/info", <UserOutlined />),
+  getItem("设置", "/labeler/settings", <SettingOutlined />),
 ];
 
 const administratorItems: MenuItem[] = [
-  getItem("审核需求方权限", "check_demander", <TeamOutlined />),
-  getItem("审核发布任务", "check_task", <QuestionCircleOutlined />),
-  getItem("需求方账号管理", "demander_account", <ReconciliationOutlined />),
-  getItem("标注方账号管理", "labeler_account", <PushpinOutlined />),
-  getItem("举报管理", "report", <ExclamationCircleOutlined />),
-  getItem("个人信息", "info", <UserOutlined />),
-  getItem("设置", "settings", <SettingOutlined />),
+  getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
+  getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
+  getItem("需求方账号管理", "/administrator/demander_account", <ReconciliationOutlined />),
+  getItem("标注方账号管理", "/administrator/labeler_account", <PushpinOutlined />),
+  getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
+  getItem("个人信息", "/administrator/info", <UserOutlined />),
+  getItem("设置", "/administrator/settings", <SettingOutlined />),
 ];
 
 const agentItems: MenuItem[] = [];
@@ -76,12 +78,12 @@ const mapRole2Menu = {
   agent: agentItems,
 };
 
-export interface DemanderLayoutProps {
+export interface MyLayoutProps {
   children: any;
   role: string | null;
 }
 
-const MyLayout = (props: DemanderLayoutProps) => {
+const MyLayout = (props: MyLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [recollapsed, setRecollapsed] = useState(false);
@@ -119,13 +121,15 @@ const MyLayout = (props: DemanderLayoutProps) => {
         can collapse or not with Sider
       */}
       <Sider
-        collapsible
+        // collapsible
         collapsed={recollapsed}
         onCollapse={(value) => {
           setCollapsed(value);
           setRecollapsed(value);
         }}
-      ></Sider>
+        theme="light"
+        collapsedWidth="0"
+      />
       <Sider
         collapsible
         collapsed={collapsed}
@@ -137,35 +141,68 @@ const MyLayout = (props: DemanderLayoutProps) => {
           overflow: "auto",
           position: "fixed",
           height: "100vh",
-          // backgroundColor:"#273d6e",
+          boxShadow: "3px 3px 10px #00000038",
+          zIndex: 10
+          // backgroundColor:"#094884",
         }}
-        theme="dark"
+        theme="light"
+        collapsedWidth="0"
       >
         <div
           style={{
-            height: 32,
-            margin: 16,
+            height: 70,
             background: "rgba(255, 255, 255, 0.2)",
           }}
-        />
+        >
+          <Image src={"/logo/logo.png"} width="200" alt={"logo加载失败"} height="80" />
+        </div>
+        <div style={{ height: "2%" }} />
         <Menu
           style={{
-            overflow: "auto",
-            background: "rgba(0, 0, 0, 0)",
+            border: "none"
           }}
-          theme="dark"
-          defaultSelectedKeys={["info"]}
+          theme="light"
+          defaultSelectedKeys={[router.pathname]}
           mode="inline"
           items={mapRole2Menu[props.role]}
           onSelect={(e) => {
-            router.push(`/${props.role}/${e.key}`);
+            // router.push(`/${props.role}/${e.key}`);
+            router.push(`${e.key}`);
           }}
         />
       </Sider>
       <Layout className="site-layout">
-        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
-        <Content style={{ margin: "0 16px" }}>
-          {props.children}
+        <Header style={{
+          padding: 0, background: "#3b5999", height: "70px", width: "100%", position: "fixed", top: 0, zIndex: 1,
+          boxShadow: "3px 3px 5px #00000038",
+        }}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => {
+              setCollapsed((i) => !i);
+              setRecollapsed((i) => !i);
+            }}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+              color: "white"
+            }}
+          />
+
+        </Header>
+        <Content style={{
+          backgroundColor: "#ffffff"
+        }}>
+          <div style={{ backgroundColor: "#ffffff", height: "70px" }}></div>
+          <div style={{
+            padding: "16px",
+            background: "#d7e8f81e",
+            borderRadius: "10px"
+          }}>
+            {props.children}
+          </div>
           {/* <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>User</Breadcrumb.Item>
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
@@ -174,7 +211,7 @@ const MyLayout = (props: DemanderLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        {/* <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer> */}
       </Layout>
     </Layout>
   );
