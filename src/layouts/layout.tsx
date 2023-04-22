@@ -37,34 +37,34 @@ function getItem(
 }
 
 const demanderItems: MenuItem[] = [
-  getItem("所有任务", "all_task", <OrderedListOutlined />),
-  getItem("新建任务", "new_task", <PlusOutlined />),
-  getItem("标注中", "labeling", <MonitorOutlined />),
-  getItem("待审核", "checking", <QuestionCircleOutlined />),
-  getItem("已完成", "completed", <CarryOutOutlined />),
-  getItem("管理员审核", "adminchecking", <HighlightOutlined />),
-  getItem("用户信息", "info", <UserOutlined />),
-  getItem("设置", "settings", <SettingOutlined />),
+  getItem("所有任务", "/demander/all_task", <OrderedListOutlined />),
+  getItem("新建任务", "/demander/new_task", <PlusOutlined />),
+  getItem("标注中", "/demander/labeling", <MonitorOutlined />),
+  getItem("待审核", "/demander/checking", <QuestionCircleOutlined />),
+  getItem("已完成", "/demander/completed", <CarryOutOutlined />),
+  getItem("管理员审核", "/demander/adminchecking", <HighlightOutlined />),
+  getItem("用户信息", "/demander/info", <UserOutlined />),
+  getItem("设置", "/demander/settings", <SettingOutlined />),
 ];
 
 const labelerItems: MenuItem[] = [
-  getItem("全部任务", "all_task", <OrderedListOutlined />),
-  getItem("新任务", "new_task", <EditOutlined />),
-  getItem("标注中", "labeling", <MonitorOutlined />),
-  getItem("审核中", "checking", <QuestionCircleOutlined />),
-  getItem("已完成", "completed", <CarryOutOutlined />),
-  getItem("用户信息", "info", <UserOutlined />),
-  getItem("设置", "settings", <SettingOutlined />),
+  getItem("全部任务", "/labeler/all_task", <OrderedListOutlined />),
+  getItem("新任务", "/labeler/new_task", <EditOutlined />),
+  getItem("标注中", "/labeler/labeling", <MonitorOutlined />),
+  getItem("审核中", "/labeler/checking", <QuestionCircleOutlined />),
+  getItem("已完成", "/labeler/completed", <CarryOutOutlined />),
+  getItem("用户信息", "/labeler/info", <UserOutlined />),
+  getItem("设置", "/labeler/settings", <SettingOutlined />),
 ];
 
 const administratorItems: MenuItem[] = [
-  getItem("审核需求方权限", "check_demander", <TeamOutlined />),
-  getItem("审核发布任务", "check_task", <QuestionCircleOutlined />),
-  getItem("需求方账号管理", "demander_account", <ReconciliationOutlined />),
-  getItem("标注方账号管理", "labeler_account", <PushpinOutlined />),
-  getItem("举报管理", "report", <ExclamationCircleOutlined />),
-  getItem("个人信息", "info", <UserOutlined />),
-  getItem("设置", "settings", <SettingOutlined />),
+  getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
+  getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
+  getItem("需求方账号管理", "/administrator/demander_account", <ReconciliationOutlined />),
+  getItem("标注方账号管理", "/administrator/labeler_account", <PushpinOutlined />),
+  getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
+  getItem("个人信息", "/administrator/info", <UserOutlined />),
+  getItem("设置", "/administrator/settings", <SettingOutlined />),
 ];
 
 const agentItems: MenuItem[] = [];
@@ -76,12 +76,12 @@ const mapRole2Menu = {
   agent: agentItems,
 };
 
-export interface DemanderLayoutProps {
+export interface MyLayoutProps {
   children: any;
   role: string | null;
 }
 
-const MyLayout = (props: DemanderLayoutProps) => {
+const MyLayout = (props: MyLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [recollapsed, setRecollapsed] = useState(false);
@@ -154,11 +154,12 @@ const MyLayout = (props: DemanderLayoutProps) => {
             background: "rgba(0, 0, 0, 0)",
           }}
           theme="dark"
-          defaultSelectedKeys={["info"]}
+          defaultSelectedKeys={[router.pathname]}
           mode="inline"
           items={mapRole2Menu[props.role]}
           onSelect={(e) => {
-            router.push(`/${props.role}/${e.key}`);
+            // router.push(`/${props.role}/${e.key}`);
+            router.push(`${e.key}`);
           }}
         />
       </Sider>

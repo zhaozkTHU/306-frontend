@@ -106,8 +106,6 @@ return (
           <Radio.Group
             defaultValue="fail"
             onChange={(e: RadioChangeEvent) => {
-              // const s = current;
-              // const c = e.target.value;
               if (e.target.value === "pass") {
                 setPassedNumber((b) => b + 1);
               } else if (e.target.value === "fail") {

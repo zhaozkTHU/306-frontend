@@ -1,15 +1,14 @@
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Button, Space, Spin, Modal, Descriptions, Collapse, Alert, Tooltip, Popconfirm, message } from "antd";
+import { Button, Space, Spin, Modal, Descriptions, Collapse, Alert, Tooltip, Popconfirm, message, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { transTime } from "@/utils/valid";
 import { Table } from "antd/lib";
 import DataExportCallback from "@/components/data_export/dataExport";
-import DemanderStateTag from "@/components/demander_task_list/demander-task-state-tag";
-import LabelerStateTag from "./demander-task-labeler-state";
 import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
+import { mapState2ColorChinese } from "@/const/interface";
 
 interface DemanderTaskTableEntry {
   task_id: number;
@@ -100,7 +99,8 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         return (
           <Space size={[0, 8]} wrap>
             {state.map((s: string, idx: number) =>
-              <DemanderStateTag type={s} key={idx} />
+              // <DemanderStateTag type={s} key={idx} />
+              <Tag color={mapState2ColorChinese[s].color} key={idx}>{mapState2ColorChinese[s].description}</Tag>
             )}
           </Space>
         )
@@ -155,7 +155,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       render: (state) => {
         return (
           <Space size={[0, 8]} wrap>
-            <LabelerStateTag type={state} />
+            <Tag color={mapState2ColorChinese[state].color}>{mapState2ColorChinese[state].description}</Tag>
           </Space>
         )
       }
@@ -250,7 +250,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             <Descriptions.Item label="状态" span={1}>
               <Space size={[0, 8]} wrap>
                 {detail.state.map((s: string, idx: number) =>
-                  <DemanderStateTag type={s} key={idx} />
+                  <Tag color={mapState2ColorChinese[s].color} key={idx}>{mapState2ColorChinese[s].description}</Tag>
                 )}
               </Space>
             </Descriptions.Item>

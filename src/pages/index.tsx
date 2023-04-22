@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
-import { Form, message, Button, Spin, Modal, Divider, Carousel } from "antd";
+import { Form, message, Button, Spin, Modal, Divider } from "antd";
 import axios from "axios";
 import { isValid } from "@/utils/valid";
 import { useRouter } from "next/router";
@@ -79,8 +79,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-        >
-          
+        > 
         </Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
