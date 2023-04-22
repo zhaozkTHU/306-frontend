@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -23,7 +23,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
   const router = useRouter();
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
+  const CarouselRef = useRef<any>(null);
   const login = async (values: { username: string; hashPassword: string }) => {
     axios
       .post("api/user/login", {
@@ -63,7 +63,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         style={{ top: "0" }}
         centered
       >
-        <Register setModalOpen={setIsRegisterModalOpen} />
+        <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <Grid
@@ -72,7 +72,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
           sm={4}
           md={7}
           sx={{
-            // backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundImage: 'url(/logo/306.png)',
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],
@@ -206,7 +206,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                       setIsRegisterModalOpen(true);
                     }}
                   >
-                    还没有306账号? 注册一个
+                    注册或验证
                   </Button>
                 </Grid>
               </Grid>

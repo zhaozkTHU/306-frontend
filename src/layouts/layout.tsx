@@ -14,10 +14,12 @@ import {
   PushpinOutlined,
   HighlightOutlined,
   ExclamationCircleOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
-
+import Image from 'next/image'
 const { Header, Content, Sider, Footer } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -119,13 +121,15 @@ const MyLayout = (props: MyLayoutProps) => {
         can collapse or not with Sider
       */}
       <Sider
-        collapsible
+        // collapsible
         collapsed={recollapsed}
         onCollapse={(value) => {
           setCollapsed(value);
           setRecollapsed(value);
         }}
-      ></Sider>
+        theme="light"
+        collapsedWidth="0"
+      />
       <Sider
         collapsible
         collapsed={collapsed}
@@ -137,23 +141,27 @@ const MyLayout = (props: MyLayoutProps) => {
           overflow: "auto",
           position: "fixed",
           height: "100vh",
-          // backgroundColor:"#273d6e",
+          boxShadow: "3px 3px 10px #00000038",
+          zIndex: 10
+          // backgroundColor:"#094884",
         }}
-        theme="dark"
+        theme="light"
+        collapsedWidth="0"
       >
         <div
           style={{
-            height: 32,
-            margin: 16,
+            height: 70,
             background: "rgba(255, 255, 255, 0.2)",
           }}
-        />
+        >
+          <Image src={"/logo/logo.png"} width="200" alt={"logo加载失败"} height="80" />
+        </div>
+        <div style={{ height: "2%" }} />
         <Menu
           style={{
-            overflow: "auto",
-            background: "rgba(0, 0, 0, 0)",
+            border: "none"
           }}
-          theme="dark"
+          theme="light"
           defaultSelectedKeys={[router.pathname]}
           mode="inline"
           items={mapRole2Menu[props.role]}
@@ -164,9 +172,37 @@ const MyLayout = (props: MyLayoutProps) => {
         />
       </Sider>
       <Layout className="site-layout">
-        <Header style={{ padding: 0, background: colorBgContainer }}></Header>
-        <Content style={{ margin: "0 16px" }}>
-          {props.children}
+        <Header style={{
+          padding: 0, background: "#3b5999", height: "70px", width: "100%", position: "fixed", top: 0, zIndex: 1,
+          boxShadow: "3px 3px 5px #00000038",
+        }}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => {
+              setCollapsed((i) => !i);
+              setRecollapsed((i) => !i);
+            }}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+              color: "white"
+            }}
+          />
+
+        </Header>
+        <Content style={{
+          backgroundColor: "#ffffff"
+        }}>
+          <div style={{ backgroundColor: "#ffffff", height: "70px" }}></div>
+          <div style={{
+            padding: "16px",
+            background: "#d7e8f81e",
+            borderRadius: "10px"
+          }}>
+            {props.children}
+          </div>
           {/* <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>User</Breadcrumb.Item>
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
@@ -175,7 +211,7 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        {/* <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer> */}
       </Layout>
     </Layout>
   );
