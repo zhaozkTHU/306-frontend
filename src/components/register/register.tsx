@@ -56,6 +56,7 @@ const Register = (props: RegisterProps) => {
         console.log(response.data);
         message.success("注册成功");
         props.CarouselRef.current?.next?.();
+        console.log()
       })
       .catch((error) => {
         if (error.response) {
@@ -459,7 +460,8 @@ const Register = (props: RegisterProps) => {
                   block
                   size="large"
                   style={{
-                    backgroundColor: "#3b5999"
+                    backgroundColor: "#3b5999",
+                    marginBottom: "5px"
                   }}
                 >前往验证</Button>
                 <Grid container>
