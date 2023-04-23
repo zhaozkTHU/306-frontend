@@ -9,6 +9,7 @@ import DataExportCallback from "@/components/data_export/dataExport";
 import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
 import { mapState2ColorChinese } from "@/const/interface";
+import { request } from "../../utils/network";
 
 interface DemanderTaskTableEntry {
   task_id: number;
@@ -45,7 +46,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         },
         params: { task_id: task_id },
       })
-      .then(() => {
+      .then((response) => {
         message.success("删除成功");
       })
       .catch((err) => {
@@ -88,13 +89,31 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       key: 'create_at',
       align: 'center',
       width: '20%',
-      render: (timeStamp) => <p>{transTime(timeStamp)}</p>
+      render: (timeStamp) => <p>{transTime(timeStamp)}</p>,
+      sorter: (a, b) => a.create_at - b.create_at,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: '任务状态',
       dataIndex: 'state',
       key: 'state',
       align: 'center',
+      filterSearch: true,
+      filters: [
+        {
+          text: '标注中',
+          value: 'labeling'
+        },
+        {
+          text: '待审核',
+          value: 'checking'
+        },
+        {
+          text: '已完成',
+          value: 'completed'
+        }
+      ],
+      onFilter: (values, record) => record.state.indexOf(values) !== -1,
       render: (state) => {
         return (
           <Space size={[0, 8]} wrap>
@@ -197,21 +216,16 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   ];
 
   useEffect(() => {
-    axios
-      .get(`/api/task${props.type}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        const newTasks = response.data.demander_tasks.map((task: any) => {
-          return { ...task };
-        });
-        setTasks(newTasks);
-      })
-      .catch((err) => {
-        console.log(err);
+    request(`/api/task${props.type}`, 'GET')
+    .then((response) => {
+      const newTasks = response.data.demander_tasks.map((task: any) => {
+        return { ...task };
       });
+      setTasks(newTasks);
+    })
+    .catch((err) => {
+      console.log(err.reponse?.data);
+    });
     setRefreshing(false);
   }, [router, refreshing]);
   return (
@@ -271,7 +285,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             </Panel>
           </Collapse>
         </Modal>
-        <Table columns={DemanderTaskTableColumns} dataSource={tasks}></Table>
+        <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing}></Table>
         </Spin>
       </Spin>
     </>

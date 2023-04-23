@@ -9,11 +9,11 @@ import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
 import { Form, message, Button, Spin, Modal, Divider } from "antd";
-import axios from "axios";
 import { isValid } from "@/utils/valid";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import Register from "@/components/register/register";
+import { request } from "@/utils/network";
 
 interface LoginScreenPorps {
   setRole: Dispatch<SetStateAction<string | null>>;
@@ -25,11 +25,32 @@ export default function LoginScreen(props: LoginScreenPorps) {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const CarouselRef = useRef<any>(null);
   const login = async (values: { username: string; hashPassword: string }) => {
-    axios
-      .post("api/user/login", {
-        username: values.username,
-        password: values.hashPassword,
-      })
+    // axios
+    //   .post("api/user/login", {
+    //     username: values.username,
+    //     password: values.hashPassword,
+    //   })
+    //   .then((response) => {
+    //     localStorage.setItem("token", response.data.token);
+    //     localStorage.setItem("role", response.data.role);
+    //     props.setRole(response.data.role);
+    //     router.push(`/${response.data.role}/info`);
+    //     message.success("登录成功");
+    //   })
+    //   .catch((error) => {
+    //     if (error.response) {
+    //       message.error(`登录失败，${error.response.data.message}`);
+    //     } else {
+    //       message.error("网络失败，请稍后再试");
+    //     }
+    //   })
+    //   .finally(() => {
+    //     setRefreshing(false);
+    //   });
+    request("/api/user/login", "POST", {
+      username: values.username,
+      password: values.hashPassword,
+    })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);

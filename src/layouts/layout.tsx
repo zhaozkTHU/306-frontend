@@ -17,7 +17,7 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined
 } from "@ant-design/icons";
-import type { MenuProps } from "antd";
+import { Breadcrumb, MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
 import Image from 'next/image'
 const { Header, Content, Sider, Footer } = Layout;
@@ -86,7 +86,6 @@ export interface MyLayoutProps {
 const MyLayout = (props: MyLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  const [recollapsed, setRecollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -121,29 +120,21 @@ const MyLayout = (props: MyLayoutProps) => {
         can collapse or not with Sider
       */}
       <Sider
-        // collapsible
-        collapsed={recollapsed}
-        onCollapse={(value) => {
-          setCollapsed(value);
-          setRecollapsed(value);
+        collapsed={collapsed}
+        style={{
+          height:"100%"
         }}
         theme="light"
         collapsedWidth="0"
       />
       <Sider
-        collapsible
         collapsed={collapsed}
-        onCollapse={(value) => {
-          setCollapsed(value);
-          setRecollapsed(value);
-        }}
         style={{
           overflow: "auto",
           position: "fixed",
-          height: "100vh",
+          height: "100%",
           boxShadow: "3px 3px 10px #00000038",
           zIndex: 10
-          // backgroundColor:"#094884",
         }}
         theme="light"
         collapsedWidth="0"
@@ -173,7 +164,7 @@ const MyLayout = (props: MyLayoutProps) => {
       </Sider>
       <Layout className="site-layout">
         <Header style={{
-          padding: 0, background: "#3b5999", height: "70px", width: "100%", position: "fixed", top: 0, zIndex: 1,
+          padding: 0, background: "#3b5999", height: "80px", width: "100%", position: "fixed", top: 0, zIndex: 3,
           boxShadow: "3px 3px 5px #00000038",
         }}>
           <Button
@@ -181,24 +172,22 @@ const MyLayout = (props: MyLayoutProps) => {
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => {
               setCollapsed((i) => !i);
-              setRecollapsed((i) => !i);
             }}
             style={{
               fontSize: '16px',
-              width: 64,
-              height: 64,
+              width: 80,
+              height: 80,
               color: "white"
             }}
           />
-
+          
         </Header>
         <Content style={{
           backgroundColor: "#ffffff"
         }}>
-          <div style={{ backgroundColor: "#ffffff", height: "70px" }}></div>
+          <div style={{ backgroundColor: "#ffffff", height: "80px" }}></div>
           <div style={{
             padding: "16px",
-            background: "#d7e8f81e",
             borderRadius: "10px"
           }}>
             {props.children}
@@ -206,12 +195,12 @@ const MyLayout = (props: MyLayoutProps) => {
           {/* <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>User</Breadcrumb.Item>
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
-                    </Breadcrumb> */}
-          {/* <div style={{ padding: 24, minHeight: 360, background: colorBgContainer }}>
+                    </Breadcrumb>
+          <div style={{ padding: 24, minHeight: 360, background: colorBgContainer }}>
                         Bill is a cat.
                     </div> */}
         </Content>
-        {/* <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer> */}
+        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
   );
