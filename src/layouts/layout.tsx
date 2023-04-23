@@ -15,11 +15,11 @@ import {
   HighlightOutlined,
   ExclamationCircleOutlined,
   MenuUnfoldOutlined,
-  MenuFoldOutlined
+  MenuFoldOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, MenuProps } from "antd";
 import { Layout, Menu, theme, Result, Button } from "antd";
-import Image from 'next/image'
+import Image from "next/image";
 const { Header, Content, Sider, Footer } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -122,7 +122,7 @@ const MyLayout = (props: MyLayoutProps) => {
       <Sider
         collapsed={collapsed}
         style={{
-          height:"100%"
+          height: "100%",
         }}
         theme="light"
         collapsedWidth="0"
@@ -134,7 +134,7 @@ const MyLayout = (props: MyLayoutProps) => {
           position: "fixed",
           height: "100%",
           boxShadow: "3px 3px 10px #00000038",
-          zIndex: 10
+          zIndex: 10,
         }}
         theme="light"
         collapsedWidth="0"
@@ -150,7 +150,7 @@ const MyLayout = (props: MyLayoutProps) => {
         <div style={{ height: "2%" }} />
         <Menu
           style={{
-            border: "none"
+            border: "none",
           }}
           theme="light"
           defaultSelectedKeys={[router.pathname]}
@@ -163,10 +163,18 @@ const MyLayout = (props: MyLayoutProps) => {
         />
       </Sider>
       <Layout className="site-layout">
-        <Header style={{
-          padding: 0, background: "#3b5999", height: "80px", width: "100%", position: "fixed", top: 0, zIndex: 3,
-          boxShadow: "3px 3px 5px #00000038",
-        }}>
+        <Header
+          style={{
+            padding: 0,
+            background: "#3b5999",
+            height: "80px",
+            width: "100%",
+            position: "fixed",
+            top: 0,
+            zIndex: 3,
+            boxShadow: "3px 3px 5px #00000038",
+          }}
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -174,22 +182,25 @@ const MyLayout = (props: MyLayoutProps) => {
               setCollapsed((i) => !i);
             }}
             style={{
-              fontSize: '16px',
+              fontSize: "16px",
               width: 80,
               height: 80,
-              color: "white"
+              color: "white",
             }}
           />
-          
         </Header>
-        <Content style={{
-          backgroundColor: "#ffffff"
-        }}>
+        <Content
+          style={{
+            backgroundColor: "#ffffff",
+          }}
+        >
           <div style={{ backgroundColor: "#ffffff", height: "80px" }}></div>
-          <div style={{
-            padding: "16px",
-            borderRadius: "10px"
-          }}>
+          <div
+            style={{
+              padding: "16px",
+              borderRadius: "10px",
+            }}
+          >
             {props.children}
           </div>
           {/* <Breadcrumb style={{ margin: '16px 0' }}>

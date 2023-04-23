@@ -123,10 +123,10 @@ type StateColors = {
 };
 
 export const mapState2ColorChinese: StateColors = {
-  designated: {color: "rgb(160, 227, 109)", description: "已分发"},
-  labeling: {color: "rgb(33, 198, 198)", description: "标注中"},
-  rejected: {color: "rgb(203, 8, 21)", description: "已拒绝"},
-  checking: {color: "#c8c027", description: "待审核"},
-  completed: {color: "rgb(33, 198, 39)", description: "已完成"},
-  failed: {color: "rgb(252, 61, 14)", description: "不合格"}
-} 
+  designated: { color: "rgb(160, 227, 109)", description: "已分发" },
+  labeling: { color: "rgb(33, 198, 198)", description: "标注中" },
+  rejected: { color: "rgb(203, 8, 21)", description: "已拒绝" },
+  checking: { color: "#c8c027", description: "待审核" },
+  completed: { color: "rgb(33, 198, 39)", description: "已完成" },
+  failed: { color: "rgb(252, 61, 14)", description: "不合格" },
+};
