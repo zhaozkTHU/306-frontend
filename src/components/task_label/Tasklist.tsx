@@ -14,7 +14,9 @@ const TaskList: React.FC<TaskListProps> = (requestTypeProps) => {
     const token = localStorage.getItem("token");
     setLoading(true);
     axios
-      .get(`/api/${requestTypeProps.requestType}`, { headers: { Authorization: `Bearer ${token}` } })
+      .get(`/api/${requestTypeProps.requestType}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         const tasks_json = response.data;
         const task: TaskInfo[] = [

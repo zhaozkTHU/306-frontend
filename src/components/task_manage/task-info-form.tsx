@@ -21,7 +21,13 @@ import {
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import locale from "antd/locale/zh_CN";
-import { FaceTagDataForm, ImagesClassificationDataForm, SoundTagDataForm, TextClassificationDataForm, VideoTagDataForm } from "./task-data-form";
+import {
+  FaceTagDataForm,
+  ImagesClassificationDataForm,
+  SoundTagDataForm,
+  TextClassificationDataForm,
+  VideoTagDataForm,
+} from "./task-data-form";
 
 /**
  * 任务信息表单组件
@@ -195,24 +201,15 @@ const TaskInfoForm: React.FC<{
                         </Button>
                       </Col>
                     </Row>
-                    {form.getFieldValue("template") === "TextClassification" && (
-                      TextClassificationDataForm(dataField)
-                    )}
-                    {form.getFieldValue("template") === "ImagesClassification" && (
-                      ImagesClassificationDataForm(dataField)
-                    )}
-                    {form.getFieldValue("template") === "FaceTag" && (
-                      FaceTagDataForm(dataField)
-                    )}
-                    {form.getFieldValue("template") === "ImageFrame" && (
-                      ImagesClassificationDataForm(dataField)
-                    )}
-                    {form.getFieldValue("template") === "SoundTag" && (
-                      SoundTagDataForm(dataField)
-                    )}
-                    {form.getFieldValue("template") === "VideoTag" && (
-                      VideoTagDataForm(dataField)
-                    )}
+                    {form.getFieldValue("template") === "TextClassification" &&
+                      TextClassificationDataForm(dataField)}
+                    {form.getFieldValue("template") === "ImagesClassification" &&
+                      ImagesClassificationDataForm(dataField)}
+                    {form.getFieldValue("template") === "FaceTag" && FaceTagDataForm(dataField)}
+                    {form.getFieldValue("template") === "ImageFrame" &&
+                      ImagesClassificationDataForm(dataField)}
+                    {form.getFieldValue("template") === "SoundTag" && SoundTagDataForm(dataField)}
+                    {form.getFieldValue("template") === "VideoTag" && VideoTagDataForm(dataField)}
                   </div>
                 ))}
               </>

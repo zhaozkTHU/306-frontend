@@ -67,8 +67,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}>
-        </Modal>
+        <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}></Modal>
       </>
     );
   } else if (task.template === "ImageFrame") {

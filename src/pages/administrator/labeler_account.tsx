@@ -1,5 +1,5 @@
 const AdminLabelerAccount = () => {
-  return <>AdminLabelerAccount</>
-}
+  return <>AdminLabelerAccount</>;
+};
 
 export default AdminLabelerAccount;

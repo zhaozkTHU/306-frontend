@@ -145,14 +145,9 @@ export const SoundTagDataForm = (dataField: FormListFieldData) => (
                   <Form.Item
                     name={[optField.name, "needInput"]}
                     key={optField.key}
-                    rules={[
-                      { required: true, message: "请选择是否需要标注方输入" },
-                    ]}
+                    rules={[{ required: true, message: "请选择是否需要标注方输入" }]}
                   >
-                    <Switch
-                      checkedChildren="需要用户输入"
-                      unCheckedChildren="不需用户输入"
-                    />
+                    <Switch checkedChildren="需要用户输入" unCheckedChildren="不需用户输入" />
                   </Form.Item>
                 </Col>
                 <Col>
@@ -202,14 +197,9 @@ export const VideoTagDataForm = (dataField: FormListFieldData) => (
                   <Form.Item
                     name={[optField.name, "needInput"]}
                     key={optField.key}
-                    rules={[
-                      { required: true, message: "请选择是否需要标注方输入" },
-                    ]}
+                    rules={[{ required: true, message: "请选择是否需要标注方输入" }]}
                   >
-                    <Switch
-                      checkedChildren="需要用户输入"
-                      unCheckedChildren="不需用户输入"
-                    />
+                    <Switch checkedChildren="需要用户输入" unCheckedChildren="不需用户输入" />
                   </Form.Item>
                 </Col>
                 <Col>

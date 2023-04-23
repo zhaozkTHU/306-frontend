@@ -1,5 +1,5 @@
 const AdministratorReport = () => {
-    return <p>AdministratorReport</p>;
+  return <p>AdministratorReport</p>;
 };
-  
-  export default AdministratorReport;
+
+export default AdministratorReport;
