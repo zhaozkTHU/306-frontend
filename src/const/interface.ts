@@ -28,8 +28,9 @@ export interface ImageFramePromblem {
   url: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
-    leftdown: [number, number];
-    rightup: [number, number];
+    leftup: [number, number];
+    height: number;
+    width: number
   }[];
 }
 
@@ -56,22 +57,22 @@ export interface TaskInfo {
   create_at: number;
   deadline: number;
   template:
-    | "TextClassification"
-    | "ImagesClassification"
-    | "FaceTag"
-    | "ImageFrame"
-    | "SoundTag"
-    | "VideoTag";
+  | "TextClassification"
+  | "ImagesClassification"
+  | "FaceTag"
+  | "ImageFrame"
+  | "SoundTag"
+  | "VideoTag";
   reward: number;
   time: number;
   labeler_number: number;
   demander_id?: number;
   task_data:
-    | TextClassificationProblem[]
-    | ImagesClassificationProblem[]
-    | FaceTagProblem[]
-    | ImageFramePromblem[]
-    | TagProblem[];
+  | TextClassificationProblem[]
+  | ImagesClassificationProblem[]
+  | FaceTagProblem[]
+  | ImageFramePromblem[]
+  | TagProblem[];
 }
 
 export interface TextClassificationData {
@@ -130,3 +131,15 @@ export const mapState2ColorChinese: StateColors = {
   completed: { color: "rgb(33, 198, 39)", description: "已完成" },
   failed: { color: "rgb(252, 61, 14)", description: "不合格" },
 };
+
+type EnEntemplateZhtemplate = {
+  [state: string]: string;
+}
+export const mapEntemplate2Zhtemplate : EnEntemplateZhtemplate = {
+  TextClassification: "文本分类",
+  ImagesClassification: "图片分类",
+  FaceTag: "骨骼打点",
+  ImageFrame: "图片框选",
+  SoundTag: "音频标注",
+  VideoTag: "视频标注"
+}

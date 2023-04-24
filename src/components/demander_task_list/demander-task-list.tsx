@@ -8,7 +8,7 @@ import { Table } from "antd/lib";
 import DataExportCallback from "@/components/data_export/dataExport";
 import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
-import { mapState2ColorChinese } from "@/const/interface";
+import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
 import { request } from "../../utils/network";
 
 interface DemanderTaskTableEntry {
@@ -260,7 +260,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             <Descriptions.Item label="标题" span={2}>{detail.title}</Descriptions.Item>
             <Descriptions.Item label="创建时间" span={1}>{transTime(detail.create_at)}</Descriptions.Item>
             <Descriptions.Item label="截止时间" span={1}>{transTime(detail.deadline)}</Descriptions.Item>
-            <Descriptions.Item label="模板" span={1}>{detail.template}</Descriptions.Item>
+            <Descriptions.Item label="模板" span={1}>{mapEntemplate2Zhtemplate[detail.template]}</Descriptions.Item>
             <Descriptions.Item label="状态" span={1}>
               <Space size={[0, 8]} wrap>
                 {detail.state.map((s: string, idx: number) =>

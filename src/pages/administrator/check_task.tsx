@@ -1,18 +1,24 @@
-import { TaskInfo } from "@/const/interface";
-import { Button, Collapse, Descriptions, message, Modal, Spin } from "antd";
-import axios from "axios";
+import { mapEntemplate2Zhtemplate, TaskInfo } from "@/const/interface";
+import { Button, Collapse, Descriptions, Divider, Form, message, Modal, Spin } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { Table } from "antd/lib";
 import { transTime } from "@/utils/valid";
 import Problem from "@/components/demander_problem/problem";
+import { request } from "@/utils/network";
+import TextField from "@mui/material/TextField";
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 const AdministratorCheckTask = () => {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [tasks, setTasks] = useState<TaskInfo[]>([]);
+  const [taskId, setTaskId] = useState<number>(-1);
   const [taskDetailModalOpen, setTaskDetailModalOpen] = useState<boolean>(false);
+  const [denyModalOpen, setDenyModalOpen] = useState<boolean>(false);
   const [taskDetail, setTaskDetail] = useState<TaskInfo>({
     task_id: -1,
     title: "",
@@ -29,12 +35,7 @@ const AdministratorCheckTask = () => {
     if (!router.isReady) {
       return;
     }
-    axios
-      .get("/api/undistribute", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+    request("/api/undistribute", "GET")
       .then((response) => {
         const newTasks = response.data.tasks;
         setTasks(newTasks);
@@ -50,6 +51,30 @@ const AdministratorCheckTask = () => {
         setRefreshing(false);
       });
   }, [router, refreshing]);
+
+  const postCheckTask = async (_task_id: number, _result: boolean, _credits: number, _message: string) => {
+    request("/api/audit_result", "POST", {
+      task_id: _task_id,
+      result: _result,
+      credits: _credits,
+      message: _message
+    })
+      .then(() => {
+        message.success("审核结果提交成功");
+        setDenyModalOpen(false);
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`审核结果提交失败，${error.response.data.message}`);
+        } else {
+          message.error("网络失败，请稍后再试");
+        }
+      })
+      .finally(() => {
+        setLoading(false)
+        setRefreshing(true);
+      });
+  }
 
   const { Panel } = Collapse;
   const columns: ColumnsType<any> = [
@@ -75,42 +100,51 @@ const AdministratorCheckTask = () => {
       dataIndex: "template",
       key: "template",
       align: "center",
+      filterSearch: true,
+      width: "25%",
+      filters: [
+        {
+          text: '文本分类',
+          value: 'TextClassification'
+        },
+        {
+          text: '图片分类',
+          value: 'ImagesClassification'
+        },
+        {
+          text: '骨骼打点',
+          value: 'FaceTag'
+        },
+        {
+          text: '图片框选',
+          value: 'ImageFrame'
+        },
+        {
+          text: '音频标注',
+          value: 'SoundTag'
+        },
+        {
+          text: '视频标注',
+          value: 'VideoTag'
+        }
+      ],
+      onFilter: (values, record) => record.template.indexOf(values) !== -1,
+      render: (_, record) => (
+        <>{mapEntemplate2Zhtemplate[record.template]}</>
+      )
     },
     {
       title: "审核操作",
       key: "action",
       align: "center",
+      width: "30%",
       render: (_, record) => (
         <>
           <Button
             type="link"
             onClick={() => {
-              axios
-                .post(
-                  "/api/audit_result",
-                  {
-                    task_id: `${record.task_id}`,
-                    result: true,
-                  },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                  }
-                )
-                .then(() => {
-                  message.success("审核结果提交成功");
-                })
-                .catch((error) => {
-                  if (error.response) {
-                    message.error(`审核结果提交失败，${error.response.data.message}`);
-                  } else {
-                    message.error("网络失败，请稍后再试");
-                  }
-                })
-                .finally(() => {
-                  setRefreshing(true);
-                });
+              setLoading(true);
+              postCheckTask(record.task_id, true, 0, "")
             }}
           >
             通过
@@ -118,32 +152,8 @@ const AdministratorCheckTask = () => {
           <Button
             type="link"
             onClick={() => {
-              axios
-                .post(
-                  "/api/audit_result",
-                  {
-                    task_id: `${record.task_id}`,
-                    result: false,
-                  },
-                  {
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                  }
-                )
-                .then(() => {
-                  message.success("审核结果提交成功");
-                })
-                .catch((error) => {
-                  if (error.response) {
-                    message.error(`审核结果提交失败，${error.response.data.message}`);
-                  } else {
-                    message.error("网络失败，请稍后再试");
-                  }
-                })
-                .finally(() => {
-                  setRefreshing(true);
-                });
+              setTaskId(record.task_id);
+              setDenyModalOpen(true)
             }}
           >
             不通过
@@ -154,37 +164,115 @@ const AdministratorCheckTask = () => {
   ];
   return (
     <Spin spinning={refreshing} tip="加载中...">
-      <Modal
-        open={taskDetailModalOpen}
-        onCancel={() => setTaskDetailModalOpen(false)}
-        footer={null}
-        // title={taskDetail.title}
-        width={"100%"}
-        centered
-      >
-        <>
-        <h3>基本信息</h3>
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label="标题" span={2}>{taskDetail.title}</Descriptions.Item>
-            <Descriptions.Item label="创建时间" span={1}>{transTime(taskDetail.create_at)}</Descriptions.Item>
-            <Descriptions.Item label="截止时间" span={1}>{transTime(taskDetail.deadline)}</Descriptions.Item>
-            <Descriptions.Item label="创建人ID" span={1}>{taskDetail.demander_id}</Descriptions.Item>
-            <Descriptions.Item label="模板" span={1}>{taskDetail.template}</Descriptions.Item>
-            <Descriptions.Item label="单题奖励" span={1}>{taskDetail.reward}</Descriptions.Item>
-            <Descriptions.Item label="单题限时" span={1}>{taskDetail.time}</Descriptions.Item>
-            <Descriptions.Item label="标注者人数" span={1}>{taskDetail.labeler_number}</Descriptions.Item>
-          </Descriptions>
-          <h3>题目详情</h3>
-          <Collapse>
-            <Panel key={""} header={"点击此处查看题目详情"}>
-              {taskDetail.task_data.map((problem, idx) => 
-                <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator" key={idx}/>
-              )}
-            </Panel>
-          </Collapse>
-        </>
-      </Modal>
-      <Table columns={columns} dataSource={tasks} />
+      <Spin spinning={loading} tip="加载中...">
+        <Modal open={denyModalOpen}
+          footer={null}
+          onCancel={() => setDenyModalOpen(false)}
+          destroyOnClose
+        >
+          <Typography component="h1" variant="h5">
+            扣除信用分和原因说明
+          </Typography>
+          <Divider></Divider>
+          <Form
+            name="basic"
+            initialValues={{ remember: true }}
+            onFinish={(values) => {
+              setLoading(true)
+              postCheckTask(taskId, false, values.credits, values.message)
+            }}
+            autoComplete="off"
+          >
+            <Grid item xs={24} sm={12}>
+              <p>管理员可以对审核不通过的任务扣除信用分</p>
+              <Form.Item
+                name="credits"
+                rules={[
+                  { required: true, message: "不能为空" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value < 0) {
+                        return Promise.reject(new Error("扣除的信用分不能为负数"));
+                      }
+                      if (value > 100) {
+                        return Promise.reject(new Error("扣除的信用分不能超过100"));
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <TextField
+                  name="credits"
+                  fullWidth
+                  id="credits"
+                  label="扣除的信用分"
+                  autoFocus
+                  type="number"
+                />
+              </Form.Item>
+              <p>管理员需要对审核不通过的原因进行说明</p>
+              <Form.Item
+                name="message"
+                rules={[
+                  { required: true, message: "原因不能为空" },
+                ]}
+              >
+                <TextField
+                  name="message"
+                  fullWidth
+                  id="message"
+                  label="原因说明"
+                  autoFocus
+                  type="message"
+                  multiline
+                />
+              </Form.Item>
+            </Grid>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              style={{
+                backgroundColor: "#3b5999",
+                marginBottom: "5px"
+              }}
+            >确认</Button>
+          </Form>
+        </Modal>
+        <Modal
+          open={taskDetailModalOpen}
+          onCancel={() => setTaskDetailModalOpen(false)}
+          footer={null}
+          width={"100%"}
+          centered
+          destroyOnClose
+        >
+          <>
+            <h3>基本信息</h3>
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label="标题" span={2}>{taskDetail.title}</Descriptions.Item>
+              <Descriptions.Item label="创建时间" span={1}>{transTime(taskDetail.create_at)}</Descriptions.Item>
+              <Descriptions.Item label="截止时间" span={1}>{transTime(taskDetail.deadline)}</Descriptions.Item>
+              <Descriptions.Item label="创建人ID" span={1}>{taskDetail.demander_id}</Descriptions.Item>
+              <Descriptions.Item label="模板" span={1}>{mapEntemplate2Zhtemplate[taskDetail.template]}</Descriptions.Item>
+              <Descriptions.Item label="单题奖励" span={1}>{taskDetail.reward}</Descriptions.Item>
+              <Descriptions.Item label="单题限时" span={1}>{taskDetail.time}</Descriptions.Item>
+              <Descriptions.Item label="标注者人数" span={1}>{taskDetail.labeler_number}</Descriptions.Item>
+            </Descriptions>
+            <h3>题目详情</h3>
+            <Collapse>
+              <Panel key={""} header={"点击此处查看题目详情"}>
+                {taskDetail.task_data.map((problem, idx) =>
+                  <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator" key={idx} />
+                )}
+              </Panel>
+            </Collapse>
+          </>
+        </Modal>
+        <Table columns={columns} dataSource={tasks} />
+      </Spin>
     </Spin>
   );
 };

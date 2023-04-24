@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
+import { request } from "./network";
 
 /**
  *
@@ -20,17 +21,14 @@ export const isValid = (s: string, isStrict: boolean): boolean => {
 export const transTime = (time: number): string => {
   return `${new Date(time).getFullYear()}-${new Date(time).getMonth() + 1}-${new Date(
     time
-  ).getDate()} ${
-    new Date(time).getHours() < 10 ? "0" + new Date(time).getHours() : new Date(time).getHours()
-  }:${
-    new Date(time).getMinutes() < 10
+  ).getDate()} ${new Date(time).getHours() < 10 ? "0" + new Date(time).getHours() : new Date(time).getHours()
+    }:${new Date(time).getMinutes() < 10
       ? "0" + new Date(time).getMinutes()
       : new Date(time).getMinutes()
-  }:${
-    new Date(time).getSeconds() < 10
+    }:${new Date(time).getSeconds() < 10
       ? "0" + new Date(time).getSeconds()
       : new Date(time).getSeconds()
-  }`;
+    }`;
 };
 
 /**
@@ -50,6 +48,22 @@ export const isIn = (arr: any[], ele: any): boolean => {
 
 /**
  *
- * @brief delete a task by the task_id
+ * @brief translate the url to url
  * @param taskid
  */
+
+export const translateUrl = (url: string): string => {
+  request("/api/file", "GET", {
+    responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
+    params: { url: url },
+  })
+    .then((response) => {
+      const blob = new Blob([response.data], { type: "image/jpeg" });
+      const url = URL.createObjectURL(blob);
+      return url
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  return url
+}
