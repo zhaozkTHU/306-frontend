@@ -49,44 +49,33 @@ const TaskInfoForm: React.FC<{
     const value = { ...props.taskInfo };
     value.deadline = dayjs(value.deadline) as any;
     if (value.template === "ImagesClassification")
-      (value.task_data as ImagesClassificationProblem[]).map(v => ({
+      (value.task_data as ImagesClassificationProblem[]).map((v) => ({
         ...v,
-        options: v.options.map((url): UploadFile => ({
-          uid: randomUUID(),
-          name: url.substring(url.lastIndexOf("/")),
-          status: "done",
-          url: url,
-        })),
+        options: v.options.map(
+          (url): UploadFile => ({
+            uid: randomUUID(),
+            name: url.substring(url.lastIndexOf("/")),
+            status: "done",
+            url: url,
+          })
+        ),
       }));
-    if (value.template === "ImageFrame")
-      (value.task_data as ImageFramePromblem[]).map(v => ({
+    if (
+      value.template === "ImageFrame" ||
+      value.template === "FaceTag" ||
+      value.template === "SoundTag" ||
+      value.template === "VideoTag"
+    )
+      (value.task_data as ImageFramePromblem[]).map((v) => ({
         ...v,
-        url: [{
-          uid: randomUUID(),
-          name: v.url.substring(v.url.lastIndexOf("/")),
-          status: "done",
-          url: v.url,
-        }] as UploadFile[],
-      }));
-    if (value.template === "FaceTag")
-      (value.task_data as FaceTagProblem[]).map(v => ({
-        ...v,
-        url: [{
-          uid: randomUUID(),
-          name: v.url.substring(v.url.lastIndexOf("/")),
-          status: "done",
-          url: v.url,
-        }] as UploadFile[],
-      }));
-    if (value.template === "SoundTag" || value.template === "VideoTag")
-      (value.task_data as TagProblem[]).map(v => ({
-        ...v,
-        url: [{
-          uid: randomUUID(),
-          name: v.url.substring(v.url.lastIndexOf("/")),
-          status: "done",
-          url: v.url,
-        }] as UploadFile[],
+        url: [
+          {
+            uid: randomUUID(),
+            name: v.url.substring(v.url.lastIndexOf("/")),
+            status: "done",
+            url: v.url,
+          },
+        ] as UploadFile[],
       }));
     return value;
   }, [props.taskInfo]);
