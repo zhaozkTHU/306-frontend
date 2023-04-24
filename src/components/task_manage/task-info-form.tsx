@@ -17,9 +17,10 @@ import {
   Button,
   Divider,
   ConfigProvider,
+  UploadFile,
 } from "antd";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import locale from "antd/locale/zh_CN";
 import {
   FaceTagDataForm,
@@ -28,6 +29,7 @@ import {
   TextClassificationDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
+import { randomUUID } from "crypto";
 
 /**
  * 任务信息表单组件
@@ -42,6 +44,52 @@ const TaskInfoForm: React.FC<{
 }> = (props) => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<TaskInfo>();
+  const initialValues: TaskInfo | undefined = useMemo(() => {
+    if (props.taskInfo === undefined) return undefined;
+    const value = { ...props.taskInfo };
+    value.deadline = dayjs(value.deadline) as any;
+    if (value.template === "ImagesClassification")
+      (value.task_data as ImagesClassificationProblem[]).map(v => ({
+        ...v,
+        options: v.options.map((url): UploadFile => ({
+          uid: randomUUID(),
+          name: url.substring(url.lastIndexOf("/")),
+          status: "done",
+          url: url,
+        })),
+      }));
+    if (value.template === "ImageFrame")
+      (value.task_data as ImageFramePromblem[]).map(v => ({
+        ...v,
+        url: [{
+          uid: randomUUID(),
+          name: v.url.substring(v.url.lastIndexOf("/")),
+          status: "done",
+          url: v.url,
+        }] as UploadFile[],
+      }));
+    if (value.template === "FaceTag")
+      (value.task_data as FaceTagProblem[]).map(v => ({
+        ...v,
+        url: [{
+          uid: randomUUID(),
+          name: v.url.substring(v.url.lastIndexOf("/")),
+          status: "done",
+          url: v.url,
+        }] as UploadFile[],
+      }));
+    if (value.template === "SoundTag" || value.template === "VideoTag")
+      (value.task_data as TagProblem[]).map(v => ({
+        ...v,
+        url: [{
+          uid: randomUUID(),
+          name: v.url.substring(v.url.lastIndexOf("/")),
+          status: "done",
+          url: v.url,
+        }] as UploadFile[],
+      }));
+    return value;
+  }, [props.taskInfo]);
   if (props.taskInfo !== undefined) {
     form.setFieldsValue(props.taskInfo);
     form.setFieldValue("deadline", dayjs(props.taskInfo.deadline));
@@ -106,11 +154,7 @@ const TaskInfoForm: React.FC<{
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
-        initialValues={
-          props.taskInfo
-            ? { ...props.taskInfo, deadline: dayjs(props.taskInfo.deadline) }
-            : undefined
-        }
+        initialValues={initialValues}
       >
         <Form.Item
           label="任务标题"
