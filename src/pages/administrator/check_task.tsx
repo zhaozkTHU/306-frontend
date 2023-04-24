@@ -163,23 +163,45 @@ const AdministratorCheckTask = () => {
         centered
       >
         <>
-        <h3>基本信息</h3>
+          <h3>基本信息</h3>
           <Descriptions bordered column={2}>
-            <Descriptions.Item label="标题" span={2}>{taskDetail.title}</Descriptions.Item>
-            <Descriptions.Item label="创建时间" span={1}>{transTime(taskDetail.create_at)}</Descriptions.Item>
-            <Descriptions.Item label="截止时间" span={1}>{transTime(taskDetail.deadline)}</Descriptions.Item>
-            <Descriptions.Item label="创建人ID" span={1}>{taskDetail.demander_id}</Descriptions.Item>
-            <Descriptions.Item label="模板" span={1}>{taskDetail.template}</Descriptions.Item>
-            <Descriptions.Item label="单题奖励" span={1}>{taskDetail.reward}</Descriptions.Item>
-            <Descriptions.Item label="单题限时" span={1}>{taskDetail.time}</Descriptions.Item>
-            <Descriptions.Item label="标注者人数" span={1}>{taskDetail.labeler_number}</Descriptions.Item>
+            <Descriptions.Item label="标题" span={2}>
+              {taskDetail.title}
+            </Descriptions.Item>
+            <Descriptions.Item label="创建时间" span={1}>
+              {transTime(taskDetail.create_at)}
+            </Descriptions.Item>
+            <Descriptions.Item label="截止时间" span={1}>
+              {transTime(taskDetail.deadline)}
+            </Descriptions.Item>
+            <Descriptions.Item label="创建人ID" span={1}>
+              {taskDetail.demander_id}
+            </Descriptions.Item>
+            <Descriptions.Item label="模板" span={1}>
+              {taskDetail.template}
+            </Descriptions.Item>
+            <Descriptions.Item label="单题奖励" span={1}>
+              {taskDetail.reward}
+            </Descriptions.Item>
+            <Descriptions.Item label="单题限时" span={1}>
+              {taskDetail.time}
+            </Descriptions.Item>
+            <Descriptions.Item label="标注者人数" span={1}>
+              {taskDetail.labeler_number}
+            </Descriptions.Item>
           </Descriptions>
           <h3>题目详情</h3>
           <Collapse>
             <Panel key={""} header={"点击此处查看题目详情"}>
-              {taskDetail.task_data.map((problem, idx) => 
-                <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator" key={idx}/>
-              )}
+              {taskDetail.task_data.map((problem, idx) => (
+                <Problem
+                  problem={problem}
+                  index={idx}
+                  template={`${taskDetail.template}`}
+                  showto="administrator"
+                  key={idx}
+                />
+              ))}
             </Panel>
           </Collapse>
         </>
