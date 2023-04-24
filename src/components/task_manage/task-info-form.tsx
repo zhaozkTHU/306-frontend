@@ -19,16 +19,19 @@ import {
   ConfigProvider,
   UploadFile,
   Image,
+  Select,
 } from "antd";
 import dayjs from "dayjs";
 import React, { useMemo, useState } from "react";
 import locale from "antd/locale/zh_CN";
 import {
   FaceTagDataForm,
+  FileReviewDataForm,
   ImageFrameDataForm,
   ImagesClassificationDataForm,
   SoundTagDataForm,
   TextClassificationDataForm,
+  TextReviewDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
 import { randomUUID } from "crypto";
@@ -105,47 +108,26 @@ const TaskInfoForm: React.FC<{
     const value = form.getFieldsValue();
     console.log(value);
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
-    let task_data: typeof value.task_data;
-    switch (value.template) {
-      case "ImagesClassification": {
-        task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
-          ...v,
-          options: v.options.map((x: any) => x?.response?.url),
-        }));
-        break;
-      }
-      case "FaceTag": {
-        task_data = (value.task_data as FaceTagProblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
-      case "ImageFrame": {
-        task_data = (value.task_data as ImageFramePromblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
-      case "TextClassification": {
-        task_data = value.task_data;
-        break;
-      }
-      case "SoundTag": {
-        task_data = (value.task_data as TagProblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
-      case "VideoTag": {
-        task_data = (value.task_data as TagProblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
+    let task_data: typeof value.task_data = [];
+    if (value.template === "TextClassification") {
+      task_data = value.task_data;
+    }
+    if (value.template === "ImagesClassification") {
+      task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+        ...v,
+        options: v.options.map((x: any) => x?.response?.url),
+      }));
+    }
+    if (
+      value.template === "ImageFrame" ||
+      value.template === "FaceTag" ||
+      value.template === "SoundTag" ||
+      value.template === "VideoTag"
+    ) {
+      task_data = (value.task_data as TagProblem[]).map((v) => ({
+        ...v,
+        url: (v.url[0] as any)?.response?.url,
+      }));
     }
     props.onFinish({ ...value, deadline, task_data });
     setLoading(false);
@@ -203,19 +185,26 @@ const TaskInfoForm: React.FC<{
           name="template"
           rules={[{ required: true, message: "请选择任务模板" }]}
         >
-          <Radio.Group
-            size="small"
-            onChange={(_) => {
-              form.setFieldsValue({ ...form.getFieldsValue(), task_data: [] });
-            }}
-          >
-            <Radio.Button value="TextClassification">文字分类</Radio.Button>
-            <Radio.Button value="ImagesClassification">图片分类</Radio.Button>
-            <Radio.Button value="FaceTag">人脸骨骼打点</Radio.Button>
-            <Radio.Button value="ImageFrame">图片框选</Radio.Button>
-            <Radio.Button value="SoundTag">语音标注</Radio.Button>
-            <Radio.Button value="VideoTag">视频标注</Radio.Button>
-          </Radio.Group>
+          <Select
+            onChange={() => form.setFieldValue("task_data", [])}
+            options={[
+              { value: "TextClassification", label: "文字分类" },
+              { value: "ImagesClassification", label: "图片分类" },
+              { value: "FaceTag", label: "人脸骨骼打点" },
+              { value: "ImageFrame", label: "图片框选" },
+              { value: "SoundTag", label: "语音标注" },
+              { value: "VideoTag", label: "视频标注" },
+              {
+                label: "审核",
+                options: [
+                  { label: "文字审核", value: "TextReview" },
+                  { label: "图片审核", value: "ImageReview" },
+                  { label: "视频审核", value: "VideoReview" },
+                  { label: "音频审核", value: "AudioReview" },
+                ],
+              },
+            ]}
+          />
         </Form.Item>
         <Form.Item
           label="任务奖励"
@@ -289,6 +278,15 @@ const TaskInfoForm: React.FC<{
                       ImageFrameDataForm(dataField)}
                     {form.getFieldValue("template") === "SoundTag" && SoundTagDataForm(dataField)}
                     {form.getFieldValue("template") === "VideoTag" && VideoTagDataForm(dataField)}
+                    {form.getFieldValue("template") === "TextReview" &&
+                      TextReviewDataForm(dataField)}
+                    {(form.getFieldValue("template") === "ImageReview" ||
+                      form.getFieldValue("template") === "VideoReview" ||
+                      form.getFieldValue("template") === "AudioReview") &&
+                      FileReviewDataForm(
+                        dataField,
+                        (form.getFieldValue("template") as string).substring(0, 5).toLowerCase()
+                      )}
                   </div>
                 ))}
               </>

@@ -33,9 +33,6 @@ export interface ImageFramePromblem {
   }[];
 }
 
-/**
- * @see 文档中标注示例
- */
 export interface TagProblem {
   description: string;
   url: string;
@@ -50,6 +47,22 @@ export interface TagProblem {
   };
 }
 
+export interface TextReviewProblem {
+  description: string;
+  content: string;
+  data?: boolean;
+}
+
+export interface FileReviewProblem {
+  description: string;
+  url: string;
+  data?: boolean;
+}
+
+export interface PointsCloud {
+  description: string;
+}
+
 export interface TaskInfo {
   task_id?: number;
   title: string;
@@ -61,7 +74,11 @@ export interface TaskInfo {
     | "FaceTag"
     | "ImageFrame"
     | "SoundTag"
-    | "VideoTag";
+    | "VideoTag"
+    | "TextReview"
+    | "ImageReview"
+    | "VideoReview"
+    | "AudioReview";
   reward: number;
   time: number;
   labeler_number: number;
@@ -71,7 +88,9 @@ export interface TaskInfo {
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
     | ImageFramePromblem[]
-    | TagProblem[];
+    | TagProblem[]
+    | TextReviewProblem[]
+    | FileReviewProblem[];
 }
 
 export interface TextClassificationData {
