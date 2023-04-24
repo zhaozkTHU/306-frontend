@@ -151,7 +151,7 @@ const ImagesClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       </div>
       {currentProblem.options.map((option, index) => (
         <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-          <MyImage url={"/api/image?url=" + option} />
+          <MyImage url={"/api/file?url=" + option} />
         </Checkbox>
       ))}
       <div>

@@ -44,7 +44,7 @@ const CheckModel = (props: CheckModelProps) => {
   }, [router, props.labeler_index, props.task_id]);
   useEffect(() => {
     result = problems.slice();
-  }, [problems])
+  }, [problems]);
 
   const postCheck = async (is_passed: boolean) => {
     axios
@@ -74,73 +74,78 @@ const CheckModel = (props: CheckModelProps) => {
         }
       })
       .finally(() => {
-        setRefreshing(false)
+        setRefreshing(false);
       });
+  };
+  /**
+   *
+   * Deal with the all checking or sampling checking
+   */
+  let result = problems.slice();
+  const totalNumber = problems.length;
+  if (props.is_sample) {
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    result = result.slice(0, Math.ceil(totalNumber / 3));
   }
-/**
- *
- * Deal with the all checking or sampling checking
- */
-let result = problems.slice();
-const totalNumber = problems.length;
-if (props.is_sample) {
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  result = result.slice(0, Math.ceil(totalNumber / 3));
-}
 
-const checkedNumber: number = result.length;
-return (
-  <Spin spinning={refreshing}>
-    <p>审核题目数量: {checkedNumber}</p>
-    <p>通过题目数量: {passedNumber}</p>
-    <p>当前通过率: {(passedNumber / checkedNumber).toFixed(3)}</p>
-    {refreshing ? (
-      <p>Loading...</p>
-    ) : (
-      result.map((items, index) =>
-        <>
-          <Problem problem={items} index={index} template={`${props.template}`} showto="demander" />
-          <Radio.Group
-            defaultValue="fail"
-            onChange={(e: RadioChangeEvent) => {
-              if (e.target.value === "pass") {
-                setPassedNumber((b) => b + 1);
-              } else if (e.target.value === "fail") {
-                setPassedNumber((b) => b - 1);
-              }
-            }}
-          >
-            <Radio value="pass">合格</Radio>
-            <Radio value="fail">不合格</Radio>
-          </Radio.Group>
-        </>
-      )
-    )}
-    <Button
-      size="large"
-      block
-      onClick={() => {
-        setRefreshing(true);
-        postCheck(true)
-      }}
-    >
-      合格
-    </Button>
-    <Button
-      size="large"
-      block
-      onClick={() => {
-        setRefreshing(true);
-        postCheck(false)
-      }}
-    >
-      不合格
-    </Button>
-  </Spin>
-);
+  const checkedNumber: number = result.length;
+  return (
+    <Spin spinning={refreshing}>
+      <p>审核题目数量: {checkedNumber}</p>
+      <p>通过题目数量: {passedNumber}</p>
+      <p>当前通过率: {(passedNumber / checkedNumber).toFixed(3)}</p>
+      {refreshing ? (
+        <p>Loading...</p>
+      ) : (
+        result.map((items, index) => (
+          <>
+            <Problem
+              problem={items}
+              index={index}
+              template={`${props.template}`}
+              showto="demander"
+            />
+            <Radio.Group
+              defaultValue="fail"
+              onChange={(e: RadioChangeEvent) => {
+                if (e.target.value === "pass") {
+                  setPassedNumber((b) => b + 1);
+                } else if (e.target.value === "fail") {
+                  setPassedNumber((b) => b - 1);
+                }
+              }}
+            >
+              <Radio value="pass">合格</Radio>
+              <Radio value="fail">不合格</Radio>
+            </Radio.Group>
+          </>
+        ))
+      )}
+      <Button
+        size="large"
+        block
+        onClick={() => {
+          setRefreshing(true);
+          postCheck(true);
+        }}
+      >
+        合格
+      </Button>
+      <Button
+        size="large"
+        block
+        onClick={() => {
+          setRefreshing(true);
+          postCheck(false);
+        }}
+      >
+        不合格
+      </Button>
+    </Spin>
+  );
 };
 
 export default CheckModel;

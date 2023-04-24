@@ -17,41 +17,35 @@ import {
   Button,
   Divider,
   ConfigProvider,
-  Switch,
-  Upload,
-  UploadProps,
+  UploadFile,
+  Image,
+  Select,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import locale from "antd/locale/zh_CN";
+import {
+  FaceTagDataForm,
+  FileReviewDataForm,
+  ImageFrameDataForm,
+  ImagesClassificationDataForm,
+  SoundTagDataForm,
+  TextClassificationDataForm,
+  TextReviewDataForm,
+  VideoTagDataForm,
+} from "./task-data-form";
+import { randomUUID } from "crypto";
+import type { RcFile } from "antd/es/upload";
+import { Modal } from "antd/lib";
 import axios from "axios";
 
-const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
-  action: "/api/image",
-  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  beforeUpload: (file) => {
-    const isValid = file.type.startsWith(fileType);
-    if (!isValid) {
-      message.error(`${file.name} 文件格式错误`);
-      return Upload.LIST_IGNORE;
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error(`${file.name} 文件大小超过2MB`);
-      return Upload.LIST_IGNORE;
-    }
-    return true;
-  },
-  onRemove: async (file) => {
-    /** @bug 此处后端实现有问题 */
-    await axios.delete("/api/image", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      params: { url: file.response.url },
-    });
-    return true;
-  },
-});
+const getBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 
 /**
  * 任务信息表单组件
@@ -65,7 +59,45 @@ const TaskInfoForm: React.FC<{
   onFinish: (info: TaskInfo) => void;
 }> = (props) => {
   const [loading, setLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const [form] = Form.useForm<TaskInfo>();
+  const initialValues: TaskInfo | undefined = useMemo(() => {
+    if (props.taskInfo === undefined) return undefined;
+    const value = { ...props.taskInfo };
+    value.deadline = dayjs(value.deadline) as any;
+    if (value.template === "ImagesClassification")
+      (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+        ...v,
+        options: v.options.map(
+          (url): UploadFile => ({
+            uid: randomUUID(),
+            name: url.substring(url.lastIndexOf("/")),
+            status: "done",
+            url: url,
+          })
+        ),
+      }));
+    if (
+      value.template === "ImageFrame" ||
+      value.template === "FaceTag" ||
+      value.template === "SoundTag" ||
+      value.template === "VideoTag"
+    )
+      (value.task_data as ImageFramePromblem[]).map((v) => ({
+        ...v,
+        url: [
+          {
+            uid: randomUUID(),
+            name: v.url.substring(v.url.lastIndexOf("/")),
+            status: "done",
+            url: v.url,
+          },
+        ] as UploadFile[],
+      }));
+    return value;
+  }, [props.taskInfo]);
   if (props.taskInfo !== undefined) {
     form.setFieldsValue(props.taskInfo);
     form.setFieldValue("deadline", dayjs(props.taskInfo.deadline));
@@ -76,65 +108,70 @@ const TaskInfoForm: React.FC<{
     const value = form.getFieldsValue();
     console.log(value);
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
-    let task_data: typeof value.task_data;
-    switch (value.template) {
-      case "ImagesClassification": {
-        task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
-          ...v,
-          options: v.options.map((x: any) => x?.response?.url),
-        }));
-        break;
-      }
-      case "FaceTag": {
-        task_data = (value.task_data as FaceTagProblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
-      case "ImageFrame": {
-        task_data = (value.task_data as ImageFramePromblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
-      case "TextClassification": {
-        task_data = value.task_data;
-        break;
-      }
-      case "SoundTag": {
-        task_data = (value.task_data as TagProblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
-      case "VideoTag": {
-        task_data = (value.task_data as TagProblem[]).map((v) => ({
-          ...v,
-          url: (v.url[0] as any)?.response?.url,
-        }));
-        break;
-      }
+    let task_data: typeof value.task_data = [];
+    if (value.template === "TextClassification") {
+      task_data = value.task_data;
+    }
+    if (value.template === "ImagesClassification") {
+      task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+        ...v,
+        options: v.options.map((x: any) => x?.response?.url),
+      }));
+    }
+    if (
+      value.template === "ImageFrame" ||
+      value.template === "FaceTag" ||
+      value.template === "SoundTag" ||
+      value.template === "VideoTag"
+    ) {
+      task_data = (value.task_data as TagProblem[]).map((v) => ({
+        ...v,
+        url: (v.url[0] as any)?.response?.url,
+      }));
     }
     props.onFinish({ ...value, deadline, task_data });
     setLoading(false);
   };
 
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as RcFile);
+    }
+    if (file.url && !file.preview) {
+      file.preview = await getBase64(
+        (
+          (
+            await axios.get("/api/file", {
+              responseType: "arraybuffer",
+              params: { url: file.url },
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            })
+          ).data as FormData
+        ).get("file") as File
+      );
+    }
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+    setPreviewTitle(file.name);
+  };
+
   return (
     <ConfigProvider locale={locale}>
+      <Modal
+        open={previewOpen}
+        title={previewTitle}
+        footer={null}
+        onCancel={() => setPreviewOpen(false)}
+      >
+        <Image alt="image" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
       <Form
         form={form}
         onFinishFailed={() => {
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
-        initialValues={
-          props.taskInfo
-            ? { ...props.taskInfo, deadline: dayjs(props.taskInfo.deadline) }
-            : undefined
-        }
+        initialValues={initialValues}
       >
         <Form.Item
           label="任务标题"
@@ -148,19 +185,26 @@ const TaskInfoForm: React.FC<{
           name="template"
           rules={[{ required: true, message: "请选择任务模板" }]}
         >
-          <Radio.Group
-            size="small"
-            onChange={(_) => {
-              form.setFieldsValue({ ...form.getFieldsValue(), task_data: [] });
-            }}
-          >
-            <Radio.Button value="TextClassification">文字分类</Radio.Button>
-            <Radio.Button value="ImagesClassification">图片分类</Radio.Button>
-            <Radio.Button value="FaceTag">人脸骨骼打点</Radio.Button>
-            <Radio.Button value="ImageFrame">图片框选</Radio.Button>
-            <Radio.Button value="SoundTag">语音标注</Radio.Button>
-            <Radio.Button value="VideoTag">视频标注</Radio.Button>
-          </Radio.Group>
+          <Select
+            onChange={() => form.setFieldValue("task_data", [])}
+            options={[
+              { value: "TextClassification", label: "文字分类" },
+              { value: "ImagesClassification", label: "图片分类" },
+              { value: "FaceTag", label: "人脸骨骼打点" },
+              { value: "ImageFrame", label: "图片框选" },
+              { value: "SoundTag", label: "语音标注" },
+              { value: "VideoTag", label: "视频标注" },
+              {
+                label: "审核",
+                options: [
+                  { label: "文字审核", value: "TextReview" },
+                  { label: "图片审核", value: "ImageReview" },
+                  { label: "视频审核", value: "VideoReview" },
+                  { label: "音频审核", value: "AudioReview" },
+                ],
+              },
+            ]}
+          />
         </Form.Item>
         <Form.Item
           label="任务奖励"
@@ -225,197 +269,24 @@ const TaskInfoForm: React.FC<{
                         </Button>
                       </Col>
                     </Row>
-                    {form.getFieldValue("template") === "TextClassification" && (
-                      <Form.List name={[dataField.name, "options"]}>
-                        {(optFields, { add: optAdd, remove: optRemove }) => (
-                          <>
-                            <Button onClick={() => optAdd()}>添加选项</Button>
-                            {optFields.map((optField, optIndex) => (
-                              <div key={optIndex}>
-                                <Row>
-                                  <Col>
-                                    <Form.Item
-                                      {...optField}
-                                      rules={[
-                                        {
-                                          required: true,
-                                          message: "请输入选项",
-                                        },
-                                      ]}
-                                    >
-                                      <Input addonBefore={`选项${optIndex + 1}`} />
-                                    </Form.Item>
-                                  </Col>
-                                  <Col>
-                                    <Button onClick={() => optRemove(optIndex)} danger>
-                                      -
-                                    </Button>
-                                  </Col>
-                                </Row>
-                              </div>
-                            ))}
-                          </>
-                        )}
-                      </Form.List>
-                    )}
-                    {form.getFieldValue("template") === "ImagesClassification" && (
-                      <Form.Item
-                        key={dataField.key}
-                        name={[dataField.name, "options"]}
-                        rules={[{ required: true, message: "请上传文件" }]}
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) => {
-                          console.log(e);
-                          return e?.fileList;
-                        }}
-                      >
-                        <Upload {...UploadPropsByType("image")}>
-                          <Button icon={<UploadOutlined />}>提交文件</Button>
-                        </Upload>
-                      </Form.Item>
-                    )}
-                    {form.getFieldValue("template") === "FaceTag" && (
-                      <Form.Item
-                        key={dataField.key}
-                        name={[dataField.name, "url"]}
-                        rules={[{ required: true, message: "请上传文件" }]}
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) => {
-                          return e?.fileList;
-                        }}
-                      >
-                        <Upload {...UploadPropsByType("image")} maxCount={1}>
-                          <Button icon={<UploadOutlined />}>提交文件</Button>
-                        </Upload>
-                      </Form.Item>
-                    )}
-                    {form.getFieldValue("template") === "ImageFrame" && (
-                      <Form.Item
-                        key={dataField.key}
-                        name={[dataField.name, "url"]}
-                        rules={[{ required: true, message: "请上传文件" }]}
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) => {
-                          return e?.fileList;
-                        }}
-                      >
-                        <Upload {...UploadPropsByType("image")} maxCount={1}>
-                          <Button icon={<UploadOutlined />}>提交文件</Button>
-                        </Upload>
-                      </Form.Item>
-                    )}
-                    {form.getFieldValue("template") === "SoundTag" && (
-                      <>
-                        <Form.Item
-                          key={dataField.key}
-                          name={[dataField.name, "url"]}
-                          rules={[{ required: true, message: "请上传文件" }]}
-                          valuePropName="fileList"
-                          getValueFromEvent={(e) => e?.fileList}
-                        >
-                          <Upload {...UploadPropsByType("audio")} maxCount={1}>
-                            <Button icon={<UploadOutlined />}>提交文件</Button>
-                          </Upload>
-                        </Form.Item>
-                        <Form.List name={[dataField.name, "choice"]}>
-                          {(optFields, { add: optAdd, remove: optRemove }) => (
-                            <>
-                              <Button onClick={() => optAdd()}>添加选项</Button>
-                              {optFields.map((optField, choiceIndex) => (
-                                <div key={choiceIndex}>
-                                  <Row>
-                                    <Col>
-                                      <Form.Item
-                                        name={[optField.name, "text"]}
-                                        key={optField.key}
-                                        rules={[{ required: true, message: "请输入文字描述" }]}
-                                      >
-                                        <Input />
-                                      </Form.Item>
-                                    </Col>
-                                    <Col>
-                                      <Form.Item
-                                        name={[optField.name, "needInput"]}
-                                        key={optField.key}
-                                        rules={[
-                                          { required: true, message: "请选择是否需要标注方输入" },
-                                        ]}
-                                      >
-                                        <Switch
-                                          checkedChildren="需要用户输入"
-                                          unCheckedChildren="不需用户输入"
-                                        />
-                                      </Form.Item>
-                                    </Col>
-                                    <Col>
-                                      <Button onClick={() => optRemove(choiceIndex)} danger>
-                                        -
-                                      </Button>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              ))}
-                            </>
-                          )}
-                        </Form.List>
-                      </>
-                    )}
-                    {form.getFieldValue("template") === "VideoTag" && (
-                      <>
-                        <Form.Item
-                          key={dataField.key}
-                          name={[dataField.name, "url"]}
-                          rules={[{ required: true, message: "请上传文件" }]}
-                          valuePropName="fileList"
-                          getValueFromEvent={(e) => e?.fileList}
-                        >
-                          <Upload {...UploadPropsByType("audio")} maxCount={1}>
-                            <Button icon={<UploadOutlined />}>提交文件</Button>
-                          </Upload>
-                        </Form.Item>
-                        <Form.List name={[dataField.name, "choice"]}>
-                          {(optFields, { add: optAdd, remove: optRemove }) => (
-                            <>
-                              <Button onClick={() => optAdd()}>添加选项</Button>
-                              {optFields.map((optField, choiceIndex) => (
-                                <div key={choiceIndex}>
-                                  <Row>
-                                    <Col>
-                                      <Form.Item
-                                        name={[optField.name, "text"]}
-                                        key={optField.key}
-                                        rules={[{ required: true, message: "请输入文字描述" }]}
-                                      >
-                                        <Input />
-                                      </Form.Item>
-                                    </Col>
-                                    <Col>
-                                      <Form.Item
-                                        name={[optField.name, "needInput"]}
-                                        key={optField.key}
-                                        rules={[
-                                          { required: true, message: "请选择是否需要标注方输入" },
-                                        ]}
-                                      >
-                                        <Switch
-                                          checkedChildren="需要用户输入"
-                                          unCheckedChildren="不需用户输入"
-                                        />
-                                      </Form.Item>
-                                    </Col>
-                                    <Col>
-                                      <Button onClick={() => optRemove(choiceIndex)} danger>
-                                        -
-                                      </Button>
-                                    </Col>
-                                  </Row>
-                                </div>
-                              ))}
-                            </>
-                          )}
-                        </Form.List>
-                      </>
-                    )}
+                    {form.getFieldValue("template") === "TextClassification" &&
+                      TextClassificationDataForm(dataField)}
+                    {form.getFieldValue("template") === "ImagesClassification" &&
+                      ImagesClassificationDataForm(dataField, handlePreview)}
+                    {form.getFieldValue("template") === "FaceTag" && FaceTagDataForm(dataField)}
+                    {form.getFieldValue("template") === "ImageFrame" &&
+                      ImageFrameDataForm(dataField)}
+                    {form.getFieldValue("template") === "SoundTag" && SoundTagDataForm(dataField)}
+                    {form.getFieldValue("template") === "VideoTag" && VideoTagDataForm(dataField)}
+                    {form.getFieldValue("template") === "TextReview" &&
+                      TextReviewDataForm(dataField)}
+                    {(form.getFieldValue("template") === "ImageReview" ||
+                      form.getFieldValue("template") === "VideoReview" ||
+                      form.getFieldValue("template") === "AudioReview") &&
+                      FileReviewDataForm(
+                        dataField,
+                        (form.getFieldValue("template") as string).substring(0, 5).toLowerCase()
+                      )}
                   </div>
                 ))}
               </>
