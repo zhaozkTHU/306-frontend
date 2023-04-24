@@ -4,7 +4,7 @@ import { DeleteOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons"
 import axios from "axios";
 
 const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
-  action: "/api/image",
+  action: "/api/file",
   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   beforeUpload: (file) => {
     const isValid = file.type.startsWith(fileType);
@@ -21,7 +21,7 @@ const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps =
   },
   onRemove: async (file) => {
     /** @bug 此处后端实现有问题 */
-    await axios.delete("/api/image", {
+    await axios.delete("/api/file", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       params: { url: file.response.url },
     });

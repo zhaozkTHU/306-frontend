@@ -359,7 +359,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
             onChange={handleCheckboxChange(index)}
           >
             {taskInfo.template === "ImagesClassification" ? (
-              <MyImage url={"/api/image?url=" + option} />
+              <MyImage url={"/api/file?url=" + option} />
             ) : (
               option
             )}

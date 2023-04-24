@@ -159,7 +159,7 @@ const TaskInfoForm: React.FC<{
       file.preview = await getBase64(
         (
           (
-            await axios.get("/api/image", {
+            await axios.get("/api/file", {
               responseType: "arraybuffer",
               params: { url: file.url },
               headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

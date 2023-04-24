@@ -10,7 +10,7 @@ const MyImage = (props: MyImageProps) => {
 
   useEffect(() => {
     axios
-      .get("/api/image", {
+      .get("/api/file", {
         responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
         params: { url: props.url },
         headers: {
