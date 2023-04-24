@@ -47,11 +47,15 @@ export interface TagProblem {
   };
 }
 
-export interface ReviewProblem {
+export interface TextReviewProblem {
   description: string;
-  type: "text" | "image" | "audio" | "video";
-  /** `type`为text为纯文本，其他为url */
   content: string;
+  data?: boolean;
+}
+
+export interface FileReviewProblem {
+  description: string;
+  url: string;
   data?: boolean;
 }
 
@@ -65,24 +69,28 @@ export interface TaskInfo {
   create_at: number;
   deadline: number;
   template:
-  | "TextClassification"
-  | "ImagesClassification"
-  | "FaceTag"
-  | "ImageFrame"
-  | "SoundTag"
-  | "VideoTag"
-  | "Review";
+    | "TextClassification"
+    | "ImagesClassification"
+    | "FaceTag"
+    | "ImageFrame"
+    | "SoundTag"
+    | "VideoTag"
+    | "TextReview"
+    | "ImageReview"
+    | "VideoReview"
+    | "AudioReview";
   reward: number;
   time: number;
   labeler_number: number;
   demander_id?: number;
   task_data:
-  | TextClassificationProblem[]
-  | ImagesClassificationProblem[]
-  | FaceTagProblem[]
-  | ImageFramePromblem[]
-  | TagProblem[]
-  | ReviewProblem[];
+    | TextClassificationProblem[]
+    | ImagesClassificationProblem[]
+    | FaceTagProblem[]
+    | ImageFramePromblem[]
+    | TagProblem[]
+    | TextReviewProblem[]
+    | FileReviewProblem[];
 }
 
 export interface TextClassificationData {

@@ -7,6 +7,7 @@ const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps =
   action: "/api/file",
   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   beforeUpload: (file) => {
+    console.log(file.type);
     const isValid = file.type.startsWith(fileType);
     if (!isValid) {
       message.error(`${file.name} 文件格式错误`);
@@ -176,7 +177,7 @@ export const VideoTagDataForm = (dataField: FormListFieldData) => (
       valuePropName="fileList"
       getValueFromEvent={(e) => e?.fileList}
     >
-      <Upload {...UploadPropsByType("audio")} maxCount={1}>
+      <Upload {...UploadPropsByType("video")} maxCount={1}>
         <Button icon={<UploadOutlined />}>提交文件</Button>
       </Upload>
     </Form.Item>
@@ -217,4 +218,28 @@ export const VideoTagDataForm = (dataField: FormListFieldData) => (
       )}
     </Form.List>
   </>
+);
+
+export const TextReviewDataForm = (dataField: FormListFieldData) => (
+  <Form.Item
+    key={dataField.key}
+    name={[dataField.name, "content"]}
+    rules={[{ required: true, message: "请填写内容" }]}
+  >
+    <Input addonBefore="待审核内容" />
+  </Form.Item>
+);
+
+export const FileReviewDataForm = (dataField: FormListFieldData, type: string) => (
+  <Form.Item
+    key={dataField.key}
+    name={[dataField.name, "url"]}
+    rules={[{ required: true, message: "请上传文件" }]}
+    valuePropName="fileList"
+    getValueFromEvent={(e) => e?.fileList}
+  >
+    <Upload {...UploadPropsByType(type as Parameters<typeof UploadPropsByType>[0])} maxCount={1}>
+      <Button icon={<UploadOutlined />}>提交文件</Button>
+    </Upload>
+  </Form.Item>
 );
