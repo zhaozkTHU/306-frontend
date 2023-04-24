@@ -18,18 +18,31 @@ import {
   Divider,
   ConfigProvider,
   UploadFile,
+  Image,
 } from "antd";
 import dayjs from "dayjs";
 import React, { useMemo, useState } from "react";
 import locale from "antd/locale/zh_CN";
 import {
   FaceTagDataForm,
+  ImageFrameDataForm,
   ImagesClassificationDataForm,
   SoundTagDataForm,
   TextClassificationDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
 import { randomUUID } from "crypto";
+import type { RcFile } from "antd/es/upload";
+import { Modal } from "antd/lib";
+import axios from "axios";
+
+const getBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 
 /**
  * 任务信息表单组件
@@ -43,6 +56,9 @@ const TaskInfoForm: React.FC<{
   onFinish: (info: TaskInfo) => void;
 }> = (props) => {
   const [loading, setLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const [form] = Form.useForm<TaskInfo>();
   const initialValues: TaskInfo | undefined = useMemo(() => {
     if (props.taskInfo === undefined) return undefined;
@@ -135,8 +151,38 @@ const TaskInfoForm: React.FC<{
     setLoading(false);
   };
 
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as RcFile);
+    }
+    if (file.url && !file.preview) {
+      file.preview = await getBase64(
+        (
+          (
+            await axios.get("/api/image", {
+              responseType: "arraybuffer",
+              params: { url: file.url },
+              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            })
+          ).data as FormData
+        ).get("file") as File
+      );
+    }
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+    setPreviewTitle(file.name);
+  };
+
   return (
     <ConfigProvider locale={locale}>
+      <Modal
+        open={previewOpen}
+        title={previewTitle}
+        footer={null}
+        onCancel={() => setPreviewOpen(false)}
+      >
+        <Image alt="image" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
       <Form
         form={form}
         onFinishFailed={() => {
@@ -237,10 +283,10 @@ const TaskInfoForm: React.FC<{
                     {form.getFieldValue("template") === "TextClassification" &&
                       TextClassificationDataForm(dataField)}
                     {form.getFieldValue("template") === "ImagesClassification" &&
-                      ImagesClassificationDataForm(dataField)}
+                      ImagesClassificationDataForm(dataField, handlePreview)}
                     {form.getFieldValue("template") === "FaceTag" && FaceTagDataForm(dataField)}
                     {form.getFieldValue("template") === "ImageFrame" &&
-                      ImagesClassificationDataForm(dataField)}
+                      ImageFrameDataForm(dataField)}
                     {form.getFieldValue("template") === "SoundTag" && SoundTagDataForm(dataField)}
                     {form.getFieldValue("template") === "VideoTag" && VideoTagDataForm(dataField)}
                   </div>

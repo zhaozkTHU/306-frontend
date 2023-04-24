@@ -1,6 +1,6 @@
 import { Button, Col, Form, Input, Row, UploadProps, message, Upload, Switch } from "antd";
 import { FormListFieldData } from "antd/lib";
-import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
@@ -63,7 +63,10 @@ export const TextClassificationDataForm = (dataField: FormListFieldData) => (
   </Form.List>
 );
 
-export const ImagesClassificationDataForm = (dataField: FormListFieldData) => (
+export const ImagesClassificationDataForm = (
+  dataField: FormListFieldData,
+  onPreview: UploadProps["onPreview"]
+) => (
   <Form.Item
     key={dataField.key}
     name={[dataField.name, "options"]}
@@ -74,8 +77,8 @@ export const ImagesClassificationDataForm = (dataField: FormListFieldData) => (
       return e?.fileList;
     }}
   >
-    <Upload {...UploadPropsByType("image")}>
-      <Button icon={<UploadOutlined />}>提交文件</Button>
+    <Upload {...UploadPropsByType("image")} onPreview={onPreview} listType="picture-card">
+      <PlusOutlined style={{ fontSize: "24px" }} />
     </Upload>
   </Form.Item>
 );
