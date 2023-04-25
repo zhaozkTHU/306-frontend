@@ -1,5 +1,4 @@
 import { Card, Checkbox, Divider, Image } from "antd";
-import { CompositionImage, ImageProps } from "antd/es/image";
 import CanvasImage from "../canvas_image/canvas-image";
 import ImageFormatter from "../image-formatter";
 import MyImage from "../my-img";
@@ -41,6 +40,8 @@ const Problem = (props: ProbelmProps) => {
                     objectPosition: "center center"
                   }}
                   alt="图片加载失败"
+                  height="100%"
+                  width="100%"
                 />
               </ImageFormatter>
             </Checkbox>
