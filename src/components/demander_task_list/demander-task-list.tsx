@@ -1,15 +1,27 @@
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Button, Space, Spin, Modal, Descriptions, Collapse, Alert, Tooltip, Popconfirm, message } from "antd";
+import {
+  Button,
+  Space,
+  Spin,
+  Modal,
+  Descriptions,
+  Collapse,
+  Alert,
+  Tooltip,
+  Popconfirm,
+  message,
+  Tag,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import { transTime } from "@/utils/valid";
 import { Table } from "antd/lib";
 import DataExportCallback from "@/components/data_export/dataExport";
-import DemanderStateTag from "@/components/demander_task_list/demander-task-state-tag";
-import LabelerStateTag from "./demander-task-labeler-state";
 import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
+import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
+import { request } from "../../utils/network";
 
 interface DemanderTaskTableEntry {
   task_id: number;
@@ -25,11 +37,10 @@ interface DemanderTaskTableEntry {
 }
 
 interface DemanderTaskListProps {
-  type: string
+  type: string;
 }
 
 const DemanderTaskList = (props: DemanderTaskListProps) => {
-
   const router = useRouter();
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,7 +57,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         },
         params: { task_id: task_id },
       })
-      .then(() => {
+      .then((response) => {
         message.success("删除成功");
       })
       .catch((err) => {
@@ -60,7 +71,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         setLoading(false);
         setRefreshing(true);
       });
-  }
+  };
   const [detail, setDetail] = useState<DemanderTaskTableEntry>({
     task_id: -1,
     create_at: 0,
@@ -76,133 +87,173 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
     {
-      title: '标题',
-      dataIndex: 'title',
-      key: 'title',
-      align: 'center',
-      width: '25%',
-      render: (text) => <p>{text}</p>
+      title: "标题",
+      dataIndex: "title",
+      key: "title",
+      align: "center",
+      width: "25%",
+      render: (text) => <p>{text}</p>,
     },
     {
-      title: '创建时间',
-      dataIndex: 'create_at',
-      key: 'create_at',
-      align: 'center',
-      width: '20%',
-      render: (timeStamp) => <p>{transTime(timeStamp)}</p>
+      title: "创建时间",
+      dataIndex: "create_at",
+      key: "create_at",
+      align: "center",
+      width: "20%",
+      render: (timeStamp) => <p>{transTime(timeStamp)}</p>,
+      sorter: (a, b) => a.create_at - b.create_at,
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: '任务状态',
-      dataIndex: 'state',
-      key: 'state',
-      align: 'center',
+      title: "任务状态",
+      dataIndex: "state",
+      key: "state",
+      align: "center",
+      filterSearch: true,
+      filters: [
+        {
+          text: "标注中",
+          value: "labeling",
+        },
+        {
+          text: "待审核",
+          value: "checking",
+        },
+        {
+          text: "已完成",
+          value: "completed",
+        },
+      ],
+      onFilter: (values, record) => record.state.indexOf(values) !== -1,
       render: (state) => {
         return (
           <Space size={[0, 8]} wrap>
-            {state.map((s: string, idx: number) =>
-              <DemanderStateTag type={s} key={idx} />
-            )}
+            {state.map((s: string, idx: number) => (
+              // <DemanderStateTag type={s} key={idx} />
+              <Tag color={mapState2ColorChinese[s].color} key={idx}>
+                {mapState2ColorChinese[s].description}
+              </Tag>
+            ))}
           </Space>
-        )
-      }
+        );
+      },
     },
     {
-      title: '操作',
-      dataIndex: 'operation',
-      key: 'operation',
-      align: 'center',
-      width: '32%',
+      title: "操作",
+      dataIndex: "operation",
+      key: "operation",
+      align: "center",
+      width: "32%",
       render: (_, record) => {
         return (
           <>
-            <Button type="link" onClick={() => {
-              setIsDetailModalOpen(true);
-              setDetail(record);
-            }}>查看</Button>
-            <Popconfirm title="导出" okText="是" cancelText="否"
+            <Button
+              type="link"
+              onClick={() => {
+                setIsDetailModalOpen(true);
+                setDetail(record);
+              }}
+            >
+              查看
+            </Button>
+            <Popconfirm
+              title="导出"
+              okText="是"
+              cancelText="否"
               description="是否归并数据后导出?"
               onConfirm={() => {
-                DataExportCallback(record.task_id, true)
+                DataExportCallback(record.task_id, true);
               }}
               onCancel={() => {
-                DataExportCallback(record.task_id, false)
+                DataExportCallback(record.task_id, false);
               }}
             >
               <Button type="link">导出</Button>
             </Popconfirm>
-            <Button type="link" onClick={() => {
-              setLoading(true);
-              delete_task(record.task_id)
-            }}>删除</Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setLoading(true);
+                delete_task(record.task_id);
+              }}
+            >
+              删除
+            </Button>
           </>
         );
-      }
-    }
-  ]
+      },
+    },
+  ];
 
   const LabelerTableColumns: ColumnsType<any> = [
     {
-      title: '标注者编号',
-      dataIndex: 'labeler_id',
-      key: 'labeler_id',
-      align: 'center'
+      title: "标注者编号",
+      dataIndex: "labeler_id",
+      key: "labeler_id",
+      align: "center",
     },
     {
-      title: '标注者状态',
-      dataIndex: 'labeler_state',
-      key: 'labeler_state',
-      align: 'center',
+      title: "标注者状态",
+      dataIndex: "labeler_state",
+      key: "labeler_state",
+      align: "center",
       render: (state) => {
         return (
           <Space size={[0, 8]} wrap>
-            <LabelerStateTag type={state} />
+            <Tag color={mapState2ColorChinese[state].color}>
+              {mapState2ColorChinese[state].description}
+            </Tag>
           </Space>
-        )
-      }
+        );
+      },
     },
     {
-      title: '操作',
-      dataIndex: 'labeler_detail',
-      key: 'labeler_detail',
-      align: 'center',
+      title: "操作",
+      dataIndex: "labeler_detail",
+      key: "labeler_detail",
+      align: "center",
       render: (_, record) => {
         return (
           <>
             <Tooltip title="处于待审核状态可以审核">
-              <Button type="link" disabled={record.labeler_state != "checking"} onClick={() => {
-                setLabelerId(record.labeler_id)
-                setIsSample(false)
-                setIsCheckModalOpen(true)
-              }}>全量审核</Button>
+              <Button
+                type="link"
+                disabled={record.labeler_state != "checking"}
+                onClick={() => {
+                  setLabelerId(record.labeler_id);
+                  setIsSample(false);
+                  setIsCheckModalOpen(true);
+                }}
+              >
+                全量审核
+              </Button>
             </Tooltip>
             <Tooltip title="处于待审核状态可以审核">
-              <Button type="link" disabled={record.labeler_state != "checking"} onClick={() => {
-                setLabelerId(record.labeler_id)
-                setIsSample(true)
-                setIsCheckModalOpen(true)
-              }}>抽样审核</Button>
+              <Button
+                type="link"
+                disabled={record.labeler_state != "checking"}
+                onClick={() => {
+                  setLabelerId(record.labeler_id);
+                  setIsSample(true);
+                  setIsCheckModalOpen(true);
+                }}
+              >
+                抽样审核
+              </Button>
             </Tooltip>
             <Tooltip title="审核未通过可以举报">
-              <Button
-                disabled={record.labeler_state != "failed"}
-                type="link"
-              >
+              <Button disabled={record.labeler_state != "failed"} type="link">
                 举报
               </Button>
             </Tooltip>
           </>
         );
-      }
-    }
+      },
+    },
   ];
 
   useEffect(() => {
-    axios
-      .get(`/api/task${props.type}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+    request(`/api/task${props.type}`, "GET")
       .then((response) => {
         const newTasks = response.data.demander_tasks.map((task: any) => {
           return { ...task };
@@ -210,7 +261,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         setTasks(newTasks);
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.reponse?.data);
       });
     setRefreshing(false);
   }, [router, refreshing]);
@@ -218,39 +269,44 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     <>
       <Spin spinning={refreshing} tip="任务列表加载中">
         <Spin spinning={loading} tip="Loading...">
-        <Modal
-          open={isDetailModalOpen}
-          onCancel={() => { setIsDetailModalOpen(false) }}
-          footer={null}
-          width={"100%"}
-          destroyOnClose={true}
-          centered
-        >
           <Modal
-            open={isCheckModalOpen}
-            onCancel={() => { setIsCheckModalOpen(false) }}
+            open={isDetailModalOpen}
+            onCancel={() => {
+              setIsDetailModalOpen(false);
+            }}
             footer={null}
-            destroyOnClose={true}
             width={"100%"}
+            destroyOnClose={true}
+            centered
           >
-            <CheckModel
-              task_id={detail.task_id}
-              labeler_index={labelerId}
-              is_sample={isSample}
-              template={detail.template}
-              setIsCheckModalOpen={setIsCheckModalOpen} />
-          </Modal>
+            <Modal
+              open={isCheckModalOpen}
+              onCancel={() => {
+                setIsCheckModalOpen(false);
+              }}
+              footer={null}
+              destroyOnClose={true}
+              width={"100%"}
+            >
+              <CheckModel
+                task_id={detail.task_id}
+                labeler_index={labelerId}
+                is_sample={isSample}
+                template={detail.template}
+                setIsCheckModalOpen={setIsCheckModalOpen}
+              />
+            </Modal>
           {detail.pass_check ? <></> : <Alert message="该任务尚未通过管理员审核!" type="warning" showIcon />}
           <h3>任务详情</h3>
           <Descriptions bordered column={2}>
             <Descriptions.Item label="标题" span={2}>{detail.title}</Descriptions.Item>
             <Descriptions.Item label="创建时间" span={1}>{transTime(detail.create_at)}</Descriptions.Item>
             <Descriptions.Item label="截止时间" span={1}>{transTime(detail.deadline)}</Descriptions.Item>
-            <Descriptions.Item label="模板" span={1}>{detail.template}</Descriptions.Item>
+            <Descriptions.Item label="模板" span={1}>{mapEntemplate2Zhtemplate[detail.template]}</Descriptions.Item>
             <Descriptions.Item label="状态" span={1}>
               <Space size={[0, 8]} wrap>
                 {detail.state.map((s: string, idx: number) =>
-                  <DemanderStateTag type={s} key={idx} />
+                  <Tag color={mapState2ColorChinese[s].color} key={idx}>{mapState2ColorChinese[s].description}</Tag>
                 )}
               </Space>
             </Descriptions.Item>
@@ -270,12 +326,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               <UpdateTask taskId={detail.task_id} />
             </Panel>
           </Collapse>
-        </Modal>
-        <Table columns={DemanderTaskTableColumns} dataSource={tasks}></Table>
+        </Modal> 
+        <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing}></Table>
         </Spin>
       </Spin>
     </>
-  )
-}
+  );
+};
 
 export default DemanderTaskList;

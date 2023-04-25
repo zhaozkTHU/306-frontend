@@ -20,7 +20,9 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
   });
   // while re-render, get current saved answer & upload status from localstorage
   const [chosenOptions, setChosenOptions] = useState<boolean[]>(() => {
-    const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
+    const storedChosenOptions = localStorage.getItem(
+      `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`
+    );
     return storedChosenOptions ? JSON.parse(storedChosenOptions) : [];
   });
   const [chosenOption, setChosenOption] = useState<{ choiceIndex: number; input?: string }>(() => {
@@ -61,7 +63,9 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       : new Array(filteredTaskData.length).fill(false);
   });
   const [timer, setTimer] = useState(() => {
-    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
+    const storedTimer = localStorage.getItem(
+      `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
+    );
     return storedTimer ? JSON.parse(storedTimer) : 0;
   });
   const [loading, setLoading] = useState(false); // using while upload
@@ -94,8 +98,12 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
   const totalProblemsCount = filteredTaskData.length;
 
   // save cur prob id to localstorage
-  useEffect(() => { // 存储 currentProblemIndex 到 localStorage
-    localStorage.setItem(`currentProblemIndex-${taskInfo.task_id}`, JSON.stringify(currentProblemIndex));
+  useEffect(() => {
+    // 存储 currentProblemIndex 到 localStorage
+    localStorage.setItem(
+      `currentProblemIndex-${taskInfo.task_id}`,
+      JSON.stringify(currentProblemIndex)
+    );
   }, [currentProblemIndex]);
   // save answers into localstorage
   useEffect(() => {
@@ -121,13 +129,17 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
     const interval = setInterval(() => {
       setTimer((prevTimer: number) => prevTimer + 1);
     }, 1000); // 每1000毫秒（1秒）更新一次
-    return () => {  // 清除intervalId以避免内存泄漏
+    return () => {
+      // 清除intervalId以避免内存泄漏
       clearInterval(interval);
     };
   }, [currentProblemIndex]);
   // 使用 useEffect 监听 timer 的变化并存储到 localStorage
   useEffect(() => {
-    localStorage.setItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(timer));
+    localStorage.setItem(
+      `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`,
+      JSON.stringify(timer)
+    );
   }, [timer]);
   // task ddl count
   useEffect(() => {
@@ -145,7 +157,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
   }, [taskInfo.deadline]);
 
   const isCurrentProblemSaved = () => savedProblems[currentProblemIndex];
-  const formatTimeRemaining = (milliseconds:number) => {
+  const formatTimeRemaining = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -364,7 +376,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
           <div>
             Completed: {completedProblemsCount}/{totalProblemsCount}
           </div>
-          
+
           <div
             style={{
               color: timer < taskInfo.time ? "red" : "green",
@@ -374,7 +386,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
           </div>
           <div>
             {`Total time remaining: `}
-            <span style={{ color: timeRemaining > 0 ? "green" : "red"}} >
+            <span style={{ color: timeRemaining > 0 ? "green" : "red" }}>
               {formatTimeRemaining(timeRemaining)}
             </span>
           </div>
@@ -382,33 +394,43 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Divider />
         <div>{currentProblem.description}</div>
         {currentProblem.options.map((option, index) => (
-          <Checkbox key={index} checked={chosenOptions[index]} onChange={handleCheckboxChange(index)}>
-            { taskInfo.template === "ImagesClassification" ? 
-              (<MyImage url={"/api/image?url=" + option} />) : (option)
-            }
+          <Checkbox
+            key={index}
+            checked={chosenOptions[index]}
+            onChange={handleCheckboxChange(index)}
+          >
+            {taskInfo.template === "ImagesClassification" ? (
+              <MyImage url={"/api/file?url=" + option} />
+            ) : (
+              option
+            )}
           </Checkbox>
         ))}
         <Divider />
         <div>
           <Space>
-          <Button onClick={handlePrevious} icon={<LeftCircleOutlined />}>Previous</Button>
-          <Button onClick={handleNext} icon={<RightCircleOutlined />}>Next</Button>
-          <Button 
-            onClick={handleSave}
-            disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-            type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-            icon={<SaveOutlined />}
-          >
-            {timeRemaining <= 0 ? "Deadline passed" : isCurrentProblemSaved() ? "Saved" : "Save"}
-          </Button>
-          <Button 
-            onClick={handleUpload}
-            disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-            type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-            icon={<UploadOutlined />}
-          >
-            {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
-          </Button>
+            <Button onClick={handlePrevious} icon={<LeftCircleOutlined />}>
+              Previous
+            </Button>
+            <Button onClick={handleNext} icon={<RightCircleOutlined />}>
+              Next
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
+              type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
+              icon={<SaveOutlined />}
+            >
+              {timeRemaining <= 0 ? "Deadline passed" : isCurrentProblemSaved() ? "Saved" : "Save"}
+            </Button>
+            <Button
+              onClick={handleUpload}
+              disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
+              type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
+              icon={<UploadOutlined />}
+            >
+              {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
+            </Button>
           </Space>
         </div>
       </div>
@@ -491,9 +513,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       </div>
     );
   } else {
-    return (
-      <div>Error: Invalid task type!</div>
-    );
+    return <div>Error: Invalid task type!</div>;
   }
 };
 

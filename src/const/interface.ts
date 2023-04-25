@@ -28,14 +28,12 @@ export interface ImageFrameProblem {
   url: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
-    leftdown: [number, number];
-    rightup: [number, number];
+    leftup: [number, number];
+    height: number;
+    width: number
   }[];
 }
 
-/**
- * @see 文档中标注示例
- */
 export interface TagProblem {
   description: string;
   url: string;
@@ -50,6 +48,22 @@ export interface TagProblem {
   };
 }
 
+export interface TextReviewProblem {
+  description: string;
+  content: string;
+  data?: boolean;
+}
+
+export interface FileReviewProblem {
+  description: string;
+  url: string;
+  data?: boolean;
+}
+
+export interface PointsCloud {
+  description: string;
+}
+
 export interface TaskInfo {
   task_id?: number;
   title: string;
@@ -61,7 +75,11 @@ export interface TaskInfo {
     | "FaceTag"
     | "ImageFrame"
     | "SoundTag"
-    | "VideoTag";
+    | "VideoTag"
+    | "TextReview"
+    | "ImageReview"
+    | "VideoReview"
+    | "AudioReview";
   reward: number;
   time: number;
   labeler_number: number;
@@ -71,7 +89,9 @@ export interface TaskInfo {
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
     | ImageFrameProblem[]
-    | TagProblem[];
+    | TagProblem[]
+    | TextReviewProblem[]
+    | FileReviewProblem[];
 }
 
 export interface TextClassificationData {
@@ -150,4 +170,34 @@ export function isTagProblem(data: any): data is TagProblem {
       (typeof data.data.choiceIndex === "number" &&
         (data.data.input === undefined || typeof data.data.input === "string")))
   );
+}
+
+type StateColor = {
+  color: string;
+  description: string;
+};
+
+type StateColors = {
+  [state: string]: StateColor;
+};
+
+export const mapState2ColorChinese: StateColors = {
+  designated: { color: "rgb(160, 227, 109)", description: "已分发" },
+  labeling: { color: "rgb(33, 198, 198)", description: "标注中" },
+  rejected: { color: "rgb(203, 8, 21)", description: "已拒绝" },
+  checking: { color: "#c8c027", description: "待审核" },
+  completed: { color: "rgb(33, 198, 39)", description: "已完成" },
+  failed: { color: "rgb(252, 61, 14)", description: "不合格" },
+};
+
+type EnEntemplateZhtemplate = {
+  [state: string]: string;
+}
+export const mapEntemplate2Zhtemplate : EnEntemplateZhtemplate = {
+  TextClassification: "文本分类",
+  ImagesClassification: "图片分类",
+  FaceTag: "骨骼打点",
+  ImageFrame: "图片框选",
+  SoundTag: "音频标注",
+  VideoTag: "视频标注"
 }

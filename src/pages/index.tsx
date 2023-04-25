@@ -8,12 +8,12 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
-import { Form, message, Button, Spin, Modal, Divider, Carousel } from "antd";
-import axios from "axios";
+import { Form, message, Button, Spin, Modal, Divider } from "antd";
 import { isValid } from "@/utils/valid";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import Register from "@/components/register/register";
+import { request } from "@/utils/network";
 
 interface LoginScreenPorps {
   setRole: Dispatch<SetStateAction<string | null>>;
@@ -23,13 +23,12 @@ export default function LoginScreen(props: LoginScreenPorps) {
   const router = useRouter();
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-
+  const CarouselRef = useRef<any>(null);
   const login = async (values: { username: string; hashPassword: string }) => {
-    axios
-      .post("api/user/login", {
-        username: values.username,
-        password: values.hashPassword,
-      })
+    request("/api/user/login", "POST", {
+      username: values.username,
+      password: values.hashPassword,
+    })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
@@ -63,7 +62,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         style={{ top: "0" }}
         centered
       >
-        <Register setModalOpen={setIsRegisterModalOpen} />
+        <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <Grid
@@ -72,16 +71,14 @@ export default function LoginScreen(props: LoginScreenPorps) {
           sm={4}
           md={7}
           sx={{
-            // backgroundImage: 'url(https://source.unsplash.com/random)',
+            backgroundImage: "url(/logo/306.png)",
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-        >
-          
-        </Grid>
+        ></Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{
@@ -207,7 +204,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                       setIsRegisterModalOpen(true);
                     }}
                   >
-                    还没有306账号? 注册一个
+                    注册或验证
                   </Button>
                 </Grid>
               </Grid>
