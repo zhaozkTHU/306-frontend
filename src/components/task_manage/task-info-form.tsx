@@ -1,6 +1,6 @@
 import {
   FaceTagProblem,
-  ImageFramePromblem,
+  ImageFrameProblem,
   ImagesClassificationProblem,
   TagProblem,
   TaskInfo,
@@ -93,7 +93,7 @@ const TaskInfoForm: React.FC<{
         break;
       }
       case "ImageFrame": {
-        task_data = (value.task_data as ImageFramePromblem[]).map((v) => ({
+        task_data = (value.task_data as ImageFrameProblem[]).map((v) => ({
           ...v,
           url: (v.url[0] as any)?.response?.url,
         }));

@@ -1,47 +1,74 @@
 import React, { useState, useEffect } from "react";
-import { Button, Radio, Input, message, Divider } from "antd";
+import { Button, Radio, Input, message, Modal, Steps } from "antd";
 import axios from "axios";
-import {
-  TaskInfo,
-  TagProblem,
-  isSoundTagProblem,
-  isVideoTagProblem,
-} from "@/const/interface";
+import { TaskInfo, TagProblem, isTagProblem } from "@/const/interface";
 import MyAudio from "../my-audio";
 import MyVideo from "../my-video";
 
-function hasSoundUrl(problem: TagProblem | TagProblem): problem is TagProblem {
-  return (problem as TagProblem).url !== undefined;
-}
-function hasVideoUrl(problem: TagProblem | TagProblem): problem is TagProblem {
-  return (problem as TagProblem).url !== undefined;
-}
-
 const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(null);
-  const [inputValue, setInputValue] = useState<string | null>(null);
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter((item) => {
-    if (taskInfo.template === "SoundTag") {
-      return isSoundTagProblem(item);
-    } else if (taskInfo.template === "VideoTag") {
-      return isVideoTagProblem(item);
-    }
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(() => { // keep current pro id
+    const storedCurrentProblemIndex = localStorage.getItem(`currentProblemIndex-${taskInfo.task_id}`);
+    return storedCurrentProblemIndex ? JSON.parse(storedCurrentProblemIndex) : 0;
   });
-  const [chosenOptionsAll, setChosenOptionsAll] = useState<
-    Array<{ choiceIndex: number; input?: string }>
-  >(filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 }));
-  const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(0);
+  const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(() => { // curreny pro choice
+    const storedChosenOptionIndex = localStorage.getItem(`chosenOptionIndex-${taskInfo.task_id}-${currentProblemIndex}`);
+    return storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : null;
+  });
+  const [inputValue, setInputValue] = useState<string | null>(null);
 
-  const currentProblem =
-    taskInfo.template === "SoundTag"
-      ? (filteredTaskData[currentProblemIndex] as TagProblem)
-      : (filteredTaskData[currentProblemIndex] as TagProblem);
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTagProblem);
+  const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<{ choiceIndex: number; input?: string }>>(() => {
+    const storedChosenOptionsAll = localStorage.getItem(`chosenOptionsAll-${taskInfo.task_id}`);
+    return storedChosenOptionsAll
+      ? JSON.parse(storedChosenOptionsAll)
+      : filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 } );
+  });
+  const [savedProblems, setSavedProblems] = useState<boolean[]>(() => {
+    const storedSavedProblems = localStorage.getItem(`savedProblems-${taskInfo.task_id}`);
+    return storedSavedProblems
+      ? JSON.parse(storedSavedProblems)
+      : new Array(filteredTaskData.length).fill(false);
+  });
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(() => {
+    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
+    return storedTimer ? JSON.parse(storedTimer) : 0;
+  });
+  const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
+
+  const currentProblem = filteredTaskData[currentProblemIndex] as TagProblem;
+  const { Step } = Steps;
+
+  const handleStepClick = (index: number) => {
+    const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
+    localStorage.setItem(lastSaveKey, JSON.stringify(timer));
+
+    setCurrentProblemIndex(index);
+    setChosenOptionIndex(filteredTaskData[index].data?.choiceIndex || null);
+    const storedChosenOptions = localStorage.getItem(`chosenOptionIndex-${taskInfo.task_id}-${index}`);
+    setChosenOptionIndex(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+
+    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
+    setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+  };
+
+  const completedProblemsCount = savedProblems.filter((saved) => saved).length;
+  const totalProblemsCount = filteredTaskData.length;
+
+  // save answers into localstorage
+  useEffect(() => {
+    localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
+  }, [chosenOptionsAll]);
+  useEffect(() => {
+    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptionIndex));
+  }, [chosenOptionIndex]);
+  useEffect(() => {
+    localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
+  }, [savedProblems]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer((prevTimer) => prevTimer + 1);
+      setTimer((prevTimer: number) => prevTimer + 1);
     }, 1000);
     return () => {
       clearInterval(interval);
@@ -62,6 +89,11 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleSave = () => {
+    const firstSaveKey = `firstSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
+    if (!localStorage.getItem(firstSaveKey)) {
+      localStorage.setItem(firstSaveKey, JSON.stringify(timer));
+    }
+
     if (timer < taskInfo.time) {
       message.warning("标记太快了！");
       return;
@@ -76,11 +108,16 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleUpload = async () => {
+    const allSaved = savedProblems.every((problemSaved) => problemSaved);
+    if (!allSaved) {
+      message.warning("未保存所有题目答案");
+      return;
+    }
     const tag_data = {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
-        soundUrl: problem.soundUrl,
+        soundUrl: problem.url,
         description: problem.description,
         choice: problem.choice,
         data: chosenOptionsAll[problemIndex],
@@ -111,7 +148,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handlePrevious = () => {
     if (currentProblemIndex > 0) {
-      setCurrentProblemIndex((prevState) => prevState - 1);
+      setCurrentProblemIndex((prevState: number) => prevState - 1);
     } else {
       message.warning("这是第一道题！");
     }
@@ -119,55 +156,22 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handleNext = () => {
     if (currentProblemIndex < filteredTaskData.length - 1) {
-      setCurrentProblemIndex((prevState) => prevState + 1);
+      setCurrentProblemIndex((prevState: number) => prevState + 1);
     } else {
       message.warning("这是最后一道题！");
     }
   };
 
-  if (taskInfo.template == "SoundTag" && hasSoundUrl(currentProblem)) {
+  if (taskInfo.template === "SoundTag" || taskInfo.template === "VideoTag") {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>{currentProblem.description}</div>
           <div>{`Timer: ${timer}s`}</div>
         </div>
-        <MyAudio url={"/api/audio?url=" + currentProblem.url} controls />
-        <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
-          {currentProblem.choice.map((option, index) => (
-            <Radio key={index} value={index}>
-              {option.text}
-              {option.needInput && (
-                <Input
-                  style={{ marginLeft: 8 }}
-                  value={chosenOptionIndex === index ? inputValue || "" : ""}
-                  onChange={handleInputChange}
-                  disabled={chosenOptionIndex !== index}
-                />
-              )}
-            </Radio>
-          ))}
-        </Radio.Group>
-        <div>
-          <Button onClick={handlePrevious}>上一题</Button>
-          <Button onClick={handleNext}>下一题</Button>
-          <Button onClick={handleSave}>保存</Button>
-          <Button onClick={handleUpload} loading={loading}>
-            上传
-          </Button>
-        </div>
-      </div>
-    );
-  } else if (taskInfo.template == "VideoTag" && hasVideoUrl(currentProblem)) {
-    return (
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>{currentProblem.description}</div>
-          <div>{`Timer: ${timer}s`}</div>
-        </div>
-        <Divider />
-        <MyVideo url={"/api/video?url=" + currentProblem.url} controls />
-        <Divider />
+        { taskInfo.template === "SoundTag" ? 
+          (<MyAudio url={"/api/audio?url=" + currentProblem.url} controls />) : (<MyVideo url={"/api/video?url=" + currentProblem.url} controls />)
+        }
         <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
           {currentProblem.choice.map((option, index) => (
             <Radio key={index} value={index}>
@@ -194,7 +198,9 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
       </div>
     );
   } else {
-    return <>error type!</>;
+    return (
+      <div>Error: Invalid task type!</div>
+    );
   }
 };
 
