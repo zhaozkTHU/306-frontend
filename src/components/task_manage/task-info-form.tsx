@@ -1,5 +1,4 @@
 import {
-  FaceTagProblem,
   ImageFramePromblem,
   ImagesClassificationProblem,
   TagProblem,
@@ -9,7 +8,6 @@ import {
   Form,
   message,
   Input,
-  Radio,
   InputNumber,
   DatePicker,
   Row,
@@ -22,7 +20,7 @@ import {
   Select,
 } from "antd";
 import dayjs from "dayjs";
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import locale from "antd/locale/zh_CN";
 import {
   FaceTagDataForm,
@@ -34,7 +32,6 @@ import {
   TextReviewDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
-import { randomUUID } from "crypto";
 import type { RcFile } from "antd/es/upload";
 import { Modal } from "antd/lib";
 import axios from "axios";
@@ -63,22 +60,27 @@ const TaskInfoForm: React.FC<{
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [form] = Form.useForm<TaskInfo>();
-  const initialValues: TaskInfo | undefined = useMemo(() => {
-    if (props.taskInfo === undefined) return undefined;
+
+  // init form if props.taskInfo exists
+  useEffect(() => {
+    if (props.taskInfo === undefined) return;
     const value = { ...props.taskInfo };
     value.deadline = dayjs(value.deadline) as any;
-    if (value.template === "ImagesClassification")
-      (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+    if (value.template === "ImagesClassification") {
+      console.log("old", value.task_data);
+      value.task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
         ...v,
         options: v.options.map(
           (url): UploadFile => ({
-            uid: randomUUID(),
+            uid: crypto.randomUUID(),
             name: url.substring(url.lastIndexOf("/")),
             status: "done",
             url: url,
           })
         ),
-      }));
+      })) as any;
+      console.log("new", value.task_data);
+    }
     if (
       value.template === "ImageFrame" ||
       value.template === "FaceTag" ||
@@ -89,19 +91,16 @@ const TaskInfoForm: React.FC<{
         ...v,
         url: [
           {
-            uid: randomUUID(),
+            uid: crypto.randomUUID(),
             name: v.url.substring(v.url.lastIndexOf("/")),
             status: "done",
             url: v.url,
           },
         ] as UploadFile[],
       }));
-    return value;
-  }, [props.taskInfo]);
-  if (props.taskInfo !== undefined) {
-    form.setFieldsValue(props.taskInfo);
-    form.setFieldValue("deadline", dayjs(props.taskInfo.deadline));
-  }
+    console.log(value);
+    form.setFieldsValue(value);
+  }, [form, props.taskInfo]);
 
   const onFinish = () => {
     setLoading(true);
@@ -134,23 +133,23 @@ const TaskInfoForm: React.FC<{
   };
 
   const handlePreview = async (file: UploadFile) => {
+    console.log("handlePreview");
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as RcFile);
     }
     if (file.url && !file.preview) {
+      console.log(file.url);
       file.preview = await getBase64(
         (
-          (
-            await axios.get("/api/file", {
-              responseType: "arraybuffer",
-              params: { url: file.url },
-              headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            })
-          ).data as FormData
-        ).get("file") as File
+          await axios.get("/api/file", {
+            responseType: "arraybuffer",
+            params: { url: file.url },
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          })
+        ).data
       );
     }
-    setPreviewImage(file.url || (file.preview as string));
+    setPreviewImage(file.preview as string);
     setPreviewOpen(true);
     setPreviewTitle(file.name);
   };
@@ -171,7 +170,7 @@ const TaskInfoForm: React.FC<{
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
-        initialValues={initialValues}
+        // initialValues={initialValues}
       >
         <Form.Item
           label="任务标题"
