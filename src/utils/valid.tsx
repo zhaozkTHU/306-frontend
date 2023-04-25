@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import axios from "axios";
 
 /**
  *
@@ -20,17 +20,14 @@ export const isValid = (s: string, isStrict: boolean): boolean => {
 export const transTime = (time: number): string => {
   return `${new Date(time).getFullYear()}-${new Date(time).getMonth() + 1}-${new Date(
     time
-  ).getDate()} ${
-    new Date(time).getHours() < 10 ? "0" + new Date(time).getHours() : new Date(time).getHours()
-  }:${
-    new Date(time).getMinutes() < 10
+  ).getDate()} ${new Date(time).getHours() < 10 ? "0" + new Date(time).getHours() : new Date(time).getHours()
+    }:${new Date(time).getMinutes() < 10
       ? "0" + new Date(time).getMinutes()
       : new Date(time).getMinutes()
-  }:${
-    new Date(time).getSeconds() < 10
+    }:${new Date(time).getSeconds() < 10
       ? "0" + new Date(time).getSeconds()
       : new Date(time).getSeconds()
-  }`;
+    }`;
 };
 
 /**
@@ -50,6 +47,27 @@ export const isIn = (arr: any[], ele: any): boolean => {
 
 /**
  *
- * @brief delete a task by the task_id
+ * @brief translate the url to url
  * @param taskid
  */
+
+export const translateUrl = (url: string): HTMLImageElement => {
+  const image = new Image();
+  axios.get(`/api/file`, {
+    responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
+    params: { url: url },
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  })
+    .then((response) => {
+      const blob = new Blob([response.data], { type: "image/jpeg" });
+      const _url = URL.createObjectURL(blob);
+      image.src = _url
+    })
+    .catch((error) => {
+      image.src = url
+      console.error(error);
+    });
+  return image
+}

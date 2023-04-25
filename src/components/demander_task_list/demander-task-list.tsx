@@ -20,7 +20,7 @@ import { Table } from "antd/lib";
 import DataExportCallback from "@/components/data_export/dataExport";
 import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
-import { mapState2ColorChinese } from "@/const/interface";
+import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
 import { request } from "../../utils/network";
 
 interface DemanderTaskTableEntry {
@@ -296,56 +296,38 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 setIsCheckModalOpen={setIsCheckModalOpen}
               />
             </Modal>
-            {detail.pass_check ? (
-              <></>
-            ) : (
-              <Alert message="该任务尚未通过管理员审核!" type="warning" showIcon />
-            )}
-            <h3>任务详情</h3>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label="标题" span={2}>
-                {detail.title}
-              </Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={1}>
-                {transTime(detail.create_at)}
-              </Descriptions.Item>
-              <Descriptions.Item label="截止时间" span={1}>
-                {transTime(detail.deadline)}
-              </Descriptions.Item>
-              <Descriptions.Item label="模板" span={1}>
-                {detail.template}
-              </Descriptions.Item>
-              <Descriptions.Item label="状态" span={1}>
-                <Space size={[0, 8]} wrap>
-                  {detail.state.map((s: string, idx: number) => (
-                    <Tag color={mapState2ColorChinese[s].color} key={idx}>
-                      {mapState2ColorChinese[s].description}
-                    </Tag>
-                  ))}
-                </Space>
-              </Descriptions.Item>
-              <Descriptions.Item label="要求标注方人数" span={1}>
-                {detail.labeler_number}
-              </Descriptions.Item>
-            </Descriptions>
-            <h3>标注者信息</h3>
-            <Table
-              columns={LabelerTableColumns}
-              dataSource={detail.labeler_id.map((id, idx) => {
-                return {
-                  labeler_id: id,
-                  labeler_state: detail.label_state[idx],
-                };
-              })}
-            />
-            <h3>题目详情</h3>
-            <Collapse>
-              <Panel key={""} header={"点击此处查看题目详情，尚未分发的任务可以更改题目内容"}>
-                <UpdateTask taskId={detail.task_id} />
-              </Panel>
-            </Collapse>
-          </Modal>
-          <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing}></Table>
+          {detail.pass_check ? <></> : <Alert message="该任务尚未通过管理员审核!" type="warning" showIcon />}
+          <h3>任务详情</h3>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="标题" span={2}>{detail.title}</Descriptions.Item>
+            <Descriptions.Item label="创建时间" span={1}>{transTime(detail.create_at)}</Descriptions.Item>
+            <Descriptions.Item label="截止时间" span={1}>{transTime(detail.deadline)}</Descriptions.Item>
+            <Descriptions.Item label="模板" span={1}>{mapEntemplate2Zhtemplate[detail.template]}</Descriptions.Item>
+            <Descriptions.Item label="状态" span={1}>
+              <Space size={[0, 8]} wrap>
+                {detail.state.map((s: string, idx: number) =>
+                  <Tag color={mapState2ColorChinese[s].color} key={idx}>{mapState2ColorChinese[s].description}</Tag>
+                )}
+              </Space>
+            </Descriptions.Item>
+            <Descriptions.Item label="要求标注方人数" span={1}>{detail.labeler_number}</Descriptions.Item>
+          </Descriptions>
+          <h3>标注者信息</h3>
+          <Table columns={LabelerTableColumns} dataSource={detail.labeler_id.map((id, idx) => {
+            return {
+              labeler_id: id,
+              labeler_state: detail.label_state[idx]
+            }
+          })}
+          />
+          <h3>题目详情</h3>
+          <Collapse>
+            <Panel key={""} header={"点击此处查看题目详情，尚未分发的任务可以更改题目内容"}>
+              <UpdateTask taskId={detail.task_id} />
+            </Panel>
+          </Collapse>
+        </Modal> 
+        <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing}></Table>
         </Spin>
       </Spin>
     </>

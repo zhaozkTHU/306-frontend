@@ -86,6 +86,7 @@ export interface MyLayoutProps {
 const MyLayout = (props: MyLayoutProps) => {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [pageHead, setPageHead] = useState<string>("用户信息");
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -123,6 +124,7 @@ const MyLayout = (props: MyLayoutProps) => {
         collapsed={collapsed}
         style={{
           height: "100%",
+          zIndex: 9
         }}
         theme="light"
         collapsedWidth="0"
@@ -157,7 +159,6 @@ const MyLayout = (props: MyLayoutProps) => {
           mode="inline"
           items={mapRole2Menu[props.role]}
           onSelect={(e) => {
-            // router.push(`/${props.role}/${e.key}`);
             router.push(`${e.key}`);
           }}
         />
@@ -182,7 +183,7 @@ const MyLayout = (props: MyLayoutProps) => {
               setCollapsed((i) => !i);
             }}
             style={{
-              fontSize: "16px",
+              fontSize: "25px",
               width: 80,
               height: 80,
               color: "white",
