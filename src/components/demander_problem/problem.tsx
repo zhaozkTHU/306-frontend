@@ -1,4 +1,7 @@
 import { Card, Checkbox, Divider, Image } from "antd";
+import { CompositionImage, ImageProps } from "antd/es/image";
+import CanvasImage from "../canvas_image/canvas-image";
+import ImageFormatter from "../image-formatter";
 import MyImage from "../my-img";
 
 interface ProbelmProps {
@@ -11,16 +14,17 @@ interface ProbelmProps {
 const Problem = (props: ProbelmProps) => {
   let problemContent;
   if (props.template == "TextClassification") {
-    problemContent = props.problem.options.map((option: string, index: number) => (
-      <div key={index}>
-        <Checkbox
-          defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
-          disabled={true}
-        >
-          {option}
-        </Checkbox>
-      </div>
-    ));
+    const selected: string[] = [];
+    if (props.showto == "demander") {
+      for (let i = 0; i < props.problem.options.length; i++) {
+        if (props.problem.chosen[i]) {
+          selected.push(props.problem.options[i]);
+        }
+      }
+    }
+    problemContent = (
+      <Checkbox.Group options={props.problem.options} defaultValue={selected} disabled={true} />
+    )
   } else if (props.template == "ImagesClassification") {
     problemContent = (
       <Image.PreviewGroup>
@@ -30,7 +34,15 @@ const Problem = (props: ProbelmProps) => {
               defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
               disabled={true}
             >
-              <MyImage url={`${option}`} />
+              <ImageFormatter>
+                <MyImage url={`${option}`} 
+                  style={{
+                    objectFit: "contain",
+                    objectPosition: "center center"
+                  }}
+                  alt="图片加载失败"
+                />
+              </ImageFormatter>
             </Checkbox>
             <Divider />
           </div>
@@ -38,8 +50,13 @@ const Problem = (props: ProbelmProps) => {
       </Image.PreviewGroup>
     );
   } else if (props.template == "FaceTag") {
-    problemContent = <MyImage url={`${props.problem.url}`} />;
+    problemContent = (
+      <CanvasImage data={props.problem.data} src={props.problem.url} type="point" />
+    );
   } else if (props.template == "ImageFrame") {
+    problemContent = (
+      <CanvasImage data={props.problem.data} src={props.problem.url} type="rectangle" />
+    )
   } else if (props.template == "SoundTag") {
   } else if (props.template == "VideoTag") {
   }

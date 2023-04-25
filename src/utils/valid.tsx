@@ -1,5 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
-import { request } from "./network";
+import axios from "axios";
 
 /**
  *
@@ -52,18 +51,23 @@ export const isIn = (arr: any[], ele: any): boolean => {
  * @param taskid
  */
 
-export const translateUrl = (url: string): string => {
-  request("/api/file", "GET", {
+export const translateUrl = (url: string): HTMLImageElement => {
+  const image = new Image();
+  axios.get(`/api/file`, {
     responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
     params: { url: url },
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   })
     .then((response) => {
       const blob = new Blob([response.data], { type: "image/jpeg" });
-      const url = URL.createObjectURL(blob);
-      return url
+      const _url = URL.createObjectURL(blob);
+      image.src = _url
     })
     .catch((error) => {
+      image.src = url
       console.error(error);
     });
-  return url
+  return image
 }
