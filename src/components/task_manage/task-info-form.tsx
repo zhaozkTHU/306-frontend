@@ -1,5 +1,5 @@
 import {
-  ImageFramePromblem,
+  ImageFrameProblem,
   ImagesClassificationProblem,
   TagProblem,
   TaskInfo,
@@ -91,7 +91,7 @@ const TaskInfoForm: React.FC<{
       value.template === "SoundTag" ||
       value.template === "VideoTag"
     )
-      (value.task_data as ImageFramePromblem[]).map((v) => ({
+      (value.task_data as ImageFrameProblem[]).map((v) => ({
         ...v,
         url: [
           {

@@ -6,27 +6,69 @@ import MyAudio from "../my-audio";
 import MyVideo from "../my-video";
 
 const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(null);
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(() => { // keep current pro id
+    const storedCurrentProblemIndex = localStorage.getItem(`currentProblemIndex-${taskInfo.task_id}`);
+    return storedCurrentProblemIndex ? JSON.parse(storedCurrentProblemIndex) : 0;
+  });
+  const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(() => { // curreny pro choice
+    const storedChosenOptionIndex = localStorage.getItem(`chosenOptionIndex-${taskInfo.task_id}-${currentProblemIndex}`);
+    return storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : null;
+  });
   const [inputValue, setInputValue] = useState<string | null>(null);
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTagProblem);
-  const [chosenOptionsAll, setChosenOptionsAll] = useState<
-    Array<{ choiceIndex: number; input?: string }>
-  >(filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 }));
-  const [savedProblems, setSavedProblems] = useState<boolean[]>(
-    new Array(filteredTaskData.length).fill(false)
-  );
-  const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(0);
 
-  const currentProblem =
-    taskInfo.template === "SoundTag"
-      ? (filteredTaskData[currentProblemIndex] as TagProblem)
-      : (filteredTaskData[currentProblemIndex] as TagProblem);
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTagProblem);
+  const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<{ choiceIndex: number; input?: string }>>(() => {
+    const storedChosenOptionsAll = localStorage.getItem(`chosenOptionsAll-${taskInfo.task_id}`);
+    return storedChosenOptionsAll
+      ? JSON.parse(storedChosenOptionsAll)
+      : filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 } );
+  });
+  const [savedProblems, setSavedProblems] = useState<boolean[]>(() => {
+    const storedSavedProblems = localStorage.getItem(`savedProblems-${taskInfo.task_id}`);
+    return storedSavedProblems
+      ? JSON.parse(storedSavedProblems)
+      : new Array(filteredTaskData.length).fill(false);
+  });
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(() => {
+    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
+    return storedTimer ? JSON.parse(storedTimer) : 0;
+  });
+  const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
+
+  const currentProblem = filteredTaskData[currentProblemIndex] as TagProblem;
+  const { Step } = Steps;
+
+  const handleStepClick = (index: number) => {
+    const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
+    localStorage.setItem(lastSaveKey, JSON.stringify(timer));
+
+    setCurrentProblemIndex(index);
+    setChosenOptionIndex(filteredTaskData[index].data?.choiceIndex || null);
+    const storedChosenOptions = localStorage.getItem(`chosenOptionIndex-${taskInfo.task_id}-${index}`);
+    setChosenOptionIndex(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+
+    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
+    setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+  };
+
+  const completedProblemsCount = savedProblems.filter((saved) => saved).length;
+  const totalProblemsCount = filteredTaskData.length;
+
+  // save answers into localstorage
+  useEffect(() => {
+    localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
+  }, [chosenOptionsAll]);
+  useEffect(() => {
+    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptionIndex));
+  }, [chosenOptionIndex]);
+  useEffect(() => {
+    localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
+  }, [savedProblems]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer((prevTimer) => prevTimer + 1);
+      setTimer((prevTimer: number) => prevTimer + 1);
     }, 1000);
     return () => {
       clearInterval(interval);
@@ -106,7 +148,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handlePrevious = () => {
     if (currentProblemIndex > 0) {
-      setCurrentProblemIndex((prevState) => prevState - 1);
+      setCurrentProblemIndex((prevState: number) => prevState - 1);
     } else {
       message.warning("这是第一道题！");
     }
@@ -114,7 +156,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   const handleNext = () => {
     if (currentProblemIndex < filteredTaskData.length - 1) {
-      setCurrentProblemIndex((prevState) => prevState + 1);
+      setCurrentProblemIndex((prevState: number) => prevState + 1);
     } else {
       message.warning("这是最后一道题！");
     }

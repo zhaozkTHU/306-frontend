@@ -1,47 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal, Steps, Divider, Space, Radio, Input } from "antd";
+import { Button, Checkbox, message, Modal, Steps, Divider, Space } from "antd";
 import { SaveOutlined, UploadOutlined, RightCircleOutlined, LeftCircleOutlined } from '@ant-design/icons';
 import axios from "axios";
-import { TaskInfo, isClassificationProblem, TagProblem, isTagProblem } from "@/const/interface";
+import {
+  TaskInfo,
+  isFaceTagProblem,
+  FaceTagProblem,
+  isImageFrameProblem,
+  ImageFrameProblem,
+} from "@/const/interface";
 import MyImage from "../my-img";
-import MyAudio from "../my-audio";
-import MyVideo from "../my-video";
 
-interface ClassificationProblem {
-  description: string;
-  options: string[];
-  chosen?: boolean[];
-}
-
-const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
+const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => { // keep current pro id
     const storedCurrentProblemIndex = localStorage.getItem(`currentProblemIndex-${taskInfo.task_id}`);
     return storedCurrentProblemIndex ? JSON.parse(storedCurrentProblemIndex) : 0;
   });
   // while re-render, get current saved answer & upload status from localstorage
   const [chosenOptions, setChosenOptions] = useState<boolean[]>(() => {
-    const storedChosenOptions = localStorage.getItem(
-      `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`
-    );
+    const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
     return storedChosenOptions ? JSON.parse(storedChosenOptions) : [];
   });
-  const [chosenOption, setChosenOption] = useState<{ choiceIndex: number; input?: string }>(() => {
-    const storedChosenOption = localStorage.getItem(`chosenOption-${taskInfo.task_id}-${currentProblemIndex}`);
-    return storedChosenOption ? JSON.parse(storedChosenOption) : { choiceIndex: -1 };
-  });
-  const [inputValue, setInputValue] = useState<string>(() => {
-      const storedInputValue = localStorage.getItem(`inputValue-${taskInfo.task_id}-${currentProblemIndex}`);
-      return storedInputValue ? JSON.parse(storedInputValue) : "";
-  });
-  
   const [uploadCompleted, setUploadCompleted] = useState<boolean>(() => { // whether finished upload
     const storedUploadCompleted = localStorage.getItem(`uploadCompleted-${taskInfo.task_id}`);
     return storedUploadCompleted ? JSON.parse(storedUploadCompleted) : false;
   });
   const filteredTaskData = (taskInfo.task_data as Array<any>).filter(
-    (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") ?
-    isClassificationProblem : isTagProblem
-    );
+    (taskInfo.template === "FaceTag") ? isFaceTagProblem : isImageFrameProblem
+  );
   // while re-render, get the answer from localstorage
   const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<boolean[]>>(() => {
     const storedChosenOptionsAll = localStorage.getItem(`chosenOptionsAll-${taskInfo.task_id}`);
@@ -49,13 +35,6 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       ? JSON.parse(storedChosenOptionsAll)
       : filteredTaskData.map((problem) => problem.options.map(() => false));
   });
-  const [chosenOptionAll, setChosenOptionAll] = useState<Array<{ choiceIndex: number; input?: string }>>(() => {
-    const storedChosenOptionAll = localStorage.getItem(`chosenOptionAll-${taskInfo.task_id}`);
-    return storedChosenOptionAll
-      ? JSON.parse(storedChosenOptionAll)
-      : filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 } );
-  });
-
   const [savedProblems, setSavedProblems] = useState<boolean[]>(() => {
     const storedSavedProblems = localStorage.getItem(`savedProblems-${taskInfo.task_id}`);
     return storedSavedProblems
@@ -63,17 +42,13 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       : new Array(filteredTaskData.length).fill(false);
   });
   const [timer, setTimer] = useState(() => {
-    const storedTimer = localStorage.getItem(
-      `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-    );
+    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
     return storedTimer ? JSON.parse(storedTimer) : 0;
   });
   const [loading, setLoading] = useState(false); // using while upload
   const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
 
-  const currentProblem = (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") ? 
-    (filteredTaskData[currentProblemIndex] as ClassificationProblem) : 
-    (filteredTaskData[currentProblemIndex] as TagProblem) ;
+  const currentProblem = (taskInfo.template === 'FaceTag') ? (filteredTaskData[currentProblemIndex] as FaceTagProblem) : (filteredTaskData[currentProblemIndex] as ImageFrameProblem);
   const { Step } = Steps;
 
   const handleStepClick = (index: number) => {
@@ -81,15 +56,10 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
     localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
     setCurrentProblemIndex(index);
-    if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
-      setChosenOptions(filteredTaskData[index].chosen || []);
-      const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${index}`);
-      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
-    } else {
-      setChosenOption(filteredTaskData[index].data || { choiceIndex: -1 });
-      const storedChosenOption = localStorage.getItem(`chosenOption-${taskInfo.task_id}-${index}`);
-      setChosenOption(storedChosenOption ? JSON.parse(storedChosenOption) : { choiceIndex: -1 });
-    }
+    setChosenOptions(filteredTaskData[index].chosen || []);
+    const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${index}`);
+    setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+
     const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
     setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
   };
@@ -98,48 +68,34 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
   const totalProblemsCount = filteredTaskData.length;
 
   // save cur prob id to localstorage
-  useEffect(() => {
-    // 存储 currentProblemIndex 到 localStorage
-    localStorage.setItem(
-      `currentProblemIndex-${taskInfo.task_id}`,
-      JSON.stringify(currentProblemIndex)
-    );
+  useEffect(() => { // 存储 currentProblemIndex 到 localStorage
+    localStorage.setItem(`currentProblemIndex-${taskInfo.task_id}`, JSON.stringify(currentProblemIndex));
   }, [currentProblemIndex]);
+
   // save answers into localstorage
   useEffect(() => {
     localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
   }, [chosenOptionsAll]);
   useEffect(() => {
-    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOption));
+    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptions));
   }, [chosenOptions]);
-  useEffect(() => {
-    localStorage.setItem(`chosenOptionAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
-  }, [chosenOptionAll]);
-  useEffect(() => {
-    localStorage.setItem(`chosenOption-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOption));
-  }, [chosenOption]);
-  useEffect(() => {
-    localStorage.setItem(`inputValue-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(inputValue));
-  }, [inputValue]);
   useEffect(() => {
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
   }, [savedProblems]);
+
   // single problem count
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prevTimer: number) => prevTimer + 1);
     }, 1000); // 每1000毫秒（1秒）更新一次
-    return () => {
-      // 清除intervalId以避免内存泄漏
+    return () => {  // 清除intervalId以避免内存泄漏
       clearInterval(interval);
     };
   }, [currentProblemIndex]);
+  
   // 使用 useEffect 监听 timer 的变化并存储到 localStorage
   useEffect(() => {
-    localStorage.setItem(
-      `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`,
-      JSON.stringify(timer)
-    );
+    localStorage.setItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(timer));
   }, [timer]);
   // task ddl count
   useEffect(() => {
@@ -157,7 +113,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
   }, [taskInfo.deadline]);
 
   const isCurrentProblemSaved = () => savedProblems[currentProblemIndex];
-  const formatTimeRemaining = (milliseconds: number) => {
+  const formatTimeRemaining = (milliseconds:number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -179,12 +135,6 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
     });
   };
 
-  const handleSVChange = (e: any) => {
-    setChosenOption(e.target.value);
-  };
-  const handleInputChange = (e: any) => {
-    setInputValue(e.target.value);
-  };
   const handleSave = () => {
     const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
     localStorage.setItem(lastSaveKey, JSON.stringify(timer));
@@ -203,22 +153,16 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
     newTaskData[currentProblemIndex].chosen = modifiedchosenOptions;
     setChosenOptionsAll(newTaskData.map((problem) => problem.chosen || [])); 
-    const updatedChosenOptionAll = chosenOptionAll.slice(); // copy
-    updatedChosenOptionAll[currentProblemIndex] = { choiceIndex: chosenOption.choiceIndex, input: inputValue };
-    setChosenOptionAll(updatedChosenOptionAll);
-
     localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
-    localStorage.setItem(`chosenOptionAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionAll));
     const newSavedProblems = [...savedProblems];
     newSavedProblems[currentProblemIndex] = true;
     setSavedProblems(newSavedProblems);
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
-
     localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptions));
-    localStorage.setItem(`chosenOption-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOption));
 
     message.success("Saved!");
   };
+
   const handleUpload = () => {
     Modal.confirm({
       title: "Confirm Upload",
@@ -239,27 +183,20 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       message.warning("未保存所有题目答案");
       return;
     }
+
     const modifiedchosenOptionsAll = chosenOptionsAll.map((problem) =>
       problem.map((option) => (option === null ? false : option))
     );
-    const tag_data = (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") ? 
-    { tag_style: taskInfo.template,
+    const tag_data = {
+      tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
         description: problem.description,
         options: problem.options,
         chosen: modifiedchosenOptionsAll[problemIndex].slice(0, problem.options.length),
       })),
-    } : {
-      tag_style: taskInfo.template,
-      tag_time: Date.now(),
-      tags: filteredTaskData.map((problem, problemIndex) => ({
-        description: problem.description,
-        url: problem.url,
-        choice: problem.choice,
-        data: chosenOptionAll[problemIndex],
-      })),
     };
+
     const token = localStorage.getItem("token");
     setLoading(true);
     axios
@@ -283,8 +220,9 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
         setLoading(false);
       });
   };
+
   const handlePrevious = () => {
-    if (!isCurrentProblemSaved() && uploadCompleted === false) {
+    if (!isCurrentProblemSaved()) {
       Modal.confirm({
         title: "Unsaved Changes",
         content: "You have unsaved changes. Are you sure you want to switch questions?",
@@ -303,17 +241,11 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
       setCurrentProblemIndex((prevState: number) => prevState - 1);
-      if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
-        const newChosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
-        setChosenOptions(newChosenOptions);
-        const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
-        setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
-      } else {
-        const newChosenOption = filteredTaskData[currentProblemIndex].choice || { choiceIndex: -1 };
-        setChosenOption(newChosenOption);
-        const storedChosenOption = localStorage.getItem(`chosenOption-${taskInfo.task_id}-${currentProblemIndex}`);
-        setChosenOption(storedChosenOption ? JSON.parse(storedChosenOption) : { choiceIndex: -1 });
-      }
+      const newChosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
+      setChosenOptions(newChosenOptions);
+      const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
+      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+
       const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
       setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
     } else {
@@ -322,7 +254,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
   };
 
   const handleNext = () => {
-    if (!isCurrentProblemSaved() && uploadCompleted === false) {
+    if (!isCurrentProblemSaved()) {
       Modal.confirm({
         title: "Unsaved Changes",
         content: "You have unsaved changes. Are you sure you want to switch questions?",
@@ -339,19 +271,14 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
     if (currentProblemIndex < filteredTaskData.length - 1) {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
+
       
       setCurrentProblemIndex((prevState: number) => prevState + 1);
-      if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
-        const newchosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
-        setChosenOptions(newchosenOptions);
-        const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
-        setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
-      } else {
-        const newchosenOption = filteredTaskData[currentProblemIndex].choice || { choiceIndex: -1 };
-        setChosenOption(newchosenOption);
-        const storedChosenOption = localStorage.getItem(`chosenOption-${taskInfo.task_id}-${currentProblemIndex}`);
-        setChosenOption(storedChosenOption ? JSON.parse(storedChosenOption) : { choiceIndex: -1 });
-      }
+      const newchosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
+      setChosenOptions(newchosenOptions);
+      const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
+      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+
       const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
       setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
     } else {
@@ -359,83 +286,7 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
     }
   };
 
-  if ((taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") && isClassificationProblem(currentProblem)) {
-    return (
-      <div>
-        <Steps current={currentProblemIndex}>
-          {filteredTaskData.map((_, index) => (
-            <Step
-              key={index}
-              status={savedProblems[index] ? "finish" : "wait"}
-              onClick={() => handleStepClick(index)}
-            />
-          ))}
-        </Steps>
-        <Divider />
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>
-            Completed: {completedProblemsCount}/{totalProblemsCount}
-          </div>
-
-          <div
-            style={{
-              color: timer < taskInfo.time ? "red" : "green",
-            }}
-          >
-            {`Timer: ${timer}s`}
-          </div>
-          <div>
-            {`Total time remaining: `}
-            <span style={{ color: timeRemaining > 0 ? "green" : "red" }}>
-              {formatTimeRemaining(timeRemaining)}
-            </span>
-          </div>
-        </div>
-        <Divider />
-        <div>{currentProblem.description}</div>
-        {currentProblem.options.map((option, index) => (
-          <Checkbox
-            key={index}
-            checked={chosenOptions[index]}
-            onChange={handleCheckboxChange(index)}
-          >
-            {taskInfo.template === "ImagesClassification" ? (
-              <MyImage url={"/api/file?url=" + option} />
-            ) : (
-              option
-            )}
-          </Checkbox>
-        ))}
-        <Divider />
-        <div>
-          <Space>
-            <Button onClick={handlePrevious} icon={<LeftCircleOutlined />}>
-              Previous
-            </Button>
-            <Button onClick={handleNext} icon={<RightCircleOutlined />}>
-              Next
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-              type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-              icon={<SaveOutlined />}
-            >
-              {timeRemaining <= 0 ? "Deadline passed" : isCurrentProblemSaved() ? "Saved" : "Save"}
-            </Button>
-            <Button
-              onClick={handleUpload}
-              disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
-              type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
-              icon={<UploadOutlined />}
-            >
-              {uploadCompleted ? "Uploaded" : timeRemaining <= 0 ? "Deadline passed" : "Upload"}
-            </Button>
-          </Space>
-        </div>
-      </div>
-    );
-  } if ((taskInfo.template === "SoundTag" || taskInfo.template === "VideoTag") && isTagProblem(currentProblem)) {
+  if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
     return (
       <div>
         <Steps current={currentProblemIndex}>
@@ -469,24 +320,6 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem.description}</div>
-        { taskInfo.template === "SoundTag" ? 
-          (<MyAudio url={"/api/audio?url=" + currentProblem.url} controls />) : (<MyVideo url={"/api/video?url=" + currentProblem.url} controls />)
-        }
-        <Radio.Group onChange={handleSVChange} value={chosenOption}>
-          {currentProblem.choice.map((option, index) => (
-            <Radio key={index} value={index}>
-              {option.text}
-              {option.needInput && (
-                <Input
-                  style={{ marginLeft: 8 }}
-                  value={chosenOption.choiceIndex === index ? inputValue || "" : ""}
-                  onChange={handleInputChange}
-                  disabled={chosenOption.choiceIndex !== index}
-                />
-              )}
-            </Radio>
-          ))}
-        </Radio.Group>
         <Divider />
         <div>
           <Space>
@@ -513,8 +346,10 @@ const OptionComponent: React.FC<TaskInfo> = (taskInfo) => {
       </div>
     );
   } else {
-    return <div>Error: Invalid task type!</div>;
+    return (
+      <div>Error: Invalid task type!</div>
+    );
   }
 };
 
-export default OptionComponent;
+export default AnnotationComponent;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
 import { TaskInfo } from "@/const/interface";
-import ClassificationComponent from "@/components/task_label/Option_tag";
+import OptionComponent from "@/components/task_label/Option_tag";
 import SVTagComponent from "@/components/task_label/Audio_Video_tag";
 
 interface TagBoardProps {
@@ -26,7 +26,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
           tagging
         </Button>
         <Modal title="Classification" open={open} onCancel={handleCancel} footer={null}>
-          <ClassificationComponent
+          <OptionComponent
             title={task.title}
             create_at={task.create_at}
             deadline={task.deadline}
@@ -47,7 +47,18 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
           tagging
         </Button>
         <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}>
-          <SVTagComponent
+          {/* <SVTagComponent
+            title={task.title}
+            create_at={task.create_at}
+            deadline={task.deadline}
+            template={task.template}
+            reward={task.reward}
+            time={task.time}
+            labeler_number={task.labeler_number}
+            task_id={task.task_id}
+            task_data={task.task_data}
+          /> */}
+          <OptionComponent
             title={task.title}
             create_at={task.create_at}
             deadline={task.deadline}

@@ -26,12 +26,19 @@
     "crypto-js": "4.1.1",
     "dayjs": "^1.11.7",
     "jest-sonar-reporter": "^2.0.0",
+<<<<<<< HEAD
+    "mui": "^0.0.1",
+    "next": "^13.2.5-canary.8",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+=======
     "mui": "0.0.1",
     "next": "^13.2.5-canary.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-image-annotation": "0.9.10",
     "react-redux": "^8.0.5"
+>>>>>>> e4e5547d3bf91f03824725453e4cc52d3ece25a4
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
