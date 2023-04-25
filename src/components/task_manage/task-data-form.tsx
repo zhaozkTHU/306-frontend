@@ -21,10 +21,10 @@ const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps =
     return true;
   },
   onRemove: async (file) => {
-    /** @bug 此处后端实现有问题 */
+    console.log("file", file);
     await axios.delete("/api/file", {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      params: { url: file.response.url },
+      params: { url: file.response?.url || file.url },
     });
     return true;
   },
