@@ -5,6 +5,8 @@ import LoginScreen from ".";
 import NotFound from "@/components/NotFound";
 import "@/styles/globals.css";
 import MyLayout from "@/layouts/layout";
+import store from "@/store";
+import { Provider } from "react-redux";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -27,17 +29,27 @@ const App = ({ Component, pageProps }: AppProps) => {
   ) {
     return (
       // <RoleContext.Provider value={role}>
-      <MyLayout role={role}>
-        <Component {...pageProps} />
-      </MyLayout>
+      <Provider store={store}>
+        <MyLayout role={role}>
+          <Component {...pageProps} />
+        </MyLayout>
+      </Provider>
       // </RoleContext.Provider>
     );
   } else if (router.pathname === "/") {
     // login
-    return <LoginScreen setRole={setRole} />;
+    return (
+      <Provider store={store}>
+        <LoginScreen setRole={setRole} />
+      </Provider>
+    );
   } else {
     // other interface
-    return <NotFound />;
+    return (
+      <Provider store={store}>
+        <NotFound />
+      </Provider>
+    );
   }
 };
 

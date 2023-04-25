@@ -35,6 +35,8 @@ import {
 import type { RcFile } from "antd/es/upload";
 import { Modal } from "antd/lib";
 import axios from "axios";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { clear } from "./deleteList";
 
 const getBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -55,6 +57,8 @@ const TaskInfoForm: React.FC<{
   taskInfo?: TaskInfo;
   onFinish: (info: TaskInfo) => void;
 }> = (props) => {
+  const deleteList = useAppSelector(state => state.deleteList.value);
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
@@ -129,6 +133,13 @@ const TaskInfoForm: React.FC<{
       }));
     }
     props.onFinish({ ...value, deadline, task_data });
+    deleteList.forEach(url => {
+      axios.delete("/api/file", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        params: { url },
+      });
+    });
+    dispatch(clear());
     setLoading(false);
   };
 
@@ -170,7 +181,7 @@ const TaskInfoForm: React.FC<{
           message.error("请检查表单是否填写完整");
         }}
         onFinish={onFinish}
-        // initialValues={initialValues}
+      // initialValues={initialValues}
       >
         <Form.Item
           label="任务标题"
