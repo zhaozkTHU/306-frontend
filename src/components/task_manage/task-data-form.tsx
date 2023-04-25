@@ -1,7 +1,8 @@
 import { Button, Col, Form, Input, Row, UploadProps, message, Upload, Switch } from "antd";
 import { FormListFieldData } from "antd/lib";
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import axios from "axios";
+import { add } from "./deleteList";
+import store from "@/store";
 
 const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
   action: "/api/file",
@@ -22,10 +23,7 @@ const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps =
   },
   onRemove: async (file) => {
     console.log("file", file);
-    await axios.delete("/api/file", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      params: { url: file.response?.url || file.url },
-    });
+    store.dispatch(add(file.response?.url || file.url));
     return true;
   },
 });
@@ -150,6 +148,8 @@ export const SoundTagDataForm = (dataField: FormListFieldData) => (
                     name={[optField.name, "needInput"]}
                     key={optField.key}
                     rules={[{ required: true, message: "请选择是否需要标注方输入" }]}
+                    valuePropName="checked"
+                    initialValue={false}
                   >
                     <Switch checkedChildren="需要用户输入" unCheckedChildren="不需用户输入" />
                   </Form.Item>
