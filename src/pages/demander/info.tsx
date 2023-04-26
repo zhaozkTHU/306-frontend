@@ -11,6 +11,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { FieldNumberOutlined } from "@ant-design/icons";
 import { request } from "@/utils/network";
+import { SP } from "next/dist/shared/lib/utils";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -179,6 +180,7 @@ const DemanderInfo = () => {
               setLoading(true);
               const hashPassword = CryptoJS.SHA256(values.password).toString();
               postBound(values.bank_account, hashPassword)
+              setIsBoundModalOpen(false)
             }}
             autoComplete="off"
           >
@@ -258,7 +260,6 @@ const DemanderInfo = () => {
             </Button>
           </Form>
         </Modal>
-
         <Box sx={{ width: '100%' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -339,6 +340,7 @@ const DemanderInfo = () => {
                           setLoading(true);
                           const hashPassword = CryptoJS.SHA256(values.password).toString();
                           exchange(values.score, addScore, account.bank_account, hashPassword)
+                          setIsCXModalOpen(false);
                         }}
                         autoComplete="off"
                       >
