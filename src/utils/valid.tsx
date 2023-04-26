@@ -9,7 +9,7 @@ export const isValid = (s: string, isStrict: boolean): boolean => {
   if (isStrict) {
     return /^[0-9a-zA-Z_]{1,}$/.test(s);
   }
-  return /^[0-9a-zA-Z_\'\-\$\*\(\)\^\%\=]{1,}$/.test(s);
+  return /^[0-9a-zA-Z_'\-$*()^%=]{1,}$/.test(s);
 };
 
 /**

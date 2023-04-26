@@ -20,17 +20,21 @@ export interface FaceTagProblem {
   description: string;
   url: string;
   /** 点坐标数组 */
-  data?: [number, number][];
+  data?: {
+    x: number;
+    y: number;
+  }[];
 }
 
-export interface ImageFramePromblem {
+export interface ImageFrameProblem {
   description: string;
   url: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
-    leftup: [number, number];
+    x: number; // leftup x
+    y: number;
+    width: number;
     height: number;
-    width: number
   }[];
 }
 
@@ -88,7 +92,7 @@ export interface TaskInfo {
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
-    | ImageFramePromblem[]
+    | ImageFrameProblem[]
     | TagProblem[]
     | TextReviewProblem[]
     | FileReviewProblem[];
@@ -96,6 +100,45 @@ export interface TaskInfo {
 
 export interface TextClassificationData {
   label_data: boolean[][];
+}
+
+export function isFaceTagProblem(data: any): data is FaceTagProblem {
+  return (
+    typeof data.description === "string" &&
+    typeof data.url === "string" &&
+    (data.data === undefined ||
+      (Array.isArray(data.data) &&
+        data.data.every(
+          (point: any) =>
+            Array.isArray(point) &&
+            point.length === 2 &&
+            typeof point[0] === "number" &&
+            typeof point[1] === "number"
+        )))
+  );
+}
+
+export function isImageFrameProblem(data: any): data is ImageFrameProblem {
+  return (
+    typeof data.description === "string" &&
+    typeof data.url === "string" &&
+    (data.data === undefined ||
+      (Array.isArray(data.data) &&
+        data.data.every((rect: any) => {
+          return (
+            typeof rect.leftdown === "object" &&
+            Array.isArray(rect.leftdown) &&
+            rect.leftdown.length === 2 &&
+            typeof rect.leftdown[0] === "number" &&
+            typeof rect.leftdown[1] === "number" &&
+            typeof rect.rightup === "object" &&
+            Array.isArray(rect.rightup) &&
+            rect.rightup.length === 2 &&
+            typeof rect.rightup[0] === "number" &&
+            typeof rect.rightup[1] === "number"
+          );
+        })))
+  );
 }
 
 export function isClassificationProblem(data: any): data is TextClassificationProblem {
