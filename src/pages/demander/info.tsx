@@ -1,4 +1,4 @@
-import UserInfo, { UserInfoProps } from "@/components/user_info/user-info";
+import UserInfo from "@/components/user_info/user-info";
 import { Alert, Tabs, TextField, Typography } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -11,7 +11,6 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { FieldNumberOutlined } from "@ant-design/icons";
 import { request } from "@/utils/network";
-import { SP } from "next/dist/shared/lib/utils";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -191,9 +190,9 @@ const DemanderInfo = () => {
                   required: true,
                   message: "不得为空",
                 },
-                ({ getFieldValue }) => ({
+                ({}) => ({
                   validator(_, value) {
-                    let r = /^\+?[1-9][0-9]*$/;
+                    const r = /^\+?[1-9][0-9]*$/;
                     if (value && !r.test(value)) {
                       return Promise.reject(new Error("银行卡账号必须由数字组成"));
                     }
@@ -221,9 +220,9 @@ const DemanderInfo = () => {
                   required: true,
                   message: "不得为空",
                 },
-                ({ getFieldValue }) => ({
+                ({}) => ({
                   validator(_, value) {
-                    let r = /^\+?[1-9][0-9]*$/;
+                    const r = /^\+?[1-9][0-9]*$/;
                     if (value && !r.test(value)) {
                       return Promise.reject(new Error("银行卡密码必须由数字组成"));
                     }
@@ -292,23 +291,23 @@ const DemanderInfo = () => {
                 >点击此处绑定</Button>
               </Alert>}
             <Card title={"账户信息 "}
-              extra={[
+              extra={
                 <Button type="text" size="large" disabled={!isBound} onClick={() => {
                   setVisible((i) => !i)
                 }}
                   icon={visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 />
-              ]}>
+              }>
               <Box sx={{ width: '100%' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                   <Tabs value={accountValue} onChange={handleChange2} aria-label="basic tabs example">
                     {accountBalance.map((_, idx) =>
-                      <Tab label={`账户${idx + 1}`} {...a11yProps(idx)} />
+                      <Tab label={`账户${idx + 1}`} {...a11yProps(idx)} key={idx}/>
                     )}
                   </Tabs>
                 </Box>
                 {accountBalance.map((account, idx) =>
-                  <TabPanel value={accountValue} index={idx}>
+                  <TabPanel value={accountValue} index={idx} key={idx}>
                     <Statistic title="银行卡卡号 (No.)" value={visible ? account.bank_account : "******************"} precision={0} prefix={<FieldNumberOutlined />} />
                     <Statistic title="账户余额 (CNY)" value={visible ? account.balance : "******************"} precision={2} prefix={<CurrencyYuanIcon />} />
                     <Button onClick={() => {
@@ -353,7 +352,7 @@ const DemanderInfo = () => {
                             },
                             ({ }) => ({
                               validator(_, value) {
-                                let r = /^\+?[1-9][0-9]*$/;
+                                const r = /^\+?[1-9][0-9]*$/;
                                 if (value && !r.test(value)) {
                                   return Promise.reject(new Error("请输入数字"));
                                 }
@@ -386,7 +385,7 @@ const DemanderInfo = () => {
                             },
                             ({ getFieldValue }) => ({
                               validator(_, value) {
-                                let r = /^\+?[1-9][0-9]*$/;
+                                const r = /^\+?[1-9][0-9]*$/;
                                 if (value && !r.test(value)) {
                                   return Promise.reject(new Error("银行卡密码必须由数字组成"));
                                 }
