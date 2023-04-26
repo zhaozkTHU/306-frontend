@@ -26,6 +26,9 @@
     "crypto-js": "4.1.1",
     "dayjs": "^1.11.7",
     "jest-sonar-reporter": "^2.0.0",
+    "next": "^13.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-image-annotation": "0.9.10",
     "react-redux": "^8.0.5"
   },
