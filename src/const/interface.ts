@@ -20,7 +20,10 @@ export interface FaceTagProblem {
   description: string;
   url: string;
   /** 点坐标数组 */
-  data?: [number, number][];
+  data?: {
+    x: number;
+    y: number;
+  }[];
 }
 
 export interface ImageFrameProblem {
@@ -28,9 +31,10 @@ export interface ImageFrameProblem {
   url: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
-    leftup: [number, number];
+    x: number; // leftup x
+    y: number;
+    width: number;
     height: number;
-    width: number
   }[];
 }
 

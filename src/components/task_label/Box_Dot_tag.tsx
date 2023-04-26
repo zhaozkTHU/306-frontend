@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Checkbox, message, Modal, Steps, Divider, Space } from "antd";
 import { SaveOutlined, UploadOutlined, RightCircleOutlined, LeftCircleOutlined } from '@ant-design/icons';
 import axios from "axios";
+import { Annotator } from "react-image-annotate";
 import {
   TaskInfo,
   isFaceTagProblem,
@@ -17,9 +18,9 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     return storedCurrentProblemIndex ? JSON.parse(storedCurrentProblemIndex) : 0;
   });
   // while re-render, get current saved answer & upload status from localstorage
-  const [chosenOptions, setChosenOptions] = useState<boolean[]>(() => {
-    const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
-    return storedChosenOptions ? JSON.parse(storedChosenOptions) : [];
+  const [tagAnswers, setTagAnswers] = useState<Array<{ x: number; y: number; width: number; height: number } | { x: number; y: number }>> (() => {
+    const storedTagAnswers = localStorage.getItem(`tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`);
+    return storedTagAnswers ? JSON.parse(storedTagAnswers) : [];
   });
   const [uploadCompleted, setUploadCompleted] = useState<boolean>(() => { // whether finished upload
     const storedUploadCompleted = localStorage.getItem(`uploadCompleted-${taskInfo.task_id}`);
@@ -29,17 +30,13 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     (taskInfo.template === "FaceTag") ? isFaceTagProblem : isImageFrameProblem
   );
   // while re-render, get the answer from localstorage
-  const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<boolean[]>>(() => {
-    const storedChosenOptionsAll = localStorage.getItem(`chosenOptionsAll-${taskInfo.task_id}`);
-    return storedChosenOptionsAll
-      ? JSON.parse(storedChosenOptionsAll)
-      : filteredTaskData.map((problem) => problem.options.map(() => false));
+  const [tagAnswersAll, setTagAnswersAll] = useState<Array< Array<{ x: number; y: number; width: number; height: number } | { x: number; y: number }> >>(() => {
+    const storedTagAnswersAll = localStorage.getItem(`tagAnswersAll-${taskInfo.task_id}`);
+    return storedTagAnswersAll ? JSON.parse(storedTagAnswersAll) : [];
   });
   const [savedProblems, setSavedProblems] = useState<boolean[]>(() => {
     const storedSavedProblems = localStorage.getItem(`savedProblems-${taskInfo.task_id}`);
-    return storedSavedProblems
-      ? JSON.parse(storedSavedProblems)
-      : new Array(filteredTaskData.length).fill(false);
+    return storedSavedProblems ? JSON.parse(storedSavedProblems) : new Array(filteredTaskData.length).fill(false);
   });
   const [timer, setTimer] = useState(() => {
     const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
@@ -56,9 +53,9 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
     setCurrentProblemIndex(index);
-    setChosenOptions(filteredTaskData[index].chosen || []);
-    const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${index}`);
-    setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+    setTagAnswers(filteredTaskData[index].data || []);
+    const storedTagAnswers = localStorage.getItem(`tagAnswers-${taskInfo.task_id}-${index}`);
+    setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
 
     const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
     setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
@@ -74,11 +71,11 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   // save answers into localstorage
   useEffect(() => {
-    localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
-  }, [chosenOptionsAll]);
+    localStorage.setItem(`tagAnswersAll-${taskInfo.task_id}`, JSON.stringify(tagAnswersAll));
+  }, [tagAnswersAll]);
   useEffect(() => {
-    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptions));
-  }, [chosenOptions]);
+    localStorage.setItem(`tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(tagAnswers));
+  }, [tagAnswers]);
   useEffect(() => {
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
   }, [savedProblems]);
@@ -120,18 +117,13 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     const seconds = totalSeconds % 60;
     return `${hours}h ${minutes}m ${seconds}s`;
   };
-  const handleCheckboxChange = (index: number) => (e: any) => {
-    setChosenOptions((prevState) => {
+  const handleTagChange = (updatedAnnotations: Array<{ x: number; y: number; width: number; height: number } | { x: number; y: number }>) => {
+    console.log("实时标注数据：", updatedAnnotations);
+    setTagAnswers(updatedAnnotations);
+    setTagAnswersAll((prevState) => {
       const newState = [...prevState];
-      newState[index] = e.target.checked;
+      newState[currentProblemIndex] = updatedAnnotations;
       return newState;
-    });
-    setChosenOptionsAll((prevState) => {
-      const newState = [...prevState];
-      newState[currentProblemIndex][index] = e.target.checked;
-      return newState.map((problemOptions) =>
-        problemOptions.map((option) => (option === null ? false : option))
-      );
     });
   };
 
@@ -143,22 +135,14 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       return;
     }
     const newTaskData = [...filteredTaskData]; // chosen not chosen
-    const modifiedchosenOptions = chosenOptions.map((option) => (option === null ? false : option));
-    if (modifiedchosenOptions.length < newTaskData[currentProblemIndex].options.length) {
-      const remainingOptions =
-        newTaskData[currentProblemIndex].options.length - modifiedchosenOptions.length;
-      for (let i = 0; i < remainingOptions; i++) {
-        modifiedchosenOptions.push(false);
-      }
-    }
-    newTaskData[currentProblemIndex].chosen = modifiedchosenOptions;
-    setChosenOptionsAll(newTaskData.map((problem) => problem.chosen || [])); 
-    localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
+    newTaskData[currentProblemIndex].data = tagAnswers;
+    setTagAnswersAll(newTaskData.map((problem) => problem.data || [])); 
+    localStorage.setItem(`tagAnswersAll-${taskInfo.task_id}`, JSON.stringify(tagAnswersAll));
     const newSavedProblems = [...savedProblems];
     newSavedProblems[currentProblemIndex] = true;
     setSavedProblems(newSavedProblems);
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
-    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptions));
+    localStorage.setItem(`tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(tagAnswers));
 
     message.success("Saved!");
   };
@@ -184,16 +168,13 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       return;
     }
 
-    const modifiedchosenOptionsAll = chosenOptionsAll.map((problem) =>
-      problem.map((option) => (option === null ? false : option))
-    );
     const tag_data = {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
         description: problem.description,
-        options: problem.options,
-        chosen: modifiedchosenOptionsAll[problemIndex].slice(0, problem.options.length),
+        url: problem.url,
+        data: tagAnswersAll[problemIndex],
       })),
     };
 
@@ -241,10 +222,10 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
       setCurrentProblemIndex((prevState: number) => prevState - 1);
-      const newChosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
-      setChosenOptions(newChosenOptions);
-      const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
-      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+      const newTagAnswers = filteredTaskData[currentProblemIndex].data || [];
+      setTagAnswers(newTagAnswers);
+      const storedTagAnswers = localStorage.getItem(`tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`);
+      setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
 
       const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
       setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
@@ -274,10 +255,10 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
       
       setCurrentProblemIndex((prevState: number) => prevState + 1);
-      const newchosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
-      setChosenOptions(newchosenOptions);
-      const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`);
-      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+      const newTagAnswers = filteredTaskData[currentProblemIndex].data || [];
+      setTagAnswers(newTagAnswers);
+      const storedTagAnswers = localStorage.getItem(`tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`);
+      setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
 
       const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
       setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
@@ -285,8 +266,24 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       message.warning("This is the last problem!");
     }
   };
+  const loadImage = async (src: string) => {
+    try {
+      const response = await axios.get(src, {
+        responseType: "arraybuffer",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const blob = new Blob([response.data], { type: "image/jpeg" });
+      const url = URL.createObjectURL(blob);
+      return url;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
 
-  if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
+  if (taskInfo.template === "FaceTag" || taskInfo.template === "ImageFrame") {
     return (
       <div>
         <Steps current={currentProblemIndex}>
@@ -320,6 +317,12 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem.description}</div>
+        <Annotator
+          selectedImage={"/api/image?url=" + currentProblem.url}
+          onChange={handleTagChange}
+          enabledTools={[(taskInfo.template === 'FaceTag')?"create-point":"create-box"]}
+          loadImage={loadImage}
+        />
         <Divider />
         <div>
           <Space>
