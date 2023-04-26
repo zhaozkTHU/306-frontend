@@ -49,6 +49,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const [isSample, setIsSample] = useState<boolean>(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
+  
   const delete_task = async (task_id: number) => {
     axios
       .delete(`/api/task`, {
@@ -129,7 +130,6 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         return (
           <Space size={[0, 8]} wrap>
             {state.map((s: string, idx: number) => (
-              // <DemanderStateTag type={s} key={idx} />
               <Tag color={mapState2ColorChinese[s].color} key={idx}>
                 {mapState2ColorChinese[s].description}
               </Tag>
@@ -294,6 +294,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 is_sample={isSample}
                 template={detail.template}
                 setIsCheckModalOpen={setIsCheckModalOpen}
+                setRefreshing={setRefreshing}
               />
             </Modal>
           {detail.pass_check ? <></> : <Alert severity="warning">该任务尚未通过管理员审核</Alert>}
