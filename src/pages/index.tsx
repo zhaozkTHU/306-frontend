@@ -54,11 +54,10 @@ export default function LoginScreen(props: LoginScreenPorps) {
     <Spin spinning={refreshing} tip="加载中，请稍后">
       <Modal
         open={isRegisterModalOpen}
-        onOk={() => {
-          setIsRegisterModalOpen(false);
-        }}
         onCancel={() => {
-          setIsRegisterModalOpen(false);
+          if(!refreshing) {
+            setIsRegisterModalOpen(false);
+          }
         }}
         footer={false}
         destroyOnClose={true}
@@ -69,7 +68,11 @@ export default function LoginScreen(props: LoginScreenPorps) {
 
 
       <Modal open={isFoundPassword}
-        onCancel={() => setIsFoundPassword(false)}
+        onCancel={() => {
+          if(!refreshing) {
+            setIsFoundPassword(false);
+          }
+        }}
         footer={null}
         destroyOnClose
       >

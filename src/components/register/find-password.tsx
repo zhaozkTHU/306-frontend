@@ -4,6 +4,7 @@ import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Button, Divider, Form, Input, message, Spin } from "antd";
 import { Dispatch, SetStateAction, useState } from "react";
+import CryptoJS from "crypto-js";
 
 interface FindPasswordProps {
   setrefreshing: Dispatch<SetStateAction<boolean>>;
@@ -15,7 +16,7 @@ const FindPassword = (props: FindPasswordProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { Search } = Input;
   const getVeriCode = async (_email: string) => {
-    request("/api/captcha", "POST", {
+    request("/api/vericode_for_reset", "POST", {
       email: _email,
     })
       .then(() => {
@@ -33,8 +34,32 @@ const FindPassword = (props: FindPasswordProps) => {
       })
       .finally(() => {
         setRefreshing(false);
+        props.setrefreshing(false)
       });
   };
+
+  const resetPassword = async (username: string, email: string, captcha: string, hashedNewPassword: string) => {
+    request("/api/reset_password", "POST", {
+      username: username,
+      email: email,
+      captcha: captcha,
+      newpassword: hashedNewPassword
+    })
+    .then(() => {
+      message.success("重置密码成功")
+    })
+    .catch((error) => {
+      if(error.response?.data) {
+        message.error("重置密码失败" + error.response?.data.message)
+      } else {
+        message.error("网络错误")
+      }
+    })
+    .finally(() => {
+      props.setrefreshing(false)
+      setRefreshing(false)
+    })
+  }
   return (
     <Spin spinning={refreshing}>
       <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
@@ -45,6 +70,10 @@ const FindPassword = (props: FindPasswordProps) => {
         name="basic"
         initialValues={{ remember: true }}
         onFinish={(values) => {
+          setRefreshing(true)
+          props.setrefreshing(true)
+          const hashPassword = CryptoJS.SHA256(values.newPassword).toString();
+          resetPassword(values.username, values.email, values.vericode, hashPassword);
         }}
         autoComplete="off"
       >
@@ -92,6 +121,7 @@ const FindPassword = (props: FindPasswordProps) => {
             allowClear
             onSearch={(value) => {
               setRefreshing(true);
+              props.setrefreshing(true)
               getVeriCode(value)
             }}
             enterButton={
@@ -122,7 +152,7 @@ const FindPassword = (props: FindPasswordProps) => {
           />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: "验证码不能为空" }]}
+          rules={[{ required: true, message: "密码不能为空" }]}
           name="newPassword"
         >
           <TextField
@@ -132,7 +162,6 @@ const FindPassword = (props: FindPasswordProps) => {
             id="newPassword"
             label="新密码"
             name="newPassword"
-            autoFocus
           />
         </Form.Item>
         <Button
