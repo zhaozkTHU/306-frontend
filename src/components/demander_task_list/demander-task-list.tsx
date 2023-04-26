@@ -8,7 +8,6 @@ import {
   Modal,
   Descriptions,
   Collapse,
-  Alert,
   Tooltip,
   Popconfirm,
   message,
@@ -22,6 +21,7 @@ import UpdateTask from "../task_manage/update-task";
 import CheckModel from "../check/checkModel";
 import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
 import { request } from "../../utils/network";
+import Alert from "@mui/material/Alert";
 
 interface DemanderTaskTableEntry {
   task_id: number;
@@ -296,7 +296,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 setIsCheckModalOpen={setIsCheckModalOpen}
               />
             </Modal>
-          {detail.pass_check ? <></> : <Alert message="该任务尚未通过管理员审核!" type="warning" showIcon />}
+          {detail.pass_check ? <></> : <Alert severity="warning">该任务尚未通过管理员审核</Alert>}
           <h3>任务详情</h3>
           <Descriptions bordered column={2}>
             <Descriptions.Item label="标题" span={2}>{detail.title}</Descriptions.Item>
