@@ -94,6 +94,62 @@ const Problem = (props: ProbelmProps) => {
         </Radio.Group>
       </>
     )
+  } else if (props.template == "TextReview") {
+    problemContent = (
+      <>
+        <p>{props.problem.content}</p>
+        <Radio.Group value={props.problem.data} disabled>
+          <Radio value={true}>合格</Radio>
+          <Radio value={false}>不合格</Radio>
+        </Radio.Group>
+      </>
+    )
+  } else if (props.template == "ImageReview") {
+    problemContent = (
+      <>
+        <ImageFormatter>
+          <MyImage url={props.problem.url}
+            style={{
+              objectFit: "contain",
+              objectPosition: "center center"
+            }}
+            alt="图片加载失败"
+            height="100%"
+            width="100%"
+          />
+        </ImageFormatter>
+        <Radio.Group value={props.problem.data} disabled>
+          <Radio value={true}>合格</Radio>
+          <Radio value={false}>不合格</Radio>
+        </Radio.Group>
+      </>
+    )
+  } else if (props.template == "VideoReview") {
+    problemContent = (
+      <>
+        <MyVideo url={props.problem.url}
+          style={{
+            width: "300px",
+            height: "200px",
+          }}
+        />
+        <Divider/>
+        <Radio.Group value={props.problem.data} disabled>
+          <Radio value={true}>合格</Radio>
+          <Radio value={false}>不合格</Radio>
+        </Radio.Group>
+      </>
+    )
+  } else if (props.template == "AudioReview") {
+    problemContent = (
+      <>
+        <MyAudio url={props.problem.url} />
+        <Radio.Group value={props.problem.data} disabled>
+          <Radio value={true}>合格</Radio>
+          <Radio value={false}>不合格</Radio>
+        </Radio.Group>
+      </>
+    )
   }
   return (
     <Card title={`题目${props.index + 1}`}>
