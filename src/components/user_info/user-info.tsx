@@ -47,7 +47,7 @@ const ModalIcon = (level: string) => {
 const UserInfo = (props: UserInfoProps) => {
   return (
     <>
-      <Descriptions title="用户信息" bordered>
+      <Descriptions bordered>
         <Descriptions.Item label="头像">
           <Avatar size="large" icon={<UserOutlined />} />
         </Descriptions.Item>

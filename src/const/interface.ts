@@ -197,6 +197,7 @@ export const mapState2ColorChinese: StateColors = {
 type EnEntemplateZhtemplate = {
   [state: string]: string;
 }
+
 export const mapEntemplate2Zhtemplate : EnEntemplateZhtemplate = {
   TextClassification: "文本分类",
   ImagesClassification: "图片分类",
