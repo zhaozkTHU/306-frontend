@@ -26,10 +26,10 @@ const CanvasImage = (props: CanvasImageProps) => {
         if (props.type == "rectangle") {
           ctx.strokeStyle = colors[i % 4];
           ctx.lineWidth = 2;
-          ctx.strokeRect(props.data[i].leftup[0], props.data[i].leftup[1], props.data[i].width, props.data[i].height);
+          ctx.strokeRect(props.data[i].x, props.data[i].y, props.data[i].width, props.data[i].height);
         } else {
           ctx.beginPath();
-          ctx.arc(props.data[i][0], props.data[i][1], 3, 0, 2 * Math.PI)
+          ctx.arc(props.data[i].x, props.data[i].y, 3, 0, 2 * Math.PI)
           ctx.fillStyle = 'red'
           ctx.fill();
         }

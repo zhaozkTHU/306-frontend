@@ -128,10 +128,6 @@ const DemanderInfo = () => {
     };
   }
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    // if (newValue === 2) {
-    //   setRefreshing(true)
-    //   getBoundAccounts()
-    // }
     setValue(newValue);
   };
   const handleChange2 = (event: React.SyntheticEvent, newValue: number) => {
@@ -283,7 +279,7 @@ const DemanderInfo = () => {
           </TabPanel>
           <TabPanel value={value} index={2}>
             {
-              <Alert severity={isBound ? "success" : "warning"}>该账号已绑定银行卡
+              <Alert severity={isBound ? "success" : "warning"}>该账号{isBound?"已":"未"}绑定银行卡
                 <Button type="link" size="small"
                   onClick={() => {
                     setIsBoundModalOpen(true)
