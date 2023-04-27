@@ -8,12 +8,13 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import PersonIcon from "@mui/icons-material/Person";
 import Typography from "@mui/material/Typography";
-import { Form, message, Button, Spin, Modal, Divider } from "antd";
+import { Form, message, Button, Spin, Modal, Divider, Input } from "antd";
 import { isValid } from "@/utils/valid";
 import { useRouter } from "next/router";
 import CryptoJS from "crypto-js";
 import Register from "@/components/register/register";
 import { request } from "@/utils/network";
+import FindPassword from "@/components/register/find-password";
 
 interface LoginScreenPorps {
   setRole: Dispatch<SetStateAction<string | null>>;
@@ -22,8 +23,10 @@ interface LoginScreenPorps {
 export default function LoginScreen(props: LoginScreenPorps) {
   const router = useRouter();
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState<boolean>(false);
+  const [isFoundPassword, setIsFoundPassword] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const CarouselRef = useRef<any>(null);
+
   const login = async (values: { username: string; hashPassword: string }) => {
     request("/api/user/login", "POST", {
       username: values.username,
@@ -51,19 +54,31 @@ export default function LoginScreen(props: LoginScreenPorps) {
     <Spin spinning={refreshing} tip="加载中，请稍后">
       <Modal
         open={isRegisterModalOpen}
-        onOk={() => {
-          setIsRegisterModalOpen(false);
-        }}
         onCancel={() => {
-          setIsRegisterModalOpen(false);
+          if(!refreshing) {
+            setIsRegisterModalOpen(false);
+          }
         }}
         footer={false}
         destroyOnClose={true}
-        style={{ top: "0" }}
         centered
       >
         <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
+
+
+      <Modal open={isFoundPassword}
+        onCancel={() => {
+          if(!refreshing) {
+            setIsFoundPassword(false);
+          }
+        }}
+        footer={null}
+        destroyOnClose
+      >
+        <FindPassword setrefreshing={setRefreshing}/>
+      </Modal>
+
       <Grid container component="main" sx={{ height: "100vh" }}>
         <Grid
           item
@@ -145,7 +160,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                 name="password"
                 rules={[
                   { required: true, message: "密码不能为空" },
-                  ({ getFieldValue }) => ({
+                  ({}) => ({
                     validator(_, value) {
                       if (
                         !value ||
@@ -195,7 +210,9 @@ export default function LoginScreen(props: LoginScreenPorps) {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Button type="link">忘记密码?</Button>
+                  <Button type="link"
+                    onClick={() => { setIsFoundPassword(true) }}
+                  >忘记密码?</Button>
                 </Grid>
                 <Grid item>
                   <Button

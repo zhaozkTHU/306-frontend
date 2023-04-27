@@ -11,6 +11,7 @@ interface CheckModelProps {
   is_sample: boolean;
   template: string;
   setIsCheckModalOpen: Dispatch<SetStateAction<boolean>>;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -39,8 +40,11 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .catch((err) => {
         console.log(err);
-      });
-    setRefreshing(false);
+      })
+      .finally(() => {
+        setRefreshing(false);
+        props.setRefreshing(true);
+      })
   }, [router, props.labeler_index, props.task_id]);
   useEffect(() => {
     result = problems.slice();
@@ -75,6 +79,7 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .finally(() => {
         setRefreshing(false);
+        props.setRefreshing(true);
       });
   };
   /**
