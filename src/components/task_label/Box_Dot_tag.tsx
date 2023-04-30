@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Checkbox, message, Modal, Steps, Divider, Space } from "antd";
 import { SaveOutlined, UploadOutlined, RightCircleOutlined, LeftCircleOutlined } from '@ant-design/icons';
 import axios from "axios";
-import { Annotator } from "react-image-annotate";
+import ReactPictureAnnotation from 'react-picture-annotation';
 import {
   TaskInfo,
   isFaceTagProblem,
@@ -10,8 +10,32 @@ import {
   isImageFrameProblem,
   ImageFrameProblem,
 } from "@/const/interface";
-import MyImage from "../my-img";
 
+
+const MyImageUrl = (src: string) => {
+  const [imageUrl, setImageUrl] = useState<string>("");
+
+  useEffect(() => {
+    axios
+      .get("/api/file", {
+        responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
+        params: { url: src },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        const blob = new Blob([response.data], { type: "image/jpeg" });
+        const url = URL.createObjectURL(blob);
+        setImageUrl(url);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [src]);
+
+  return imageUrl;
+};
 const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => { // keep current pro id
     const storedCurrentProblemIndex = localStorage.getItem(`currentProblemIndex-${taskInfo.task_id}`);
@@ -118,7 +142,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
   const handleTagChange = (updatedAnnotations: Array<{ x: number; y: number; width: number; height: number } | { x: number; y: number }>) => {
-    console.log("实时标注数据：", updatedAnnotations);
+    console.log("标注数据：", updatedAnnotations);
     setTagAnswers(updatedAnnotations);
     setTagAnswersAll((prevState) => {
       const newState = [...prevState];
@@ -266,22 +290,6 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       message.warning("This is the last problem!");
     }
   };
-  const loadImage = async (src: string) => {
-    try {
-      const response = await axios.get(src, {
-        responseType: "arraybuffer",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const blob = new Blob([response.data], { type: "image/jpeg" });
-      const url = URL.createObjectURL(blob);
-      return url;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
 
   if (taskInfo.template === "FaceTag" || taskInfo.template === "ImageFrame") {
     return (
@@ -317,12 +325,26 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem.description}</div>
-        <Annotator
-          selectedImage={"/api/image?url=" + currentProblem.url}
-          onChange={handleTagChange}
+        {/* <MyImage url={"/api/image?url=" + currentProblem.url}/> */}
+        {/* <Annotator
+          images={[
+            {
+              src: MyImageUrl("/api/image?url=" + currentProblem.url),
+              name: "annotation-image",
+              regions: [],
+            },
+          ]}
+          onExit={handleTagChange}
           enabledTools={[(taskInfo.template === 'FaceTag')?"create-point":"create-box"]}
-          loadImage={loadImage}
-        />
+          // loadImage={loadImage}
+        /> */}
+        {/* <ReactPictureAnnotation
+          image={MyImageUrl("/api/image?url=" + currentProblem.url)}
+          // onSelect={onSelect}
+          onChange={handleTagChange}
+          width={400}
+          height={400}
+        /> */}
         <Divider />
         <div>
           <Space>

@@ -15,8 +15,9 @@ const MyAudio = (props: MyAudioProps) => {
 
   useEffect(() => {
     axios
-      .get(`${props.url}`, {
+      .get("/api/file", {
         responseType: "arraybuffer",
+        params: { url: props.url },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -32,9 +33,7 @@ const MyAudio = (props: MyAudioProps) => {
   }, [props.url]);
 
   return (
-    <Paragraph style={props.style}>
-      <audio src={audioUrl} controls={props.controls ?? true} />
-    </Paragraph>
+    <audio src={audioUrl} controls={props.controls ?? true} />
   );
 };
 

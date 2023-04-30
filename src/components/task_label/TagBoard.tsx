@@ -3,6 +3,7 @@ import { Button, Modal } from "antd";
 import { TaskInfo } from "@/const/interface";
 import OptionComponent from "@/components/task_label/Option_tag";
 import SVTagComponent from "@/components/task_label/Audio_Video_tag";
+import AnnotationComponent from "./Box_Dot_tag";
 
 interface TagBoardProps {
   task: TaskInfo;
@@ -46,19 +47,8 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}>
-          {/* <SVTagComponent
-            title={task.title}
-            create_at={task.create_at}
-            deadline={task.deadline}
-            template={task.template}
-            reward={task.reward}
-            time={task.time}
-            labeler_number={task.labeler_number}
-            task_id={task.task_id}
-            task_data={task.task_data}
-          /> */}
-          <OptionComponent
+        <Modal title="Sound Video Tag" open={open} onCancel={handleCancel} footer={null}>
+          <SVTagComponent
             title={task.title}
             create_at={task.create_at}
             deadline={task.deadline}
@@ -72,17 +62,27 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         </Modal>
       </>
     );
-  } else if (task.template === "FaceTag") {
+  } else if (task.template === "FaceTag" || task.template === "ImageFrame") {
     return (
       <>
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal title="Face Dot" open={open} onCancel={handleCancel} footer={null}></Modal>
+        <Modal title="Image annontation" open={open} onCancel={handleCancel} footer={null}>
+          <AnnotationComponent
+            title={task.title}
+            create_at={task.create_at}
+            deadline={task.deadline}
+            template={task.template}
+            reward={task.reward}
+            time={task.time}
+            labeler_number={task.labeler_number}
+            task_id={task.task_id}
+            task_data={task.task_data}
+          />
+        </Modal>
       </>
     );
-  } else if (task.template === "ImageFrame") {
-    return <></>;
   } else {
     return <></>;
   }

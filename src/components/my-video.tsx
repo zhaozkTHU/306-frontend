@@ -16,8 +16,9 @@ const MyVideo = (props: MyVideoProps) => {
 
   useEffect(() => {
     axios
-      .get(`${props.url}`, {
+      .get("/api/file", {
         responseType: "arraybuffer",
+        params: { url: props.url },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
