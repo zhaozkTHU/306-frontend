@@ -3,7 +3,7 @@ import { isValid } from "@/utils/valid";
 import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Button, Divider, Form, Input, message, Spin } from "antd";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
 
 interface FindPasswordProps {
@@ -15,6 +15,18 @@ const FindPassword = (props: FindPasswordProps) => {
   const [isVerifyDisabled, setIsVerifyDisabled] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { Search } = Input;
+  useEffect(() => {
+    if (!isVerifyDisabled) {
+      return;
+    }
+    if (timeLeft == 0) {
+      setIsVerifyDisabled(false);
+    }
+    const timer = setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [isVerifyDisabled, timeLeft]);
   const getVeriCode = async (_email: string) => {
     request("/api/vericode_for_reset", "POST", {
       email: _email,
