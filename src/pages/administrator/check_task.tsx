@@ -30,6 +30,7 @@ const AdministratorCheckTask = () => {
     labeler_number: 0,
     demander_id: -1,
     task_data: [],
+    batch: false,
   });
   useEffect(() => {
     if (!router.isReady) {
@@ -281,7 +282,7 @@ const AdministratorCheckTask = () => {
             <h3>题目详情</h3>
             <Collapse>
               <Panel key={""} header={"点击此处查看题目详情"}>
-                {taskDetail.task_data.map((problem, idx) => (
+                {taskDetail.task_data?.map((problem, idx) => (
                   <Problem
                     problem={problem}
                     index={idx}

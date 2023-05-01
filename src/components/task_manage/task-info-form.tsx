@@ -1,5 +1,4 @@
 import {
-  ImageFrameProblem,
   ImagesClassificationProblem,
   TagProblem,
   TaskInfo,
@@ -367,7 +366,7 @@ const TaskInfoForm: React.FC<{
             />
             <Form.Item
               label="上传压缩包"
-              name="task_data"
+              name="batch_file"
               valuePropName="fileList"
               getValueFromEvent={(e) => e?.fileList}
               rules={[{ required: true, message: "请上传压缩包" }]}

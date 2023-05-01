@@ -89,15 +89,15 @@ export interface TaskInfo {
   labeler_number: number;
   demander_id?: number;
   batch: boolean;
-  task_data:
+  task_data?:
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
     | ImageFrameProblem[]
     | TagProblem[]
     | TextReviewProblem[]
-    | FileReviewProblem[]
-    | string;
+    | FileReviewProblem[];
+  batch_file?: string;
 }
 
 export interface TextClassificationData {
