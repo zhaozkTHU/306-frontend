@@ -34,32 +34,37 @@ const FindPassword = (props: FindPasswordProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-        props.setrefreshing(false)
+        props.setrefreshing(false);
       });
   };
 
-  const resetPassword = async (username: string, email: string, captcha: string, hashedNewPassword: string) => {
+  const resetPassword = async (
+    username: string,
+    email: string,
+    captcha: string,
+    hashedNewPassword: string
+  ) => {
     request("/api/reset_password", "POST", {
       username: username,
       email: email,
       captcha: captcha,
-      newpassword: hashedNewPassword
+      newpassword: hashedNewPassword,
     })
-    .then(() => {
-      message.success("重置密码成功")
-    })
-    .catch((error) => {
-      if(error.response?.data) {
-        message.error("重置密码失败" + error.response?.data.message)
-      } else {
-        message.error("网络错误")
-      }
-    })
-    .finally(() => {
-      props.setrefreshing(false)
-      setRefreshing(false)
-    })
-  }
+      .then(() => {
+        message.success("重置密码成功");
+      })
+      .catch((error) => {
+        if (error.response?.data) {
+          message.error("重置密码失败" + error.response?.data.message);
+        } else {
+          message.error("网络错误");
+        }
+      })
+      .finally(() => {
+        props.setrefreshing(false);
+        setRefreshing(false);
+      });
+  };
   return (
     <Spin spinning={refreshing}>
       <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
@@ -70,8 +75,8 @@ const FindPassword = (props: FindPasswordProps) => {
         name="basic"
         initialValues={{ remember: true }}
         onFinish={(values) => {
-          setRefreshing(true)
-          props.setrefreshing(true)
+          setRefreshing(true);
+          props.setrefreshing(true);
           const hashPassword = CryptoJS.SHA256(values.newPassword).toString();
           resetPassword(values.username, values.email, values.vericode, hashPassword);
         }}
@@ -83,10 +88,7 @@ const FindPassword = (props: FindPasswordProps) => {
             { required: true, message: "用户名不能为空" },
             ({}) => ({
               validator(_, value) {
-                if (
-                  !value ||
-                  (isValid(value, true) && value.length <= 50 && value.length >= 3)
-                ) {
+                if (!value || (isValid(value, true) && value.length <= 50 && value.length >= 3)) {
                   return Promise.resolve();
                 }
                 if (value && !isValid(value, true)) {
@@ -121,27 +123,18 @@ const FindPassword = (props: FindPasswordProps) => {
             allowClear
             onSearch={(value) => {
               setRefreshing(true);
-              props.setrefreshing(true)
-              getVeriCode(value)
+              props.setrefreshing(true);
+              getVeriCode(value);
             }}
             enterButton={
-              <Button
-                type="link"
-                disabled={isVerifyDisabled}
-                style={{ width: "100%" }}
-              >
-                {isVerifyDisabled
-                  ? `${timeLeft < 10 ? 0 : ""}${timeLeft}s后重发`
-                  : "发送验证码"}
+              <Button type="link" disabled={isVerifyDisabled} style={{ width: "100%" }}>
+                {isVerifyDisabled ? `${timeLeft < 10 ? 0 : ""}${timeLeft}s后重发` : "发送验证码"}
               </Button>
             }
             size="large"
           />
         </Form.Item>
-        <Form.Item
-          rules={[{ required: true, message: "验证码不能为空" }]}
-          name="vericode"
-        >
+        <Form.Item rules={[{ required: true, message: "验证码不能为空" }]} name="vericode">
           <TextField
             margin="normal"
             fullWidth
@@ -151,10 +144,7 @@ const FindPassword = (props: FindPasswordProps) => {
             autoFocus
           />
         </Form.Item>
-        <Form.Item
-          rules={[{ required: true, message: "密码不能为空" }]}
-          name="newPassword"
-        >
+        <Form.Item rules={[{ required: true, message: "密码不能为空" }]} name="newPassword">
           <TextField
             margin="normal"
             fullWidth
@@ -179,7 +169,7 @@ const FindPassword = (props: FindPasswordProps) => {
         </Button>
       </Form>
     </Spin>
-  )
-}
+  );
+};
 
-export default FindPassword
+export default FindPassword;

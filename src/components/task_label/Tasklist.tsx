@@ -31,6 +31,7 @@ const TaskList: React.FC<TaskListProps> = (requestTypeProps) => {
             labeler_number: tasks_json.labeler_number,
             demander_id: tasks_json.demander_id,
             task_data: tasks_json.task_data,
+            batch: false
           },
         ];
         setTasks(task);

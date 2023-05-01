@@ -88,7 +88,8 @@ export interface TaskInfo {
   time: number;
   labeler_number: number;
   demander_id?: number;
-  task_data:
+  batch: boolean;
+  task_data?:
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
@@ -96,6 +97,7 @@ export interface TaskInfo {
     | TagProblem[]
     | TextReviewProblem[]
     | FileReviewProblem[];
+  batch_file?: string;
 }
 
 export interface TextClassificationData {
@@ -196,13 +198,13 @@ export const mapState2ColorChinese: StateColors = {
 
 type EnEntemplateZhtemplate = {
   [state: string]: string;
-}
+};
 
-export const mapEntemplate2Zhtemplate : EnEntemplateZhtemplate = {
+export const mapEntemplate2Zhtemplate: EnEntemplateZhtemplate = {
   TextClassification: "文本分类",
   ImagesClassification: "图片分类",
   FaceTag: "骨骼打点",
   ImageFrame: "图片框选",
   SoundTag: "音频标注",
-  VideoTag: "视频标注"
-}
+  VideoTag: "视频标注",
+};
