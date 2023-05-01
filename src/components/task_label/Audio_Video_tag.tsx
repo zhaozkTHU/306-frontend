@@ -6,22 +6,30 @@ import MyAudio from "../my-audio";
 import MyVideo from "../my-video";
 
 const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(() => { // keep current pro id
-    const storedCurrentProblemIndex = localStorage.getItem(`currentProblemIndex-${taskInfo.task_id}`);
+  const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
+    // keep current pro id
+    const storedCurrentProblemIndex = localStorage.getItem(
+      `currentProblemIndex-${taskInfo.task_id}`
+    );
     return storedCurrentProblemIndex ? JSON.parse(storedCurrentProblemIndex) : 0;
   });
-  const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(() => { // curreny pro choice
-    const storedChosenOptionIndex = localStorage.getItem(`chosenOptionIndex-${taskInfo.task_id}-${currentProblemIndex}`);
+  const [chosenOptionIndex, setChosenOptionIndex] = useState<number | null>(() => {
+    // curreny pro choice
+    const storedChosenOptionIndex = localStorage.getItem(
+      `chosenOptionIndex-${taskInfo.task_id}-${currentProblemIndex}`
+    );
     return storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : null;
   });
   const [inputValue, setInputValue] = useState<string | null>(null);
 
   const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTagProblem);
-  const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<{ choiceIndex: number; input?: string }>>(() => {
+  const [chosenOptionsAll, setChosenOptionsAll] = useState<
+    Array<{ choiceIndex: number; input?: string }>
+  >(() => {
     const storedChosenOptionsAll = localStorage.getItem(`chosenOptionsAll-${taskInfo.task_id}`);
     return storedChosenOptionsAll
       ? JSON.parse(storedChosenOptionsAll)
-      : filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 } );
+      : filteredTaskData.map((problem) => problem.data || { choiceIndex: -1 });
   });
   const [savedProblems, setSavedProblems] = useState<boolean[]>(() => {
     const storedSavedProblems = localStorage.getItem(`savedProblems-${taskInfo.task_id}`);
@@ -31,7 +39,9 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
   });
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(() => {
-    const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`);
+    const storedTimer = localStorage.getItem(
+      `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
+    );
     return storedTimer ? JSON.parse(storedTimer) : 0;
   });
   const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
@@ -45,7 +55,9 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
     setCurrentProblemIndex(index);
     setChosenOptionIndex(filteredTaskData[index].data?.choiceIndex || null);
-    const storedChosenOptions = localStorage.getItem(`chosenOptionIndex-${taskInfo.task_id}-${index}`);
+    const storedChosenOptions = localStorage.getItem(
+      `chosenOptionIndex-${taskInfo.task_id}-${index}`
+    );
     setChosenOptionIndex(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
     const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
@@ -60,7 +72,10 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
     localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
   }, [chosenOptionsAll]);
   useEffect(() => {
-    localStorage.setItem(`chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`, JSON.stringify(chosenOptionIndex));
+    localStorage.setItem(
+      `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`,
+      JSON.stringify(chosenOptionIndex)
+    );
   }, [chosenOptionIndex]);
   useEffect(() => {
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));

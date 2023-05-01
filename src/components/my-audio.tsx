@@ -32,9 +32,7 @@ const MyAudio = (props: MyAudioProps) => {
       });
   }, [props.url]);
 
-  return (
-    <audio src={audioUrl} controls={props.controls ?? true} />
-  );
+  return <audio src={audioUrl} controls={props.controls ?? true} />;
 };
 
 export default MyAudio;
