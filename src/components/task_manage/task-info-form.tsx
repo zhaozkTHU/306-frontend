@@ -81,45 +81,45 @@ const TaskInfoForm: React.FC<{
   const [batch, setBatch] = useState<boolean>(false);
 
   // init form if props.taskInfo exists
-  useEffect(() => {
-    if (props.taskInfo === undefined) return;
-    const value = { ...props.taskInfo };
-    value.deadline = dayjs(value.deadline) as any;
-    if (value.template === "ImagesClassification") {
-      console.log("old", value.task_data);
-      value.task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
-        ...v,
-        options: v.options.map(
-          (url): UploadFile => ({
-            uid: crypto.randomUUID(),
-            name: url.substring(url.lastIndexOf("/")),
-            status: "done",
-            url: url,
-          })
-        ),
-      })) as any;
-      console.log("new", value.task_data);
-    }
-    if (
-      value.template === "ImageFrame" ||
-      value.template === "FaceTag" ||
-      value.template === "SoundTag" ||
-      value.template === "VideoTag"
-    )
-      (value.task_data as ImageFrameProblem[]).map((v) => ({
-        ...v,
-        url: [
-          {
-            uid: crypto.randomUUID(),
-            name: v.url.substring(v.url.lastIndexOf("/")),
-            status: "done",
-            url: v.url,
-          },
-        ] as UploadFile[],
-      }));
-    console.log(value);
-    form.setFieldsValue(value);
-  }, [form, props.taskInfo]);
+  // useEffect(() => {
+  //   if (props.taskInfo === undefined) return;
+  //   const value = { ...props.taskInfo };
+  //   value.deadline = dayjs(value.deadline) as any;
+  //   if (value.template === "ImagesClassification") {
+  //     console.log("old", value.task_data);
+  //     value.task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+  //       ...v,
+  //       options: v.options.map(
+  //         (url): UploadFile => ({
+  //           uid: crypto.randomUUID(),
+  //           name: url.substring(url.lastIndexOf("/")),
+  //           status: "done",
+  //           url: url,
+  //         })
+  //       ),
+  //     })) as any;
+  //     console.log("new", value.task_data);
+  //   }
+  //   if (
+  //     value.template === "ImageFrame" ||
+  //     value.template === "FaceTag" ||
+  //     value.template === "SoundTag" ||
+  //     value.template === "VideoTag"
+  //   )
+  //     (value.task_data as ImageFrameProblem[]).map((v) => ({
+  //       ...v,
+  //       url: [
+  //         {
+  //           uid: crypto.randomUUID(),
+  //           name: v.url.substring(v.url.lastIndexOf("/")),
+  //           status: "done",
+  //           url: v.url,
+  //         },
+  //       ] as UploadFile[],
+  //     }));
+  //   console.log(value);
+  //   form.setFieldsValue(value);
+  // }, [form, props.taskInfo]);
 
   useEffect(() => {
     Modal.confirm({
