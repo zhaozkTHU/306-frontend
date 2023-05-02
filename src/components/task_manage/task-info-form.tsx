@@ -1,8 +1,4 @@
-import {
-  ImagesClassificationProblem,
-  TagProblem,
-  TaskInfo,
-} from "@/const/interface";
+import { ImagesClassificationProblem, TagProblem, TaskInfo } from "@/const/interface";
 import {
   Form,
   message,
@@ -162,17 +158,14 @@ const TaskInfoForm: React.FC<{
     let task_data: typeof value.task_data = [];
     if (batch) {
       task_data = (value.task_data as unknown as UploadFile[])[0]?.response?.url;
-    }
-    else if (value.template === "TextClassification") {
+    } else if (value.template === "TextClassification") {
       task_data = value.task_data;
-    }
-    else if (value.template === "ImagesClassification") {
+    } else if (value.template === "ImagesClassification") {
       task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
         ...v,
         options: v.options.map((x: any) => x?.response?.url),
       }));
-    }
-    else if (
+    } else if (
       value.template === "ImageFrame" ||
       value.template === "FaceTag" ||
       value.template === "SoundTag" ||
