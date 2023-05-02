@@ -1,23 +1,26 @@
+import Problem from "@/components/demander_problem/problem";
+
 export interface User {
   username: string;
   password: string;
 }
 
-export interface TextClassificationProblem {
+export interface Problem {
   description: string;
+}
+
+export interface TextClassificationProblem extends Problem {
   options: string[];
   chosen?: boolean[];
 }
 
-export interface ImagesClassificationProblem {
-  description: string;
+export interface ImagesClassificationProblem extends Problem {
   /** 图片url */
   options: string[];
   chosen?: boolean[];
 }
 
-export interface FaceTagProblem {
-  description: string;
+export interface FaceTagProblem extends Problem {
   url: string;
   /** 点坐标数组 */
   data?: {
@@ -26,8 +29,7 @@ export interface FaceTagProblem {
   }[];
 }
 
-export interface ImageFrameProblem {
-  description: string;
+export interface ImageFrameProblem extends Problem {
   url: string;
   /** 图片框选矩形，左下和右上确定矩形 */
   data?: {
@@ -38,8 +40,7 @@ export interface ImageFrameProblem {
   }[];
 }
 
-export interface TagProblem {
-  description: string;
+export interface TagProblem extends Problem {
   url: string;
   /** 有些选项需要标注方填写 */
   choice: {
@@ -52,14 +53,12 @@ export interface TagProblem {
   };
 }
 
-export interface TextReviewProblem {
-  description: string;
+export interface TextReviewProblem extends Problem {
   content: string;
   data?: boolean;
 }
 
-export interface FileReviewProblem {
-  description: string;
+export interface FileReviewProblem extends Problem {
   url: string;
   data?: boolean;
 }
@@ -83,7 +82,10 @@ export interface TaskInfo {
     | "TextReview"
     | "ImageReview"
     | "VideoReview"
-    | "AudioReview";
+    | "AudioReview"
+    | "Custom";
+  /** 仅在`template`为`Custom`时非空 */
+  templates?: string[];
   reward: number;
   time: number;
   labeler_number: number;
@@ -95,7 +97,8 @@ export interface TaskInfo {
     | ImageFrameProblem[]
     | TagProblem[]
     | TextReviewProblem[]
-    | FileReviewProblem[];
+    | FileReviewProblem[]
+    | Problem[];
 }
 
 export interface TextClassificationData {
@@ -196,13 +199,13 @@ export const mapState2ColorChinese: StateColors = {
 
 type EnEntemplateZhtemplate = {
   [state: string]: string;
-}
+};
 
-export const mapEntemplate2Zhtemplate : EnEntemplateZhtemplate = {
+export const mapEntemplate2Zhtemplate: EnEntemplateZhtemplate = {
   TextClassification: "文本分类",
   ImagesClassification: "图片分类",
   FaceTag: "骨骼打点",
   ImageFrame: "图片框选",
   SoundTag: "音频标注",
-  VideoTag: "视频标注"
-}
+  VideoTag: "视频标注",
+};
