@@ -1,5 +1,3 @@
-import Problem from "@/components/demander_problem/problem";
-
 export interface User {
   username: string;
   password: string;
@@ -90,7 +88,8 @@ export interface TaskInfo {
   time: number;
   labeler_number: number;
   demander_id?: number;
-  task_data:
+  batch: boolean;
+  task_data?:
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]
     | FaceTagProblem[]
@@ -99,6 +98,7 @@ export interface TaskInfo {
     | TextReviewProblem[]
     | FileReviewProblem[]
     | Problem[];
+  batch_file?: string;
 }
 
 export interface TextClassificationData {

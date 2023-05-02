@@ -34,7 +34,12 @@ const MyVideo = (props: MyVideoProps) => {
   }, [props.url]);
 
   return (
-    <video src={videoUrl} controls={props.controls ?? true} poster={props.poster} style={props.style}/>
+    <video
+      src={videoUrl}
+      controls={props.controls ?? true}
+      poster={props.poster}
+      style={props.style}
+    />
   );
 };
 

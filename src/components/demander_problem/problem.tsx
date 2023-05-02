@@ -25,7 +25,7 @@ const Problem = (props: ProbelmProps) => {
     }
     problemContent = (
       <Checkbox.Group options={props.problem.options} defaultValue={selected} disabled={true} />
-    )
+    );
   } else if (props.template == "ImagesClassification") {
     problemContent = (
       <Image.PreviewGroup>
@@ -36,10 +36,11 @@ const Problem = (props: ProbelmProps) => {
               disabled={true}
             >
               <ImageFormatter>
-                <MyImage url={`${option}`}
+                <MyImage
+                  url={`${option}`}
                   style={{
                     objectFit: "contain",
-                    objectPosition: "center center"
+                    objectPosition: "center center",
                   }}
                   alt="图片加载失败"
                   height="100%"
@@ -54,46 +55,69 @@ const Problem = (props: ProbelmProps) => {
     );
   } else if (props.template == "FaceTag") {
     problemContent = (
-      <CanvasImage data={props.problem.data ? props.problem.data : []} src={props.problem.url} type="point" />
+      <CanvasImage
+        data={props.problem.data ? props.problem.data : []}
+        src={props.problem.url}
+        type="point"
+      />
     );
   } else if (props.template == "ImageFrame") {
     problemContent = (
-      <CanvasImage data={props.problem.data ? props.problem.data : []} src={props.problem.url} type="rectangle" />
-    )
+      <CanvasImage
+        data={props.problem.data ? props.problem.data : []}
+        src={props.problem.url}
+        type="rectangle"
+      />
+    );
   } else if (props.template == "SoundTag") {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
-        <Radio.Group value={props.problem.data ? props.problem.data.choiceIndex : null} disabled={true}>
-          {props.problem.choice.map((ch: any, idx: number) =>
+        <Radio.Group
+          value={props.problem.data ? props.problem.data.choiceIndex : null}
+          disabled={true}
+        >
+          {props.problem.choice.map((ch: any, idx: number) => (
             <Radio value={idx} key={idx}>
               <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
-              <p>{ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx ? `标注方输入: ${props.problem.data.input}` : "无输入"}</p>
+              <p>
+                {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
+                  ? `标注方输入: ${props.problem.data.input}`
+                  : "无输入"}
+              </p>
             </Radio>
-          )}
+          ))}
         </Radio.Group>
       </>
-    )
+    );
   } else if (props.template == "VideoTag") {
     problemContent = (
       <>
-        <MyVideo url={props.problem.url}
+        <MyVideo
+          url={props.problem.url}
           style={{
             width: "300px",
             height: "200px",
           }}
         />
         <Divider />
-        <Radio.Group value={props.problem.data ? props.problem.data.choiceIndex : null} disabled={true}>
-          {props.problem.choice.map((ch: any, idx: number) =>
+        <Radio.Group
+          value={props.problem.data ? props.problem.data.choiceIndex : null}
+          disabled={true}
+        >
+          {props.problem.choice.map((ch: any, idx: number) => (
             <Radio value={idx} key={idx}>
               <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
-              <p>{ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx ? `标注方输入: ${props.problem.data.input}` : "无输入"}</p>
+              <p>
+                {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
+                  ? `标注方输入: ${props.problem.data.input}`
+                  : "无输入"}
+              </p>
             </Radio>
-          )}
+          ))}
         </Radio.Group>
       </>
-    )
+    );
   } else if (props.template == "TextReview") {
     problemContent = (
       <>
@@ -103,15 +127,16 @@ const Problem = (props: ProbelmProps) => {
           <Radio value={false}>不合格</Radio>
         </Radio.Group>
       </>
-    )
+    );
   } else if (props.template == "ImageReview") {
     problemContent = (
       <>
         <ImageFormatter>
-          <MyImage url={props.problem.url}
+          <MyImage
+            url={props.problem.url}
             style={{
               objectFit: "contain",
-              objectPosition: "center center"
+              objectPosition: "center center",
             }}
             alt="图片加载失败"
             height="100%"
@@ -123,23 +148,24 @@ const Problem = (props: ProbelmProps) => {
           <Radio value={false}>不合格</Radio>
         </Radio.Group>
       </>
-    )
+    );
   } else if (props.template == "VideoReview") {
     problemContent = (
       <>
-        <MyVideo url={props.problem.url}
+        <MyVideo
+          url={props.problem.url}
           style={{
             width: "300px",
             height: "200px",
           }}
         />
-        <Divider/>
+        <Divider />
         <Radio.Group value={props.problem.data} disabled>
           <Radio value={true}>合格</Radio>
           <Radio value={false}>不合格</Radio>
         </Radio.Group>
       </>
-    )
+    );
   } else if (props.template == "AudioReview") {
     problemContent = (
       <>
@@ -149,7 +175,7 @@ const Problem = (props: ProbelmProps) => {
           <Radio value={false}>不合格</Radio>
         </Radio.Group>
       </>
-    )
+    );
   }
   return (
     <Card title={`题目${props.index + 1}`}>

@@ -124,7 +124,7 @@ const MyLayout = (props: MyLayoutProps) => {
         collapsed={collapsed}
         style={{
           height: "100%",
-          zIndex: 9
+          zIndex: 9,
         }}
         theme="light"
         collapsedWidth="0"

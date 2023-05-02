@@ -1,5 +1,4 @@
 import {
-  ImageFrameProblem,
   ImagesClassificationProblem,
   TagProblem,
   TaskInfo,
@@ -18,6 +17,8 @@ import {
   Image,
   Space,
   Select,
+  Alert,
+  Upload,
 } from "antd";
 import type { UploadFile, SelectProps } from "antd";
 import dayjs from "dayjs";
@@ -33,6 +34,7 @@ import {
   TextReviewDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
+import { ExclamationCircleFilled, UploadOutlined } from "@ant-design/icons";
 import type { RcFile } from "antd/es/upload";
 import { Modal } from "antd/lib";
 import axios from "axios";
@@ -46,6 +48,17 @@ const getBase64 = (file: File): Promise<string> =>
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = (error) => reject(error);
   });
+
+const downloadTemplate = (type: TaskInfo["template"]) => {
+  if (type === undefined) {
+    message.error("请先选择模板");
+    return;
+  }
+  const link = document.createElement("a");
+  link.href = `/template/${type}.xlsx`;
+  link.download = `${type}.xlsx`;
+  link.click();
+};
 
 const selectOptions: SelectProps["options"] = [
   { value: "TextClassification", label: "文字分类" },
@@ -84,48 +97,62 @@ const TaskInfoForm: React.FC<{
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [form] = Form.useForm<TaskInfo>();
+  const [batch, setBatch] = useState<boolean>(false);
   const template = Form.useWatch("template", form);
 
   // init form if props.taskInfo exists
+  // useEffect(() => {
+  //   if (props.taskInfo === undefined) return;
+  //   const value = { ...props.taskInfo };
+  //   value.deadline = dayjs(value.deadline) as any;
+  //   if (value.template === "ImagesClassification") {
+  //     console.log("old", value.task_data);
+  //     value.task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
+  //       ...v,
+  //       options: v.options.map(
+  //         (url): UploadFile => ({
+  //           uid: crypto.randomUUID(),
+  //           name: url.substring(url.lastIndexOf("/")),
+  //           status: "done",
+  //           url: url,
+  //         })
+  //       ),
+  //     })) as any;
+  //     console.log("new", value.task_data);
+  //   }
+  //   if (
+  //     value.template === "ImageFrame" ||
+  //     value.template === "FaceTag" ||
+  //     value.template === "SoundTag" ||
+  //     value.template === "VideoTag"
+  //   )
+  //     (value.task_data as ImageFrameProblem[]).map((v) => ({
+  //       ...v,
+  //       url: [
+  //         {
+  //           uid: crypto.randomUUID(),
+  //           name: v.url.substring(v.url.lastIndexOf("/")),
+  //           status: "done",
+  //           url: v.url,
+  //         },
+  //       ] as UploadFile[],
+  //     }));
+  //   console.log(value);
+  //   form.setFieldsValue(value);
+  // }, [form, props.taskInfo]);
+
   useEffect(() => {
-    if (props.taskInfo === undefined) return;
-    const value = { ...props.taskInfo };
-    value.deadline = dayjs(value.deadline) as any;
-    if (value.template === "ImagesClassification") {
-      console.log("old", value.task_data);
-      value.task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
-        ...v,
-        options: v.options.map(
-          (url): UploadFile => ({
-            uid: crypto.randomUUID(),
-            name: url.substring(url.lastIndexOf("/")),
-            status: "done",
-            url: url,
-          })
-        ),
-      })) as any;
-      console.log("new", value.task_data);
-    }
-    if (
-      value.template === "ImageFrame" ||
-      value.template === "FaceTag" ||
-      value.template === "SoundTag" ||
-      value.template === "VideoTag"
-    )
-      (value.task_data as ImageFrameProblem[]).map((v) => ({
-        ...v,
-        url: [
-          {
-            uid: crypto.randomUUID(),
-            name: v.url.substring(v.url.lastIndexOf("/")),
-            status: "done",
-            url: v.url,
-          },
-        ] as UploadFile[],
-      }));
-    console.log(value);
-    form.setFieldsValue(value);
-  }, [form, props.taskInfo]);
+    Modal.confirm({
+      title: "是否使用批量上传",
+      icon: <ExclamationCircleFilled />,
+      onOk() {
+        setBatch(true);
+      },
+      onCancel() {
+        setBatch(false);
+      },
+    });
+  }, []);
 
   const onFinish = () => {
     setLoading(true);
@@ -133,16 +160,19 @@ const TaskInfoForm: React.FC<{
     console.log(value);
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
     let task_data: typeof value.task_data = [];
-    if (value.template === "TextClassification") {
+    if (batch) {
+      task_data = (value.task_data as unknown as UploadFile[])[0]?.response?.url;
+    }
+    else if (value.template === "TextClassification") {
       task_data = value.task_data;
     }
-    if (value.template === "ImagesClassification") {
+    else if (value.template === "ImagesClassification") {
       task_data = (value.task_data as ImagesClassificationProblem[]).map((v) => ({
         ...v,
         options: v.options.map((x: any) => x?.response?.url),
       }));
     }
-    if (
+    else if (
       value.template === "ImageFrame" ||
       value.template === "FaceTag" ||
       value.template === "SoundTag" ||
@@ -153,7 +183,7 @@ const TaskInfoForm: React.FC<{
         url: (v.url[0] as any)?.response?.url,
       }));
     }
-    props.onFinish({ ...value, deadline, task_data });
+    props.onFinish({ ...value, deadline, task_data, batch });
     deleteList.forEach((url) => {
       axios.delete("/api/file", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

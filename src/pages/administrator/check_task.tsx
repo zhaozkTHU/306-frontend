@@ -8,8 +8,8 @@ import { transTime } from "@/utils/valid";
 import Problem from "@/components/demander_problem/problem";
 import { request } from "@/utils/network";
 import TextField from "@mui/material/TextField";
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
 const AdministratorCheckTask = () => {
   const router = useRouter();
@@ -30,6 +30,7 @@ const AdministratorCheckTask = () => {
     labeler_number: 0,
     demander_id: -1,
     task_data: [],
+    batch: false,
   });
   useEffect(() => {
     if (!router.isReady) {
@@ -52,12 +53,17 @@ const AdministratorCheckTask = () => {
       });
   }, [router, refreshing]);
 
-  const postCheckTask = async (_task_id: number, _result: boolean, _credits: number, _message: string) => {
+  const postCheckTask = async (
+    _task_id: number,
+    _result: boolean,
+    _credits: number,
+    _message: string
+  ) => {
     request("/api/audit_result", "POST", {
       task_id: _task_id,
       result: _result,
       credits: _credits,
-      message: _message
+      message: _message,
     })
       .then(() => {
         message.success("审核结果提交成功");
@@ -71,10 +77,10 @@ const AdministratorCheckTask = () => {
         }
       })
       .finally(() => {
-        setLoading(false)
+        setLoading(false);
         setRefreshing(true);
       });
-  }
+  };
 
   const { Panel } = Collapse;
   const columns: ColumnsType<any> = [
@@ -104,34 +110,32 @@ const AdministratorCheckTask = () => {
       width: "25%",
       filters: [
         {
-          text: '文本分类',
-          value: 'TextClassification'
+          text: "文本分类",
+          value: "TextClassification",
         },
         {
-          text: '图片分类',
-          value: 'ImagesClassification'
+          text: "图片分类",
+          value: "ImagesClassification",
         },
         {
-          text: '骨骼打点',
-          value: 'FaceTag'
+          text: "骨骼打点",
+          value: "FaceTag",
         },
         {
-          text: '图片框选',
-          value: 'ImageFrame'
+          text: "图片框选",
+          value: "ImageFrame",
         },
         {
-          text: '音频标注',
-          value: 'SoundTag'
+          text: "音频标注",
+          value: "SoundTag",
         },
         {
-          text: '视频标注',
-          value: 'VideoTag'
-        }
+          text: "视频标注",
+          value: "VideoTag",
+        },
       ],
       onFilter: (values, record) => record.template.indexOf(values) !== -1,
-      render: (_, record) => (
-        <>{mapEntemplate2Zhtemplate[record.template]}</>
-      )
+      render: (_, record) => <>{mapEntemplate2Zhtemplate[record.template]}</>,
     },
     {
       title: "审核操作",
@@ -144,7 +148,7 @@ const AdministratorCheckTask = () => {
             type="link"
             onClick={() => {
               setLoading(true);
-              postCheckTask(record.task_id, true, 0, "")
+              postCheckTask(record.task_id, true, 0, "");
             }}
           >
             通过
@@ -153,7 +157,7 @@ const AdministratorCheckTask = () => {
             type="link"
             onClick={() => {
               setTaskId(record.task_id);
-              setDenyModalOpen(true)
+              setDenyModalOpen(true);
             }}
           >
             不通过
@@ -165,7 +169,8 @@ const AdministratorCheckTask = () => {
   return (
     <Spin spinning={refreshing} tip="加载中...">
       <Spin spinning={loading} tip="加载中...">
-        <Modal open={denyModalOpen}
+        <Modal
+          open={denyModalOpen}
           footer={null}
           onCancel={() => setDenyModalOpen(false)}
           destroyOnClose
@@ -178,8 +183,8 @@ const AdministratorCheckTask = () => {
             name="basic"
             initialValues={{ remember: true }}
             onFinish={(values) => {
-              setLoading(true)
-              postCheckTask(taskId, false, values.credits, values.message)
+              setLoading(true);
+              postCheckTask(taskId, false, values.credits, values.message);
             }}
             autoComplete="off"
           >
@@ -212,12 +217,7 @@ const AdministratorCheckTask = () => {
                 />
               </Form.Item>
               <p>管理员需要对审核不通过的原因进行说明</p>
-              <Form.Item
-                name="message"
-                rules={[
-                  { required: true, message: "原因不能为空" },
-                ]}
-              >
+              <Form.Item name="message" rules={[{ required: true, message: "原因不能为空" }]}>
                 <TextField
                   name="message"
                   fullWidth
@@ -236,9 +236,11 @@ const AdministratorCheckTask = () => {
               size="large"
               style={{
                 backgroundColor: "#3b5999",
-                marginBottom: "5px"
+                marginBottom: "5px",
               }}
-            >确认</Button>
+            >
+              确认
+            </Button>
           </Form>
         </Modal>
         <Modal
@@ -252,21 +254,43 @@ const AdministratorCheckTask = () => {
           <>
             <h3>基本信息</h3>
             <Descriptions bordered column={2}>
-              <Descriptions.Item label="标题" span={2}>{taskDetail.title}</Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={1}>{transTime(taskDetail.create_at)}</Descriptions.Item>
-              <Descriptions.Item label="截止时间" span={1}>{transTime(taskDetail.deadline)}</Descriptions.Item>
-              <Descriptions.Item label="创建人ID" span={1}>{taskDetail.demander_id}</Descriptions.Item>
-              <Descriptions.Item label="模板" span={1}>{mapEntemplate2Zhtemplate[taskDetail.template]}</Descriptions.Item>
-              <Descriptions.Item label="单题奖励" span={1}>{taskDetail.reward}</Descriptions.Item>
-              <Descriptions.Item label="单题限时" span={1}>{taskDetail.time}</Descriptions.Item>
-              <Descriptions.Item label="标注者人数" span={1}>{taskDetail.labeler_number}</Descriptions.Item>
+              <Descriptions.Item label="标题" span={2}>
+                {taskDetail.title}
+              </Descriptions.Item>
+              <Descriptions.Item label="创建时间" span={1}>
+                {transTime(taskDetail.create_at)}
+              </Descriptions.Item>
+              <Descriptions.Item label="截止时间" span={1}>
+                {transTime(taskDetail.deadline)}
+              </Descriptions.Item>
+              <Descriptions.Item label="创建人ID" span={1}>
+                {taskDetail.demander_id}
+              </Descriptions.Item>
+              <Descriptions.Item label="模板" span={1}>
+                {mapEntemplate2Zhtemplate[taskDetail.template]}
+              </Descriptions.Item>
+              <Descriptions.Item label="单题奖励" span={1}>
+                {taskDetail.reward}
+              </Descriptions.Item>
+              <Descriptions.Item label="单题限时" span={1}>
+                {taskDetail.time}
+              </Descriptions.Item>
+              <Descriptions.Item label="标注者人数" span={1}>
+                {taskDetail.labeler_number}
+              </Descriptions.Item>
             </Descriptions>
             <h3>题目详情</h3>
             <Collapse>
               <Panel key={""} header={"点击此处查看题目详情"}>
-                {taskDetail.task_data.map((problem, idx) =>
-                  <Problem problem={problem} index={idx} template={`${taskDetail.template}`} showto="administrator" key={idx} />
-                )}
+                {taskDetail.task_data?.map((problem, idx) => (
+                  <Problem
+                    problem={problem}
+                    index={idx}
+                    template={`${taskDetail.template}`}
+                    showto="administrator"
+                    key={idx}
+                  />
+                ))}
               </Panel>
             </Collapse>
           </>

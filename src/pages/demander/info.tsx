@@ -1,10 +1,10 @@
 import UserInfo from "@/components/user_info/user-info";
 import { Alert, Tabs, TextField, Typography } from "@mui/material";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import CurrencyYuanIcon from '@mui/icons-material/CurrencyYuan';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CurrencyYuanIcon from "@mui/icons-material/CurrencyYuan";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
 import CryptoJS from "crypto-js";
 import { Button, Card, Divider, Form, message, Modal, Spin, Statistic } from "antd";
 import React from "react";
@@ -38,7 +38,6 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-
 const DemanderInfo = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [username, setUsername] = useState<string>("");
@@ -48,91 +47,98 @@ const DemanderInfo = () => {
   const [points, setPoints] = useState<number>(0);
   const [value, setValue] = React.useState(0);
   const [isBound, setIsBound] = useState<boolean>(false);
-  const [accountBalance, setAccountBalance] = useState<{ bank_account: string, balance: string }[]>([])
+  const [accountBalance, setAccountBalance] = useState<{ bank_account: string; balance: string }[]>(
+    []
+  );
   const [visible, setVisible] = useState<boolean>(false);
   const [isBoundModalOpen, setIsBoundModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activateAccountTabKey, setActivateAccountTabKey] = useState<number>(1)
+  const [activateAccountTabKey, setActivateAccountTabKey] = useState<number>(1);
   const [accountValue, setAccountValue] = useState<number>(0);
-  const [isCXModalOpen, setIsCXModalOpen] = useState<boolean>(false)
+  const [isCXModalOpen, setIsCXModalOpen] = useState<boolean>(false);
   const [addScore, setAddScore] = useState<boolean>(false);
 
   const disbound = async (bank_account: string) => {
     request("/api/untie", "POST", {
-      bank_account: bank_account
+      bank_account: bank_account,
     })
       .then((response) => {
-        message.success("解绑成功")
+        message.success("解绑成功");
       })
       .catch((error) => {
-        message.error("解绑失败")
+        message.error("解绑失败");
       })
       .finally(() => {
         setLoading(false);
         setRefreshing(true);
-      })
-  }
+      });
+  };
   const postBound = async (bank_account: string, hashedPassword: string) => {
     request("/api/bound", "POST", {
       bank_account: bank_account,
-      password: hashedPassword
+      password: hashedPassword,
     })
       .then((response) => {
-        message.success("银行卡绑定成功")
+        message.success("银行卡绑定成功");
         setIsBoundModalOpen(false);
       })
       .catch((error) => {
-        message.error(`银行卡绑定失败, ${error.response.data.message}`)
+        message.error(`银行卡绑定失败, ${error.response.data.message}`);
       })
       .finally(() => {
-        setLoading(false)
-        setRefreshing(true)
-      })
-  }
+        setLoading(false);
+        setRefreshing(true);
+      });
+  };
 
-  const exchange = async (score: number, add_score: boolean, bank_account: string, hashedPassword: string) => {
+  const exchange = async (
+    score: number,
+    add_score: boolean,
+    bank_account: string,
+    hashedPassword: string
+  ) => {
     request("/api/exchange", "POST", {
       score: score,
       add_score: add_score,
       bank_account: bank_account,
-      password: hashedPassword
+      password: hashedPassword,
     })
       .then((reponse) => {
-        message.success((addScore ? "充值" : "提现") + "成功")
+        message.success((addScore ? "充值" : "提现") + "成功");
       })
       .catch((error) => {
-        message.error((addScore ? "充值" : "提现") + "失败")
+        message.error((addScore ? "充值" : "提现") + "失败");
       })
       .finally(() => {
         setLoading(false);
         setRefreshing(true);
-      })
-  }
+      });
+  };
 
   const getBoundAccounts = async () => {
     request("/api/bound_accounts", "GET")
       .then((response) => {
-        setAccountBalance(response.data.accounts)
+        setAccountBalance(response.data.accounts);
       })
       .catch((error) => {
-        message.error(`银行卡信息获取失败, ${error.response.data.message}`)
+        message.error(`银行卡信息获取失败, ${error.response.data.message}`);
       })
       .finally(() => {
-        setRefreshing(false)
-      })
-  }
+        setRefreshing(false);
+      });
+  };
   function a11yProps(index: number) {
     return {
       id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
+      "aria-controls": `simple-tabpanel-${index}`,
     };
   }
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
   const handleChange2 = (event: React.SyntheticEvent, newValue: number) => {
-    setAccountValue(newValue)
-  }
+    setAccountValue(newValue);
+  };
   useEffect(() => {
     request("/api/account_info", "GET")
       .then((response) => {
@@ -152,15 +158,20 @@ const DemanderInfo = () => {
   const tabList = accountBalance.map((_con, idx) => {
     return {
       key: `${idx + 1}`,
-      tab: `账户${idx + 1}`
-    }
-  })
+      tab: `账户${idx + 1}`,
+    };
+  });
   return (
     <Spin spinning={refreshing}>
       <Spin spinning={loading}>
-        <Modal open={isBoundModalOpen}
-          onCancel={() => { setIsBoundModalOpen(false) }}
-          onOk={() => { setIsBoundModalOpen(false) }}
+        <Modal
+          open={isBoundModalOpen}
+          onCancel={() => {
+            setIsBoundModalOpen(false);
+          }}
+          onOk={() => {
+            setIsBoundModalOpen(false);
+          }}
           footer={null}
           destroyOnClose
         >
@@ -174,8 +185,8 @@ const DemanderInfo = () => {
             onFinish={(values) => {
               setLoading(true);
               const hashPassword = CryptoJS.SHA256(values.password).toString();
-              postBound(values.bank_account, hashPassword)
-              setIsBoundModalOpen(false)
+              postBound(values.bank_account, hashPassword);
+              setIsBoundModalOpen(false);
             }}
             autoComplete="off"
           >
@@ -197,7 +208,7 @@ const DemanderInfo = () => {
                     }
                     return Promise.resolve();
                   },
-                })
+                }),
               ]}
             >
               <TextField
@@ -222,7 +233,7 @@ const DemanderInfo = () => {
                     if (value && !r.test(value)) {
                       return Promise.reject(new Error("银行卡密码必须由数字组成"));
                     }
-                    if (value && (value.length !== 6)) {
+                    if (value && value.length !== 6) {
                       return Promise.reject(new Error("银行卡密码必须为6位"));
                     }
                     return Promise.resolve();
@@ -255,8 +266,8 @@ const DemanderInfo = () => {
             </Button>
           </Form>
         </Modal>
-        <Box sx={{ width: '100%' }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ width: "100%" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
               <Tab label="基本信息" {...a11yProps(0)} />
               <Tab label="信息修改" {...a11yProps(1)} />
@@ -279,45 +290,83 @@ const DemanderInfo = () => {
           </TabPanel>
           <TabPanel value={value} index={2}>
             {
-              <Alert severity={isBound ? "success" : "warning"}>该账号{isBound?"已":"未"}绑定银行卡
-                <Button type="link" size="small"
+              <Alert severity={isBound ? "success" : "warning"}>
+                该账号{isBound ? "已" : "未"}绑定银行卡
+                <Button
+                  type="link"
+                  size="small"
                   onClick={() => {
-                    setIsBoundModalOpen(true)
+                    setIsBoundModalOpen(true);
                   }}
-                >点击此处绑定</Button>
-              </Alert>}
-            <Card title={"账户信息 "}
+                >
+                  点击此处绑定
+                </Button>
+              </Alert>
+            }
+            <Card
+              title={"账户信息 "}
               extra={
-                <Button type="text" size="large" disabled={!isBound} onClick={() => {
-                  setVisible((i) => !i)
-                }}
+                <Button
+                  type="text"
+                  size="large"
+                  disabled={!isBound}
+                  onClick={() => {
+                    setVisible((i) => !i);
+                  }}
                   icon={visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 />
-              }>
-              <Box sx={{ width: '100%' }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                  <Tabs value={accountValue} onChange={handleChange2} aria-label="basic tabs example">
-                    {accountBalance.map((_, idx) =>
-                      <Tab label={`账户${idx + 1}`} {...a11yProps(idx)} key={idx}/>
-                    )}
+              }
+            >
+              <Box sx={{ width: "100%" }}>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <Tabs
+                    value={accountValue}
+                    onChange={handleChange2}
+                    aria-label="basic tabs example"
+                  >
+                    {accountBalance.map((_, idx) => (
+                      <Tab label={`账户${idx + 1}`} {...a11yProps(idx)} key={idx} />
+                    ))}
                   </Tabs>
                 </Box>
-                {accountBalance.map((account, idx) =>
+                {accountBalance.map((account, idx) => (
                   <TabPanel value={accountValue} index={idx} key={idx}>
-                    <Statistic title="银行卡卡号 (No.)" value={visible ? account.bank_account : "******************"} precision={0} prefix={<FieldNumberOutlined />} />
-                    <Statistic title="账户余额 (CNY)" value={visible ? account.balance : "******************"} precision={2} prefix={<CurrencyYuanIcon />} />
-                    <Button onClick={() => {
-                      setAddScore(true)
-                      setIsCXModalOpen(true)
-                    }}>充值</Button>
-                    <Button onClick={() => {
-                      setAddScore(false)
-                      setIsCXModalOpen(true)
-                    }}>提现</Button>
-                    <Button onClick={() => {
-                      setLoading(true)
-                      disbound(account.bank_account)
-                    }}>解绑</Button>
+                    <Statistic
+                      title="银行卡卡号 (No.)"
+                      value={visible ? account.bank_account : "******************"}
+                      precision={0}
+                      prefix={<FieldNumberOutlined />}
+                    />
+                    <Statistic
+                      title="账户余额 (CNY)"
+                      value={visible ? account.balance : "******************"}
+                      precision={2}
+                      prefix={<CurrencyYuanIcon />}
+                    />
+                    <Button
+                      onClick={() => {
+                        setAddScore(true);
+                        setIsCXModalOpen(true);
+                      }}
+                    >
+                      充值
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setAddScore(false);
+                        setIsCXModalOpen(true);
+                      }}
+                    >
+                      提现
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setLoading(true);
+                        disbound(account.bank_account);
+                      }}
+                    >
+                      解绑
+                    </Button>
                     <Modal
                       open={isCXModalOpen}
                       onCancel={() => setIsCXModalOpen(false)}
@@ -334,7 +383,7 @@ const DemanderInfo = () => {
                         onFinish={(values) => {
                           setLoading(true);
                           const hashPassword = CryptoJS.SHA256(values.password).toString();
-                          exchange(values.score, addScore, account.bank_account, hashPassword)
+                          exchange(values.score, addScore, account.bank_account, hashPassword);
                           setIsCXModalOpen(false);
                         }}
                         autoComplete="off"
@@ -346,7 +395,7 @@ const DemanderInfo = () => {
                               required: true,
                               message: "不得为空",
                             },
-                            ({ }) => ({
+                            ({}) => ({
                               validator(_, value) {
                                 const r = /^\+?[1-9][0-9]*$/;
                                 if (value && !r.test(value)) {
@@ -360,7 +409,7 @@ const DemanderInfo = () => {
                                 }
                                 return Promise.resolve();
                               },
-                            })
+                            }),
                           ]}
                         >
                           <TextField
@@ -385,7 +434,7 @@ const DemanderInfo = () => {
                                 if (value && !r.test(value)) {
                                   return Promise.reject(new Error("银行卡密码必须由数字组成"));
                                 }
-                                if (value && (value.length !== 6)) {
+                                if (value && value.length !== 6) {
                                   return Promise.reject(new Error("银行卡密码必须为6位"));
                                 }
                                 return Promise.resolve();
@@ -413,12 +462,12 @@ const DemanderInfo = () => {
                             marginBottom: "5px",
                           }}
                         >
-                          {addScore?"充值":"提现"}
+                          {addScore ? "充值" : "提现"}
                         </Button>
                       </Form>
                     </Modal>
                   </TabPanel>
-                )}
+                ))}
               </Box>
             </Card>
           </TabPanel>
