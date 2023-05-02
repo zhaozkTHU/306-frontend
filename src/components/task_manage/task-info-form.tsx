@@ -269,7 +269,7 @@ const TaskInfoForm: React.FC<{
               />
             </Form.Item>
           )}
-          {!batch &&
+          {!batch && (
             <Form.List name="task_data">
               {(dataFields, { add: dataAdd, remove: dataRemove }) => (
                 <>
@@ -316,7 +316,7 @@ const TaskInfoForm: React.FC<{
                 </>
               )}
             </Form.List>
-          }
+          )}
           {batch && (
             <>
               <Alert
@@ -339,7 +339,7 @@ const TaskInfoForm: React.FC<{
                 label="上传压缩包"
                 name="batch_file"
                 valuePropName="fileList"
-                getValueFromEvent={e => e?.fileList}
+                getValueFromEvent={(e) => e?.fileList}
                 rules={[{ required: true, message: "请上传压缩包" }]}
               >
                 <Upload
