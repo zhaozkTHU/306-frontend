@@ -15,6 +15,7 @@ import {
   Select,
   Alert,
   Upload,
+  Switch,
 } from "antd";
 import type { UploadFile, SelectProps } from "antd";
 import dayjs from "dayjs";
@@ -30,7 +31,7 @@ import {
   TextReviewDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
-import { ExclamationCircleFilled, UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile } from "antd/es/upload";
 import { Modal } from "antd/lib";
 import axios from "axios";
@@ -45,11 +46,17 @@ const getBase64 = (file: File): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-const downloadTemplate = (type: TaskInfo["template"]) => {
+const downloadTemplate = (type: TaskInfo["template"], templates: TaskInfo["templates"]) => {
   if (type === undefined) {
     message.error("请先选择模板");
     return;
   }
+  templates?.forEach((value) => {
+    const link = document.createElement("a");
+    link.href = `/template/${value}.xlsx`;
+    link.download = `${value}.xlsx`;
+    link.click();
+  });
   const link = document.createElement("a");
   link.href = `/template/${type}.xlsx`;
   link.download = `${type}.xlsx`;
@@ -93,21 +100,12 @@ const TaskInfoForm: React.FC<{
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [form] = Form.useForm<TaskInfo>();
-  const [batch, setBatch] = useState<boolean>(false);
+  const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
 
   useEffect(() => {
-    Modal.confirm({
-      title: "是否使用批量上传",
-      icon: <ExclamationCircleFilled />,
-      onOk() {
-        setBatch(true);
-      },
-      onCancel() {
-        setBatch(false);
-      },
-    });
-  }, []);
+    form.setFieldValue("task_data", undefined);
+  }, [batch, form]);
 
   const onFinish = () => {
     setLoading(true);
@@ -170,199 +168,214 @@ const TaskInfoForm: React.FC<{
 
   return (
     <ConfigProvider locale={locale}>
-      <Space>
-        <Modal
-          open={previewOpen}
-          title={previewTitle}
-          footer={null}
-          onCancel={() => setPreviewOpen(false)}
-        >
-          <Image alt="image" style={{ width: "100%" }} src={previewImage} />
-        </Modal>
-        <Form
-          form={form}
-          onFinishFailed={() => {
-            message.error("请检查表单是否填写完整");
-          }}
-          onFinish={onFinish}
-        >
-          <Row>
-            <Col span={6}>
+      <Modal
+        open={previewOpen}
+        title={previewTitle}
+        footer={null}
+        onCancel={() => setPreviewOpen(false)}
+      >
+        <Image alt="image" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
+      <Form
+        form={form}
+        onFinishFailed={() => {
+          message.error("请检查表单是否填写完整");
+        }}
+        onFinish={onFinish}
+      >
+        <Row>
+          <Col span={6}>
+            <Form.Item
+              label="任务标题"
+              name="title"
+              rules={[{ required: true, message: "请输入任务标题" }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              label="任务模板"
+              name="template"
+              rules={[{ required: true, message: "请选择任务模板" }]}
+            >
+              <Select
+                onChange={(v) => {
+                  form.setFieldValue("task_data", []);
+                  console.log(v);
+                  console.log(form.getFieldsValue());
+                }}
+                options={selectOptions}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={4}>
+            <Form.Item
+              label="任务奖励"
+              name="reward"
+              rules={[{ required: true, message: "请输入任务奖励" }]}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item
+              label="标注方人数"
+              name="labeler_number"
+              rules={[{ required: true, message: "请输入标注方人数" }]}
+            >
+              <InputNumber min={0} />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item
+              label="单题限时"
+              name="time"
+              rules={[{ required: true, message: "请输入单题限时" }]}
+            >
+              <InputNumber min={0} addonAfter="秒" />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row>
+          <Space>
+            <Col>
               <Form.Item
-                label="任务标题"
-                name="title"
-                rules={[{ required: true, message: "请输入任务标题" }]}
+                label="任务截止时间"
+                name="deadline"
+                rules={[{ required: true, message: "请选择任务截止时间" }]}
               >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                label="任务模板"
-                name="template"
-                rules={[{ required: true, message: "请选择任务模板" }]}
-              >
-                <Select
-                  onChange={(v) => {
-                    form.setFieldValue("task_data", []);
-                    console.log(v);
-                    console.log(form.getFieldsValue());
-                  }}
-                  options={selectOptions}
+                <DatePicker
+                  locale={locale.DatePicker}
+                  inputReadOnly
+                  showTime
+                  disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
                 />
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
-            <Col span={4}>
+            <Col>
               <Form.Item
-                label="任务奖励"
-                name="reward"
-                rules={[{ required: true, message: "请输入任务奖励" }]}
+                label="是否使用批量上传"
+                name="batch"
+                initialValue={false}
+                rules={[{ required: true, message: "" }]}
               >
-                <InputNumber min={0} />
+                <Switch />
               </Form.Item>
             </Col>
-            <Col span={4}>
-              <Form.Item
-                label="标注方人数"
-                name="labeler_number"
-                rules={[{ required: true, message: "请输入标注方人数" }]}
-              >
-                <InputNumber min={0} />
-              </Form.Item>
-            </Col>
-            <Col span={4}>
-              <Form.Item
-                label="单题限时"
-                name="time"
-                rules={[{ required: true, message: "请输入单题限时" }]}
-              >
-                <InputNumber min={0} addonAfter="秒" />
-              </Form.Item>
-            </Col>
-          </Row>
+          </Space>
+        </Row>
+        {template === "Custom" && (
           <Form.Item
-            label="任务截止时间"
-            name="deadline"
-            rules={[{ required: true, message: "请选择任务截止时间" }]}
+            label="模板组合"
+            name="templates"
+            rules={[{ required: true, message: "请选择模板组合" }]}
           >
-            <DatePicker
-              locale={locale.DatePicker}
-              inputReadOnly
-              showTime
-              disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="选择模板组合"
+              options={selectOptions}
+              onChange={(v) => console.log(v)}
             />
           </Form.Item>
-          {template === "Custom" && (
-            <Form.Item
-              label="模板组合"
-              name="templates"
-              rules={[{ required: true, message: "请选择模板组合" }]}
-            >
-              <Select
-                mode="multiple"
-                allowClear
-                placeholder="选择模板组合"
-                options={selectOptions}
-                onChange={(v) => console.log(v)}
-              />
-            </Form.Item>
-          )}
-          {!batch && (
-            <Form.List name="task_data">
-              {(dataFields, { add: dataAdd, remove: dataRemove }) => (
-                <>
-                  <Button
-                    onClick={() => dataAdd()}
-                    type="primary"
-                    disabled={form.getFieldValue("template") === undefined}
-                  >
-                    添加题目
-                  </Button>
-                  {dataFields.map((dataField, index) => (
-                    <div key={index}>
-                      <Divider orientation="left">{`题目${index + 1}`}</Divider>
-                      <Row>
-                        <Col>
-                          <Form.Item
-                            key={dataField.key}
-                            name={[dataField.name, "description"]}
-                            rules={[{ required: true, message: "请输入描述" }]}
-                          >
-                            <Input addonBefore="题目描述" />
-                          </Form.Item>
-                        </Col>
-                        <Col>
-                          <Button onClick={() => dataRemove(index)} type="primary" danger>
-                            删除题目
-                          </Button>
-                        </Col>
-                      </Row>
-                      {template === "TextClassification" && TextClassificationDataForm(dataField)}
-                      {template === "ImagesClassification" &&
-                        ImagesClassificationDataForm(dataField, handlePreview)}
-                      {template === "FaceTag" && FaceTagDataForm(dataField)}
-                      {template === "ImageFrame" && ImageFrameDataForm(dataField)}
-                      {template === "SoundTag" && SoundTagDataForm(dataField)}
-                      {template === "VideoTag" && VideoTagDataForm(dataField)}
-                      {template === "TextReview" && TextReviewDataForm(dataField)}
-                      {(template === "ImageReview" ||
-                        template === "VideoReview" ||
-                        template === "AudioReview") &&
-                        FileReviewDataForm(dataField, template.substring(0, 5).toLowerCase())}
-                    </div>
-                  ))}
-                </>
-              )}
-            </Form.List>
-          )}
-          {batch && (
-            <>
-              <Alert
-                message={
-                  <>
-                    请
-                    <Button
-                      type="link"
-                      onClick={() => downloadTemplate(form.getFieldValue("template"))}
-                    >
-                      下载
-                    </Button>
-                    模板并按规范提交
-                  </>
-                }
-                type="info"
-                showIcon
-              />
-              <Form.Item
-                label="上传压缩包"
-                name="batch_file"
-                valuePropName="fileList"
-                getValueFromEvent={(e) => e?.fileList}
-                rules={[{ required: true, message: "请上传压缩包" }]}
-              >
-                <Upload
-                  action="/api/file"
-                  headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
-                  maxCount={1}
+        )}
+        {!batch && (
+          <Form.List name="task_data">
+            {(dataFields, { add: dataAdd, remove: dataRemove }) => (
+              <>
+                <Button
+                  onClick={() => dataAdd()}
+                  type="primary"
+                  disabled={form.getFieldValue("template") === undefined}
                 >
-                  <Button icon={<UploadOutlined />}>上传压缩包</Button>
-                </Upload>
-              </Form.Item>
-            </>
-          )}
-          <Button
-            type="primary"
-            loading={loading}
-            onClick={() => {
-              form.submit();
-            }}
-          >
-            submit
-          </Button>
-        </Form>
-      </Space>
+                  添加题目
+                </Button>
+                {dataFields.map((dataField, index) => (
+                  <div key={index}>
+                    <Divider orientation="left">{`题目${index + 1}`}</Divider>
+                    <Row>
+                      <Col>
+                        <Form.Item
+                          key={dataField.key}
+                          name={[dataField.name, "description"]}
+                          rules={[{ required: true, message: "请输入描述" }]}
+                        >
+                          <Input addonBefore="题目描述" />
+                        </Form.Item>
+                      </Col>
+                      <Col>
+                        <Button onClick={() => dataRemove(index)} type="primary" danger>
+                          删除题目
+                        </Button>
+                      </Col>
+                    </Row>
+                    {template === "TextClassification" && TextClassificationDataForm(dataField)}
+                    {template === "ImagesClassification" &&
+                      ImagesClassificationDataForm(dataField, handlePreview)}
+                    {template === "FaceTag" && FaceTagDataForm(dataField)}
+                    {template === "ImageFrame" && ImageFrameDataForm(dataField)}
+                    {template === "SoundTag" && SoundTagDataForm(dataField)}
+                    {template === "VideoTag" && VideoTagDataForm(dataField)}
+                    {template === "TextReview" && TextReviewDataForm(dataField)}
+                    {(template === "ImageReview" ||
+                      template === "VideoReview" ||
+                      template === "AudioReview") &&
+                      FileReviewDataForm(dataField, template.substring(0, 5).toLowerCase())}
+                  </div>
+                ))}
+              </>
+            )}
+          </Form.List>
+        )}
+        {batch && (
+          <>
+            <Alert
+              message={
+                <>
+                  请
+                  <Button
+                    type="link"
+                    onClick={() => downloadTemplate(template, form.getFieldValue("templates"))}
+                  >
+                    下载
+                  </Button>
+                  模板并按规范提交
+                </>
+              }
+              type="info"
+              showIcon
+            />
+            <br />
+            <Form.Item
+              label="上传压缩包"
+              name="batch_file"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => e?.fileList}
+              rules={[{ required: true, message: "请上传压缩包" }]}
+            >
+              <Upload
+                action="/api/file"
+                headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
+                maxCount={1}
+              >
+                <Button icon={<UploadOutlined />}>上传压缩包</Button>
+              </Upload>
+            </Form.Item>
+          </>
+        )}
+        <Button
+          type="primary"
+          loading={loading}
+          onClick={() => {
+            form.submit();
+          }}
+        >
+          submit
+        </Button>
+      </Form>
     </ConfigProvider>
   );
 };
