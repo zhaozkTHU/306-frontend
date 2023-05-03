@@ -44,7 +44,7 @@ const CheckModel = (props: CheckModelProps) => {
       .finally(() => {
         setRefreshing(false);
         props.setRefreshing(true);
-      })
+      });
   }, [router, props.labeler_index, props.task_id]);
   useEffect(() => {
     result = problems.slice();

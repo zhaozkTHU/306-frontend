@@ -55,7 +55,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
       <Modal
         open={isRegisterModalOpen}
         onCancel={() => {
-          if(!refreshing) {
+          if (!refreshing) {
             setIsRegisterModalOpen(false);
           }
         }}
@@ -66,17 +66,17 @@ export default function LoginScreen(props: LoginScreenPorps) {
         <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
 
-
-      <Modal open={isFoundPassword}
+      <Modal
+        open={isFoundPassword}
         onCancel={() => {
-          if(!refreshing) {
+          if (!refreshing) {
             setIsFoundPassword(false);
           }
         }}
         footer={null}
         destroyOnClose
       >
-        <FindPassword setrefreshing={setRefreshing}/>
+        <FindPassword setrefreshing={setRefreshing} />
       </Modal>
 
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -210,9 +210,14 @@ export default function LoginScreen(props: LoginScreenPorps) {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Button type="link"
-                    onClick={() => { setIsFoundPassword(true) }}
-                  >忘记密码?</Button>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setIsFoundPassword(true);
+                    }}
+                  >
+                    忘记密码?
+                  </Button>
                 </Grid>
                 <Grid item>
                   <Button

@@ -37,6 +37,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             labeler_number={task.labeler_number}
             task_id={task.task_id}
             task_data={task.task_data}
+            batch={false}
           />
         </Modal>
       </>
@@ -58,6 +59,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             labeler_number={task.labeler_number}
             task_id={task.task_id}
             task_data={task.task_data}
+            batch={false}
           />
         </Modal>
       </>
@@ -79,6 +81,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             labeler_number={task.labeler_number}
             task_id={task.task_id}
             task_data={task.task_data}
+            batch={false}
           />
         </Modal>
       </>
