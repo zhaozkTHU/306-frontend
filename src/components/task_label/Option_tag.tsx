@@ -332,7 +332,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
           <div>
             Completed: {completedProblemsCount}/{totalProblemsCount}
           </div>
-
           <div
             style={{
               color: timer < taskInfo.time ? "red" : "green",
