@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Image, ImageProps } from "antd";
 interface MyImageProps extends Omit<ImageProps, "src"> {
   url: string;
+  onImageLoad?: (size: { width: number; height: number }) => void;
 }
 
 const MyImage = (props: MyImageProps) => {
@@ -27,7 +28,14 @@ const MyImage = (props: MyImageProps) => {
       });
   }, [props.url]);
 
-  return <Image src={imageUrl} {...props} alt={props.alt} />;
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    if (props.onImageLoad) {
+      const { naturalWidth, naturalHeight } = e.currentTarget;
+      props.onImageLoad({ width: naturalWidth, height: naturalHeight });
+    }
+  };
+
+  return <Image src={imageUrl} {...props} alt={props.alt} onLoad={handleImageLoad} />;
 };
 
 export default MyImage;
