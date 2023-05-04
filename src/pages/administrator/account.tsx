@@ -93,6 +93,25 @@ const AdministratorAccount = () => {
       key: "role",
       align: "center",
       width: "25%",
+      filters: [
+        {
+          text: "需求方",
+          value: "demander",
+        },
+        {
+          text: "标注方",
+          value: "labeler",
+        },
+        {
+          text: "中介",
+          value: "agent",
+        },
+        {
+          text: "管理员",
+          value: "administrator",
+        }
+      ],
+      onFilter: (values, record) => record.role===values,
       render: (role) => {
         return (
           <p>{mapRole2En[role]}</p>
@@ -105,12 +124,24 @@ const AdministratorAccount = () => {
       key: "is_blocked",
       align: "center",
       width: "25%",
+      filters: [
+        {
+          text: "已封禁",
+          value: true,
+        },
+        {
+          text: "正常",
+          value: false,
+        }
+      ],
+      onFilter: (values, record) => record.is_blocked===values,
       render: (is_blocked) => {
         return (
           is_blocked ? <Tag color="rgb(252, 61, 14)">已封禁</Tag> :
             <Tag color="rgb(33, 198, 39)">正常</Tag>
         )
       }
+      
     },
     {
       title: "操作",
@@ -147,7 +178,7 @@ const AdministratorAccount = () => {
       >
         
       </Modal>
-      <Table columns={userListColumns} dataSource={userList} loading={refreshing}></Table>
+      <Table columns={userListColumns} dataSource={userList} loading={refreshing&&loading}></Table>
     </>
   )
 }

@@ -1,6 +1,11 @@
-import { Avatar, Descriptions, Progress, Spin } from "antd";
-import Icon, { UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Col, Divider, Form, Modal, Progress, Row, Select, SelectProps, Tag, Tooltip, message, Space } from "antd";
 import { ProCard } from "@ant-design/pro-components";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { HelpOutline } from "@mui/icons-material";
+import { Dispatch, SetStateAction, useState } from "react";
+import { mapLevel2Zh } from "@/const/interface";
+import { request } from "@/utils/network";
+import Grid from "@mui/material/Grid";
 
 export interface UserInfoProps {
   username: string;
@@ -8,63 +13,168 @@ export interface UserInfoProps {
   level: string;
   exp: number;
   points: number;
+  email: string;
+  credits: number;
+  label_type: string[];
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-const MedalSvg = (color: string) => {
-  const svg = () => (
-    <svg
-      viewBox="0 0 1024 1024"
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
-      p-id="2655"
-      width="50"
-      height="50"
-      fill={color}
-    >
-      <path
-        d="M447.5 261.5L309.24 31.08A63.994 63.994 0 0 0 254.36 0H32.06C6.16 0-9 29.14 5.84 50.36l222.54 317.92c59.44-55.54 135.04-93.66 219.12-106.78zM991.94 0H769.64c-22.48 0-43.32 11.8-54.88 31.08l-138.26 230.42c84.08 13.12 159.68 51.24 219.12 106.76L1018.16 50.36C1033 29.14 1017.84 0 991.94 0zM512 320c-194.4 0-352 157.6-352 352s157.6 352 352 352 352-157.6 352-352-157.6-352-352-352z m185.04 314.52l-75.86 73.92 17.94 104.44c3.2 18.72-16.52 33.02-33.3 24.18L512 787.76l-93.8 49.3c-16.8 8.9-36.5-5.48-33.3-24.18l17.94-104.44-75.86-73.92c-13.64-13.28-6.1-36.46 12.7-39.18l104.86-15.28 46.86-95.04c4.22-8.56 12.38-12.78 20.56-12.78 8.22 0 16.44 4.28 20.66 12.78l46.86 95.04 104.86 15.28c18.8 2.72 26.34 25.9 12.7 39.18z"
-        p-id="2656"
-      />
-    </svg>
-  );
-  return svg;
-};
-
-const ModalIcon = (level: string) => {
-  switch (level) {
-    case "bronze":
-      return (
-        <Icon
-          component={MedalSvg("brown")}
-          style={{ color: "brown", fontSize: "10px" }}
-          color="brown"
-        />
-      );
-    default:
-      return <Spin />;
-  }
-};
 
 const UserInfo = (props: UserInfoProps) => {
-
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false)
+  const update_prefer = async (prefer: string[]) => {
+    request("/api/update_prefer", "POST", {
+      prefer: prefer
+    })
+      .then(() => {
+        message.success("更新偏好标签成功")
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`更新偏好失败，${error.response.data.message}`);
+        } else {
+          message.error("更新偏好失败，网络错误");
+        }
+      })
+      .finally(() => {
+        props.setLoading(false)
+        props.setRefreshing(true)
+      })
+  }
+  const preferTag: SelectProps['options'] = [{
+    label: "情感分类/分析",
+    value: "sentiment"
+  },
+  {
+    label: "词性分类",
+    value: "part-of-speech",
+  },
+  {
+    label: "意图揣测",
+    value: "intent",
+  },
+  {
+    label: "事件概括",
+    value: "event",
+  }
+  ];
   return (
     <>
+      <Modal open={isInviteModalOpen}
+        onCancel={() => { setIsInviteModalOpen(false) }}
+        footer={null}
+      >
+        <h2 style={{ textAlign: 'center' }}>邀请码</h2>
+        <Divider />
+        <p>为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。</p>
+        <p>请将这个邀请码分享给您的朋友，如果他们在注册本平台账号可以填写您的邀请码，您和您的朋友将获得丰厚的<span style={{ color: "green" }}>点数奖励</span>，<b>邀请越多，奖励越多</b>。</p>
+        <p>赶快将邀请码分享到<span style={{ color: "red" }}>QQ群、微信群</span>等平台赢取精美大奖吧！！！</p>
+      </Modal>
       <ProCard split="vertical">
-        <ProCard colSpan={'60%'}>
-          <Descriptions bordered column={3}>
-            <Descriptions.Item label="头像">
-              <Avatar size="large" icon={<UserOutlined />} />
-            </Descriptions.Item>
-            <Descriptions.Item label="经验">
-              <Progress size="small" percent={props.exp} type="circle" />
-            </Descriptions.Item>
-            <Descriptions.Item label="等级">{ModalIcon(props.level)}</Descriptions.Item>
-            <Descriptions.Item label="用户名" span={2}>{props.username}</Descriptions.Item>
-            <Descriptions.Item label="点数">{props.points}</Descriptions.Item>
-          </Descriptions>
+        <ProCard colSpan={'50%'}>
+          <Card hoverable>
+            <Row style={{
+              textAlign: 'center'
+            }}>
+              <Col span={24}>
+                <Avatar size={60} style={{
+                  backgroundColor: "rgb(243, 196, 41)",
+                  fontSize: 35
+                }}>{props.username[0]}</Avatar>
+              </Col>
+            </Row>
+            <Row style={{
+              textAlign: 'center'
+            }}>
+              <Col span={24}>
+                <div style={{
+                  textAlign: 'center'
+                }}>
+                  <h2>{props.username} <Divider type="vertical" /><Tag color={mapLevel2Zh[props.level]['color']}>{mapLevel2Zh[props.level]['name']}</Tag></h2>
+                  <span style={{ color: "#999999" }}>790772462@qq.com</span>
+                </div>
+              </Col>
+            </Row>
+            <Divider />
+            <Row>
+              <Col span={8}>
+                经验: <Progress size="small" percent={props.exp} type="circle" />
+              </Col>
+              <Col span={8}>
+                点数: <Progress size="small" percent={props.points} type="circle" />
+              </Col>
+              <Col>
+                信用分: <Progress size="small" percent={props.credits} type="circle" 
+                  format={(percent) => `${percent}分`}
+                  strokeColor={props.credits<70?"red":(props.credits>90?"rgb(33, 198, 39)":"orange")}
+                />
+              </Col>
+            </Row>
+            <Divider />
+            <h3>偏好标签</h3>
+            <Form
+              onFinish={(values) => {
+                props.setLoading(true)
+                update_prefer(values.prefer)
+              }}
+            >
+              <Row>
+                <Col span={20}>
+                  <Form.Item
+                    name="prefer"
+                  >
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      options={preferTag}
+                      defaultValue={props.label_type}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={2}>
+                  <Button type="primary" htmlType="submit">更新</Button>
+                </Col>
+              </Row>
+            </Form>
+            <Divider />
+            <Row>
+              <Col span={18}>
+                <b>邀请码: <span id="invitecode">{props.invitecode}</span></b>
+              </Col>
+              <Col span={2}>
+                <Tooltip title="什么是邀请码">
+                  <Button type="text" size="small"
+                    onClick={() => {
+                      setIsInviteModalOpen(true)
+                    }}
+                    icon={<HelpOutline />}
+                  />
+                </Tooltip>
+              </Col>
+              <Col>
+                <Tooltip title="点击此处复制邀请码">
+                  <Button type="text" size="small"
+                    onClick={() => {
+                      const invitecode = document.getElementById("invitecode")
+                      const clipboardObj = navigator.clipboard
+                      clipboardObj.writeText(invitecode ? invitecode.innerText : "")
+                        .then(() => {
+                          message.success("复制成功")
+                        })
+                        .catch(() => {
+                          message.error("复制失败，请稍后重试")
+                        })
+                    }}
+                    icon={<ContentCopyIcon />}
+                  />
+                </Tooltip>
+              </Col>
+            </Row>
+          </Card>
         </ProCard>
         <ProCard title="积分排行榜">
-        
+
         </ProCard>
       </ProCard>
     </>

@@ -6,6 +6,7 @@ import ImageFormatter from "@/components/image-formatter";
 import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
 import { Grid, TextField } from "@mui/material";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 interface Report {
   report_id: number,
@@ -81,6 +82,7 @@ const AdministratorReport = () => {
       key: "report_id",
       align: "center",
       width: "20%",
+      sorter: (a, b) => a.report_id - b.report_id,
       render: (id, record) => {
         return (
           <Button type="link" onClick={() => {
@@ -96,6 +98,7 @@ const AdministratorReport = () => {
       key: "reporter_id",
       align: "center",
       width: "20%",
+      sorter: (a, b) => a.reporter_id - b.reporter_id,
     },
     {
       title: "举报者身份",
@@ -103,6 +106,17 @@ const AdministratorReport = () => {
       key: "demander_post",
       align: "center",
       width: "20%",
+      filters: [
+        {
+          text: "需求方",
+          value: true,
+        },
+        {
+          text: "标注方",
+          value: false,
+        }
+      ],
+      onFilter: (values, record) => record.demamder_post===values,
       render: (role) => {
         return role ? "需求方" : "标注方"
       }
@@ -113,6 +127,7 @@ const AdministratorReport = () => {
       key: "user_id",
       align: "center",
       width: "20%",
+      sorter: (a, b) => a.user_id - b.user_id,
     },
     {
       title: "操作",
@@ -241,14 +256,7 @@ const AdministratorReport = () => {
           </ImageFormatter>
         )}
       </Modal>
-      <Table columns={ReportTableColumns} dataSource={[{
-        report_id: 0,
-        reporter_id: 1,
-        user_id: 3,
-        demander_post: false,
-        description: "这个需求方胡乱审核，我表述的数据明明都很明显是正确的了，他还给我的标注审核为不通过，下面有图片证据，请看",
-        image_description: []
-      }]} />
+      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing&&loading}/>
     </>
   )
 };

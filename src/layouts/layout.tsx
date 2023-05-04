@@ -23,6 +23,7 @@ import Menu from '@mui/material/Menu';
 import { MenuItem } from "@mui/material";
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import Logout from '@mui/icons-material/Logout';
+import { mapRole2En } from "@/const/interface";
 
 
 const { Header, Content, Sider, Footer } = Layout;
@@ -233,7 +234,7 @@ const MyLayout = (props: MyLayoutProps) => {
                     backgroundColor: 'rgb(33, 204, 73)'
                   }}
                   shape="square"
-                >用户</Avatar>
+                >{mapRole2En[props.role]}</Avatar>
               </Button>
               <Menu open={open}
                 anchorEl={anchorEl}
@@ -311,7 +312,7 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        {/* <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer> */}
       </Layout>
     </Layout>
   );
