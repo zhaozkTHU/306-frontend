@@ -372,9 +372,9 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Divider />
         <div>{currentProblem.description}</div>
         <MyAnnotator
-          src={ MyImageUrl("/api/image?url=" + currentProblem.url) }
+          src={MyImageUrl("/api/image?url=" + currentProblem.url)}
           onChange={handleTagChange}
-          tools={(taskInfo.template === 'FaceTag')?"dot":"rectangle"}
+          tools={taskInfo.template === "FaceTag" ? "dot" : "rectangle"}
         />
         <Divider />
         <div>

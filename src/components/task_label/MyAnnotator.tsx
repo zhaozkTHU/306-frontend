@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Radio } from 'antd';
-import MyImage from '../my-img';
-import 'antd/dist/antd.css';
+import React, { useEffect, useRef, useState } from "react";
+import { Button, Radio } from "antd";
+import MyImage from "../my-img";
+import "antd/dist/antd.css";
 
 interface ImageAnnotationProps {
-    src: string;
-    onChange: (annotations: any[]) => void;
-    tools: string;
+  src: string;
+  onChange: (annotations: any[]) => void;
+  tools: string;
 }
 type Dot = { x: number; y: number };
 type Rectangle = { x: number; y: number; width: number; height: number };
@@ -19,19 +19,19 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const imageAnnotationContainerStyle: React.CSSProperties = {
-    position: 'relative' as 'relative',
-    display: 'inline-block',
+    position: "relative" as const,
+    display: "inline-block",
   };
 
   const toolbarStyle = {
-    marginBottom: '10px',
+    marginBottom: "10px",
   };
 
   const annotationOverlayStyle: React.CSSProperties = {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    pointerEvents: 'none',
+    pointerEvents: "none",
   };
 
   useEffect(() => {
@@ -39,28 +39,27 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       return;
     }
     const canvas = canvasRef.current as HTMLCanvasElement;
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-  
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+
     return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseup", handleMouseUp);
     };
   }, [props.tools, canvasRef]);
-  
 
   const handleMouseDown = (event: MouseEvent) => {
-    if (props.tools === 'dot') {
+    if (props.tools === "dot") {
       const dot = {
-        type: 'dot',
+        type: "dot",
         x: event.clientX,
         y: event.clientY,
       };
       setAnnotations([...annotations, dot]);
       props.onChange([...annotations, dot]);
-    } else if (props.tools === 'rectangle') {
+    } else if (props.tools === "rectangle") {
       setCurrentAnnotation({
         x: event.clientX,
         y: event.clientY,
@@ -71,7 +70,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   };
 
   const handleMouseMove = (event: MouseEvent) => {
-    if (props.tools === 'rectangle' && currentAnnotation) {
+    if (props.tools === "rectangle" && currentAnnotation) {
       const updatedAnnotation = {
         ...currentAnnotation,
         width: event.clientX - currentAnnotation.x,
@@ -82,7 +81,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   };
 
   const handleMouseUp = () => {
-    if (props.tools === 'rectangle' && currentAnnotation) {
+    if (props.tools === "rectangle" && currentAnnotation) {
       setAnnotations([...annotations, currentAnnotation]);
       props.onChange([...annotations, currentAnnotation]);
       setCurrentAnnotation(null);
@@ -111,14 +110,14 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
           <Radio.Button value="dot">Dot</Radio.Button>
           <Radio.Button value="rectangle">Rectangle</Radio.Button>
         </Radio.Group>
-        <Button onClick={clearAnnotations} style={{ marginLeft: '10px' }}>
+        <Button onClick={clearAnnotations} style={{ marginLeft: "10px" }}>
           Clear
         </Button>
-        <Button onClick={undoLastAnnotation} style={{ marginLeft: '10px' }}>
+        <Button onClick={undoLastAnnotation} style={{ marginLeft: "10px" }}>
           Undo
         </Button>
       </div>
-      <MyImage url={props.src}/>
+      <MyImage url={props.src} />
       <canvas ref={canvasRef} style={annotationOverlayStyle} />
     </div>
   );

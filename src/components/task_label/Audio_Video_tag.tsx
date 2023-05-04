@@ -150,11 +150,9 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
     const storedChosenOptions = localStorage.getItem(
       `chosenOptionIndex-${taskInfo.task_id}-${index}`
     );
-    const storedInputValue = localStorage.getItem(
-      `inputValue-${taskInfo.task_id}-${index}`
-    );
+    const storedInputValue = localStorage.getItem(`inputValue-${taskInfo.task_id}-${index}`);
     setChosenOptionIndex(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
-    setInputValue(storedInputValue ? JSON.parse(storedInputValue) : '');
+    setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
 
     const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
     setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
@@ -265,7 +263,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
       setCurrentProblemIndex((prevState: number) => prevState - 1);
       const newChosenOptionIndex = filteredTaskData[currentProblemIndex].data?.choiceIndex || -1;
-      const newInputValue = filteredTaskData[currentProblemIndex].data?.input || '';
+      const newInputValue = filteredTaskData[currentProblemIndex].data?.input || "";
       setChosenOptionIndex(newChosenOptionIndex);
       setInputValue(newInputValue);
       const storedChosenOptionIndex = localStorage.getItem(
@@ -307,7 +305,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
       setCurrentProblemIndex((prevState: number) => prevState + 1);
       const newChosenOptionIndex = filteredTaskData[currentProblemIndex].data?.choiceIndex || -1;
-      const newInputValue = filteredTaskData[currentProblemIndex].data?.input || '';
+      const newInputValue = filteredTaskData[currentProblemIndex].data?.input || "";
       setChosenOptionIndex(newChosenOptionIndex);
       setInputValue(newInputValue);
       const storedChosenOptionIndex = localStorage.getItem(
@@ -318,7 +316,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
       );
       setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
       setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
-      
+
       const storedTimer = localStorage.getItem(
         `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
       );
@@ -384,7 +382,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Divider />
         <div>
           <Space>
-          <Button onClick={handlePrevious} icon={<LeftCircleOutlined />}>
+            <Button onClick={handlePrevious} icon={<LeftCircleOutlined />}>
               Previous
             </Button>
             <Button onClick={handleNext} icon={<RightCircleOutlined />}>
