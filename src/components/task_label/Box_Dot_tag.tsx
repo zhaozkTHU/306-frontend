@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal, Steps, Divider, Space } from "antd";
+import { Button, message, Modal, Steps, Divider, Space } from "antd";
 import {
   SaveOutlined,
   UploadOutlined,
@@ -7,7 +7,6 @@ import {
   LeftCircleOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import ReactPictureAnnotation from "react-picture-annotation";
 import {
   TaskInfo,
   isFaceTagProblem,
@@ -15,6 +14,7 @@ import {
   isImageFrameProblem,
   ImageFrameProblem,
 } from "@/const/interface";
+import MyAnnotator from "@/components/task_label/MyAnnotator";
 
 const MyImageUrl = (src: string) => {
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -371,26 +371,11 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem.description}</div>
-        {/* <MyImage url={"/api/image?url=" + currentProblem.url}/> */}
-        {/* <Annotator
-          images={[
-            {
-              src: MyImageUrl("/api/image?url=" + currentProblem.url),
-              name: "annotation-image",
-              regions: [],
-            },
-          ]}
-          onExit={handleTagChange}
-          enabledTools={[(taskInfo.template === 'FaceTag')?"create-point":"create-box"]}
-          // loadImage={loadImage}
-        /> */}
-        {/* <ReactPictureAnnotation
-          image={MyImageUrl("/api/image?url=" + currentProblem.url)}
-          // onSelect={onSelect}
+        <MyAnnotator
+          src={ MyImageUrl("/api/image?url=" + currentProblem.url) }
           onChange={handleTagChange}
-          width={400}
-          height={400}
-        /> */}
+          tools={(taskInfo.template === 'FaceTag')?"dot":"rectangle"}
+        />
         <Divider />
         <div>
           <Space>
