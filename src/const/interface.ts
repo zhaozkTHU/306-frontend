@@ -166,8 +166,8 @@ export function isImagesClassificationProblem(data: any): data is TextClassifica
 }
 export function isTagProblem(data: any): data is TagProblem {
   return (
-    typeof data.soundUrl === "string" &&
     typeof data.description === "string" &&
+    typeof data.url === "string" &&
     Array.isArray(data.choice) &&
     data.choice.every((c: any) => {
       return typeof c.text === "string" && typeof c.needInput === "boolean";

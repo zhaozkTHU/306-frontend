@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Radio } from "antd";
 import MyImage from "../my-img";
-import "antd/dist/antd.css";
 
 interface ImageAnnotationProps {
   src: string;
@@ -99,6 +98,13 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     props.onChange(newAnnotations);
   };
 
+  const handleImageLoad = (size: { width: number; height: number }) => {
+    if (canvasRef.current) {
+      canvasRef.current.width = size.width;
+      canvasRef.current.height = size.height;
+    }
+  };
+
   return (
     <div style={imageAnnotationContainerStyle}>
       <div style={toolbarStyle}>
@@ -117,7 +123,17 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
           Undo
         </Button>
       </div>
-      <MyImage url={props.src} />
+        <MyImage
+          url={`${props.src}`}
+          onImageLoad={handleImageLoad}
+          style={{
+            objectFit: "contain",
+            objectPosition: "center center",
+          }}
+          alt="图片加载失败"
+          height="100%"
+          width="100%"
+        />
       <canvas ref={canvasRef} style={annotationOverlayStyle} />
     </div>
   );
