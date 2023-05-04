@@ -71,17 +71,17 @@ export interface TaskInfo {
   create_at: number;
   deadline: number;
   template:
-    | "TextClassification"
-    | "ImagesClassification"
-    | "FaceTag"
-    | "ImageFrame"
-    | "SoundTag"
-    | "VideoTag"
-    | "TextReview"
-    | "ImageReview"
-    | "VideoReview"
-    | "AudioReview"
-    | "Custom";
+  | "TextClassification"
+  | "ImagesClassification"
+  | "FaceTag"
+  | "ImageFrame"
+  | "SoundTag"
+  | "VideoTag"
+  | "TextReview"
+  | "ImageReview"
+  | "VideoReview"
+  | "AudioReview"
+  | "Custom";
   /** 仅在`template`为`Custom`时非空 */
   templates?: string[];
   reward: number;
@@ -90,14 +90,14 @@ export interface TaskInfo {
   demander_id?: number;
   batch: boolean;
   task_data?:
-    | TextClassificationProblem[]
-    | ImagesClassificationProblem[]
-    | FaceTagProblem[]
-    | ImageFrameProblem[]
-    | TagProblem[]
-    | TextReviewProblem[]
-    | FileReviewProblem[]
-    | Problem[];
+  | TextClassificationProblem[]
+  | ImagesClassificationProblem[]
+  | FaceTagProblem[]
+  | ImageFrameProblem[]
+  | TagProblem[]
+  | TextReviewProblem[]
+  | FileReviewProblem[]
+  | Problem[];
   batch_file?: string;
 }
 
@@ -195,6 +195,8 @@ export const mapState2ColorChinese: StateColors = {
   checking: { color: "#c8c027", description: "待审核" },
   completed: { color: "rgb(33, 198, 39)", description: "已完成" },
   failed: { color: "rgb(252, 61, 14)", description: "不合格" },
+  blocked: { color: "rgb(252, 61, 14)", description: "已封禁" },
+  unblocked: { color: "rgb(33, 198, 39)", description: "正常" }
 };
 
 type EnEntemplateZhtemplate = {
@@ -209,3 +211,36 @@ export const mapEntemplate2Zhtemplate: EnEntemplateZhtemplate = {
   SoundTag: "音频标注",
   VideoTag: "视频标注",
 };
+
+type Role2En = {
+  [state: string]: string;
+};
+
+export const mapRole2En: Role2En = {
+  demander: "需求方",
+  labeler: "标注方",
+  administrator: "管理员",
+  agent: "中介"
+}
+
+type Level2Exp = {
+  [state: string]: number,
+};
+
+export const mapLevel2Exp: Level2Exp = {
+  bronze: 0,
+  silver: 200,
+  gold: 500,
+  diamond: 1000
+}
+
+type Level2Zh = {
+  [state: string]: { name: string, color: string },
+};
+
+export const mapLevel2Zh: Level2Zh = {
+  bronze: { name: "青铜", color: "rgb(186, 110, 64)" },
+  silver: { name: "白银", color: "rgb(233, 233, 216 )" },
+  gold: { name: "黄金", color: "rgb(242, 192, 86 )" },
+  diamond: { name: "钻石", color: "rgb(32, 108, 221)" }
+}

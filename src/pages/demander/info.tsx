@@ -42,10 +42,13 @@ const DemanderInfo = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [username, setUsername] = useState<string>("");
   const [invitecode, setInvitecode] = useState<string>("");
-  const [level, setLevel] = useState<string>("");
+  const [level, setLevel] = useState<string>("bronze");
+  const [labelType, setLabelType] = useState<string[]>([])
   const [exp, setExp] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
   const [value, setValue] = React.useState(0);
+  const [email, setEmail] = useState<string>("");
+  const [credits, setCredits] = useState<number>(0);
   const [isBound, setIsBound] = useState<boolean>(false);
   const [accountBalance, setAccountBalance] = useState<{ bank_account: string; balance: string }[]>(
     []
@@ -62,10 +65,10 @@ const DemanderInfo = () => {
     request("/api/untie", "POST", {
       bank_account: bank_account,
     })
-      .then((response) => {
+      .then(() => {
         message.success("解绑成功");
       })
-      .catch((error) => {
+      .catch(() => {
         message.error("解绑失败");
       })
       .finally(() => {
@@ -103,10 +106,10 @@ const DemanderInfo = () => {
       bank_account: bank_account,
       password: hashedPassword,
     })
-      .then((reponse) => {
+      .then(() => {
         message.success((addScore ? "充值" : "提现") + "成功");
       })
-      .catch((error) => {
+      .catch(() => {
         message.error((addScore ? "充值" : "提现") + "失败");
       })
       .finally(() => {
@@ -148,6 +151,9 @@ const DemanderInfo = () => {
         setExp(response.data.exp);
         setPoints(response.data.points);
         setIsBound(response.data.is_bound);
+        setEmail(response.data.email)
+        setCredits(response.data.credits)
+        setLabelType(response.data.label_type)
       })
       .catch((err) => {
         console.log(err);
@@ -197,7 +203,7 @@ const DemanderInfo = () => {
                   required: true,
                   message: "不得为空",
                 },
-                ({}) => ({
+                ({ }) => ({
                   validator(_, value) {
                     const r = /^\+?[1-9][0-9]*$/;
                     if (value && !r.test(value)) {
@@ -227,7 +233,7 @@ const DemanderInfo = () => {
                   required: true,
                   message: "不得为空",
                 },
-                ({}) => ({
+                ({ }) => ({
                   validator(_, value) {
                     const r = /^\+?[1-9][0-9]*$/;
                     if (value && !r.test(value)) {
@@ -270,8 +276,7 @@ const DemanderInfo = () => {
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
               <Tab label="基本信息" {...a11yProps(0)} />
-              <Tab label="信息修改" {...a11yProps(1)} />
-              <Tab label="账户与充值" {...a11yProps(2)} />
+              <Tab label="账户与充值" {...a11yProps(1)} />
             </Tabs>
           </Box>
           <TabPanel value={value} index={0}>
@@ -282,27 +287,29 @@ const DemanderInfo = () => {
                 level={level}
                 exp={exp}
                 points={points}
+                email={email}
+                credits={credits}
+                label_type={labelType}
+                setLoading={setLoading}
+                setRefreshing={setRefreshing}
               />
             </div>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            信息修改
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            {
-              <Alert severity={isBound ? "success" : "warning"}>
-                该账号{isBound ? "已" : "未"}绑定银行卡
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={() => {
-                    setIsBoundModalOpen(true);
-                  }}
-                >
-                  点击此处绑定
-                </Button>
-              </Alert>
-            }
+
+            <Alert severity={isBound ? "success" : "warning"}>
+              该账号{isBound ? "已" : "未"}绑定银行卡
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  setIsBoundModalOpen(true);
+                }}
+              >
+                点击此处绑定
+              </Button>
+            </Alert>
+
             <Card
               title={"账户信息 "}
               extra={
@@ -395,7 +402,7 @@ const DemanderInfo = () => {
                               required: true,
                               message: "不得为空",
                             },
-                            ({}) => ({
+                            ({ }) => ({
                               validator(_, value) {
                                 const r = /^\+?[1-9][0-9]*$/;
                                 if (value && !r.test(value)) {
