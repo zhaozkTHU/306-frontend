@@ -195,6 +195,8 @@ export const mapState2ColorChinese: StateColors = {
   checking: { color: "#c8c027", description: "待审核" },
   completed: { color: "rgb(33, 198, 39)", description: "已完成" },
   failed: { color: "rgb(252, 61, 14)", description: "不合格" },
+  blocked: {color: "rgb(252, 61, 14)", description: "已封禁"},
+  unblocked: {color: "rgb(33, 198, 39)", description: "正常"}
 };
 
 type EnEntemplateZhtemplate = {
@@ -209,3 +211,15 @@ export const mapEntemplate2Zhtemplate: EnEntemplateZhtemplate = {
   SoundTag: "音频标注",
   VideoTag: "视频标注",
 };
+
+type  Role2En = {
+  [state: string]: string;
+};
+
+export const mapRole2En: Role2En = {
+  demander: "需求方",
+  labeler: "标注方",
+  administrator: "管理员",
+  agent: "中介"
+}
+

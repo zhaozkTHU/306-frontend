@@ -32,7 +32,8 @@
     "react-image-annotate": "^1.8.0",
     "react-image-annotation": "^0.9.10",
     "react-picture-annotation": "^1.2.0",
-    "react-redux": "^8.0.5"
+    "react-redux": "^8.0.5",
+    "recharts": "^2.5.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",

@@ -1,5 +1,6 @@
 import { Avatar, Descriptions, Progress, Spin } from "antd";
 import Icon, { UserOutlined } from "@ant-design/icons";
+import { ProCard } from "@ant-design/pro-components";
 
 export interface UserInfoProps {
   username: string;
@@ -45,19 +46,27 @@ const ModalIcon = (level: string) => {
 };
 
 const UserInfo = (props: UserInfoProps) => {
+
   return (
     <>
-      <Descriptions bordered>
-        <Descriptions.Item label="头像">
-          <Avatar size="large" icon={<UserOutlined />} />
-        </Descriptions.Item>
-        <Descriptions.Item label="经验">
-          <Progress size="small" percent={props.exp} type="circle" />
-        </Descriptions.Item>
-        <Descriptions.Item label="等级">{ModalIcon(props.level)}</Descriptions.Item>
-        <Descriptions.Item label="用户名">{props.username}</Descriptions.Item>
-        <Descriptions.Item label="点数">{props.points}</Descriptions.Item>
-      </Descriptions>
+      <ProCard split="vertical">
+        <ProCard colSpan={'60%'}>
+          <Descriptions bordered column={3}>
+            <Descriptions.Item label="头像">
+              <Avatar size="large" icon={<UserOutlined />} />
+            </Descriptions.Item>
+            <Descriptions.Item label="经验">
+              <Progress size="small" percent={props.exp} type="circle" />
+            </Descriptions.Item>
+            <Descriptions.Item label="等级">{ModalIcon(props.level)}</Descriptions.Item>
+            <Descriptions.Item label="用户名" span={2}>{props.username}</Descriptions.Item>
+            <Descriptions.Item label="点数">{props.points}</Descriptions.Item>
+          </Descriptions>
+        </ProCard>
+        <ProCard title="积分排行榜">
+        
+        </ProCard>
+      </ProCard>
     </>
   );
 };
