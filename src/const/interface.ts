@@ -228,9 +228,9 @@ type Level2Exp = {
 };
 
 export const mapLevel2Exp: Level2Exp = {
-  bronze: 0,
-  silver: 200,
-  gold: 500,
+  bronze: 200,
+  silver: 500,
+  gold: 1000,
   diamond: 1000
 }
 

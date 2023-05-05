@@ -178,7 +178,7 @@ const AdministratorAccount = () => {
       >
         
       </Modal>
-      <Table columns={userListColumns} dataSource={userList} loading={refreshing&&loading}></Table>
+      <Table columns={userListColumns} dataSource={userList} loading={refreshing||loading}></Table>
     </>
   )
 }

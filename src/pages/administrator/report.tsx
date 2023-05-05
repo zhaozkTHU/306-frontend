@@ -256,7 +256,7 @@ const AdministratorReport = () => {
           </ImageFormatter>
         )}
       </Modal>
-      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing&&loading}/>
+      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing||loading}/>
     </>
   )
 };
