@@ -10,6 +10,7 @@ interface CheckModelProps {
   labeler_index: number;
   is_sample: boolean;
   template: string;
+  rate: number;
   setIsCheckModalOpen: Dispatch<SetStateAction<boolean>>;
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
@@ -93,7 +94,7 @@ const CheckModel = (props: CheckModelProps) => {
       const j = Math.floor(Math.random() * (i + 1));
       [result[i], result[j]] = [result[j], result[i]];
     }
-    result = result.slice(0, Math.ceil(totalNumber / 3));
+    result = result.slice(0, Math.ceil(totalNumber * props.rate / 100));
   }
 
   const checkedNumber: number = result.length;

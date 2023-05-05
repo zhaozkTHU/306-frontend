@@ -319,7 +319,7 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        {/* <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer> */}
+        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
   );

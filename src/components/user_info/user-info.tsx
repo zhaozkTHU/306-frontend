@@ -1,5 +1,5 @@
 import { Avatar, Button, Card, Col, Divider, Form, Modal, Progress, Row, Select, SelectProps, Tag, Tooltip, message, Space, Spin, Grid } from "antd";
-import { ProCard, Statistic } from "@ant-design/pro-components";
+import { ProCard } from "@ant-design/pro-components";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { HelpOutline } from "@mui/icons-material";
 import { useEffect, useState } from "react";
@@ -152,7 +152,7 @@ const UserInfo = (props: UsersInfoProps) => {
       bank_account: bank_account,
       password: hashedPassword,
     })
-      .then((response) => {
+      .then(() => {
         message.success("银行卡绑定成功");
         setIsBoundModalOpen(false);
       })
@@ -519,7 +519,7 @@ const UserInfo = (props: UsersInfoProps) => {
                   {accountBalance.map((account, idx) => (
                     <TabPanel value={accountValue} index={idx} key={idx}>
                       <Row>
-                        <Col span={16}>
+                      <Col span={14}>
                       <h3>银行卡卡号 (No.) : </h3>
                       <p>{visible ? account.bank_account : "******************"}</p>
                       </Col>
