@@ -31,7 +31,7 @@ const Problem = (props: ProbelmProps) => {
       <Image.PreviewGroup>
         <Row wrap={true}>
         {props.problem.options.map((option: string, index: number) => (
-          <Col>
+          <Col key={index}>
             <Checkbox
               defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
               disabled={true}

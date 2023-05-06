@@ -1,7 +1,7 @@
 import { mapLevel2Zh, mapTag2Zh } from "@/const/interface";
 import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
-import { Button, Modal, Table, Tag, message } from "antd";
+import { Button, Descriptions, Divider, Modal, Table, Tag, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react"
 
@@ -20,7 +20,7 @@ export interface AgentLabeler {
 const AgentAvailableLabeler = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [labelerLists, setLabelerLists] = useState<AgentLabeler[]>([])
-  const [labelerDetail, setLabelerDetail] = useState<AgentLabeler>({
+  const [detail, setDetail] = useState<AgentLabeler>({
     username: "",
     points: 0,
     level: "bronze",
@@ -56,7 +56,7 @@ const AgentAvailableLabeler = () => {
       align: "center",
       width: "20%",
       render: (name, record) => {
-        return <Button type="link" onClick={() => { setLabelerDetail(record); setLabelerModalOpen(true) }}>{name}</Button>
+        return <Button type="link" onClick={() => { setDetail(record); setLabelerModalOpen(true) }}>{name}</Button>
       }
     },
     {
@@ -103,6 +103,27 @@ const AgentAvailableLabeler = () => {
       key: "level",
       align: "center",
       width: "20%",
+      filters: [
+        {
+          text: "青铜",
+          value: "bronze",
+        },
+        {
+          text: "白银",
+          value: "silver",
+        }
+        ,
+        {
+          text: "黄金",
+          value: "gold",
+        }
+        ,
+        {
+          text: "钻石",
+          value: "diamond",
+        }
+      ],
+      onFilter: (values, record) => record.level === values,
       render: (level) => (
         <Tag color={mapLevel2Zh[level]['color']}>{mapLevel2Zh[level]['name']}</Tag>
       )
@@ -128,7 +149,25 @@ const AgentAvailableLabeler = () => {
         <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
           标注方详情
         </Typography>
-
+        <Divider/>
+        <Descriptions bordered column={4}>
+          <Descriptions.Item label="用户名" span={4}>
+            {detail.username}
+          </Descriptions.Item>
+          <Descriptions.Item label="等级" span={4}>
+            <Tag color={mapLevel2Zh[detail.level]['color']}>{mapLevel2Zh[detail.level]['name']}</Tag>
+          </Descriptions.Item>
+          <Descriptions.Item label="经验" span={2}>
+            {detail.exp}
+          </Descriptions.Item>
+          <Descriptions.Item label="信用分" span={2}>
+            {detail.credits}
+          </Descriptions.Item>
+          <Descriptions.Item label="会员权限" span={4}>
+            {detail.is_vip?"有":"无"}
+          </Descriptions.Item>
+          
+        </Descriptions>
       </Modal>
       <Table columns={LabelerTableColumns} dataSource={labelerLists} loading={refreshing} pagination={{ pageSize: 5 }} />
     </>
