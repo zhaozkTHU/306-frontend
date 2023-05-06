@@ -247,7 +247,7 @@ const AdministratorCheckTask = () => {
           open={taskDetailModalOpen}
           onCancel={() => setTaskDetailModalOpen(false)}
           footer={null}
-          width={"100%"}
+          width={"80%"}
           centered
           destroyOnClose
         >

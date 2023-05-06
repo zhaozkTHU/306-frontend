@@ -1,6 +1,8 @@
-import { mapRole2En } from "@/const/interface";
+import { mapLevel2Zh, mapRole2En } from "@/const/interface";
 import { request } from "@/utils/network";
-import { Button, Tag, message, Table, Modal } from "antd";
+import { transTime } from "@/utils/valid";
+import Typography from "@mui/material/Typography";
+import { Button, Tag, message, Table, Modal, Divider, Descriptions } from "antd";
 import { ColumnsType } from "antd/es/table"
 import { useEffect, useState } from "react"
 
@@ -36,7 +38,7 @@ const AdministratorAccount = () => {
   useEffect(() => {
     request('/api/administrator/user_info', "GET")
       .then((response) => {
-        setUserList(response.data.user_list)
+        setUserList(response.data.data)
       })
       .catch((error) => {
         if (error.response) {
@@ -155,13 +157,17 @@ const AdministratorAccount = () => {
             <Button type="link" onClick={() => {
               setLoading(true)
               block(record.username, true);
-            }}>
+            }}
+              disabled={record.is_blocked}
+            >
               封禁
             </Button>
             <Button type="link" onClick={() => {
               setLoading(true)
               block(record.username, false);
-            }}>
+            }}
+            disabled={!record.is_blocked}
+            >
               解封
             </Button>
           </>
@@ -176,9 +182,36 @@ const AdministratorAccount = () => {
         footer={null}
         open={detailModalOpen}
       >
-        
+        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+          用户详情
+        </Typography>
+        <Divider></Divider>
+        <Descriptions bordered column={4}>
+          <Descriptions.Item label="用户名" span={4}>
+            {detail.username}
+          </Descriptions.Item>
+          <Descriptions.Item label="身份" span={4}>
+            {detail.role}
+          </Descriptions.Item>
+          <Descriptions.Item label="等级" span={4}>
+            <Tag color={mapLevel2Zh[detail.level]['color']}>{mapLevel2Zh[detail.level]['name']}</Tag>
+          </Descriptions.Item>
+          <Descriptions.Item label="经验" span={2}>
+            {detail.exp}
+          </Descriptions.Item>
+          <Descriptions.Item label="信用分" span={2}>
+            {detail.credits}
+          </Descriptions.Item>
+          <Descriptions.Item label="邀请码" span={4}>
+            {detail.invitecode}
+          </Descriptions.Item>
+          <Descriptions.Item label="会员权限" span={4}>
+            {detail.is_vip?"有":"无"}
+          </Descriptions.Item>
+          
+        </Descriptions>
       </Modal>
-      <Table columns={userListColumns} dataSource={userList} loading={refreshing&&loading}></Table>
+      <Table columns={userListColumns} dataSource={userList} loading={refreshing||loading} pagination={{ pageSize: 5 }}/>
     </>
   )
 }

@@ -6,7 +6,6 @@ import ImageFormatter from "@/components/image-formatter";
 import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
 import { Grid, TextField } from "@mui/material";
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 interface Report {
   report_id: number,
@@ -116,7 +115,7 @@ const AdministratorReport = () => {
           value: false,
         }
       ],
-      onFilter: (values, record) => record.demamder_post===values,
+      onFilter: (values, record) => record.demamder_post === values,
       render: (role) => {
         return role ? "需求方" : "标注方"
       }
@@ -156,76 +155,76 @@ const AdministratorReport = () => {
   return (
     <>
       <Modal open={dealReportModalOpen}
-        onCancel={() => {setDealReportModalOpen(false)}}
+        onCancel={() => { setDealReportModalOpen(false) }}
         footer={null}
       >
-        <Typography component="h1" variant="h5" style={{textAlign: 'center'}}>
-          {pass?"通过举报":"驳回举报"}
+        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+          {pass ? "通过举报" : "驳回举报"}
         </Typography>
         <Divider></Divider>
         <Form
-            name="basic"
-            initialValues={{ remember: true }}
-            onFinish={(values) => {
-              setLoading(true)
-              deal_report(reportId, pass, values.credits, values.description)
-            }}
-            autoComplete="off"
-          >
-            <Grid item xs={24} sm={12}>
-              <p>管理员可以对{pass?"被举报者":"恶意举报的举报者"}扣除信用分</p>
-              <Form.Item
-                name="credits"
-                rules={[
-                  { required: true, message: "不能为空" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value < 0) {
-                        return Promise.reject(new Error("扣除的信用分不能为负数"));
-                      }
-                      if (value > 100) {
-                        return Promise.reject(new Error("扣除的信用分不能超过100"));
-                      }
-                      return Promise.resolve();
-                    },
-                  }),
-                ]}
-              >
-                <TextField
-                  name="credits"
-                  fullWidth
-                  id="credits"
-                  label="扣除的信用分"
-                  autoFocus
-                  type="number"
-                />
-              </Form.Item>
-              <p>管理员需要对{pass?"被举报者":"被驳回的举报"}进行说明</p>
-              <Form.Item name="message" rules={[{ required: true, message: "原因不能为空" }]}>
-                <TextField
-                  name="message"
-                  fullWidth
-                  id="message"
-                  label="原因说明"
-                  autoFocus
-                  type="message"
-                  multiline
-                />
-              </Form.Item>
-            </Grid>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              size="large"
-              style={{
-                backgroundColor: "#3b5999",
-                marginBottom: "5px",
-              }}
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={(values) => {
+            setLoading(true)
+            deal_report(reportId, pass, values.credits, values.description)
+          }}
+          autoComplete="off"
+        >
+          <Grid item xs={24} sm={12}>
+            <p>管理员可以对{pass ? "被举报者" : "恶意举报的举报者"}扣除信用分</p>
+            <Form.Item
+              name="credits"
+              rules={[
+                { required: true, message: "不能为空" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (value < 0) {
+                      return Promise.reject(new Error("扣除的信用分不能为负数"));
+                    }
+                    if (value > 100) {
+                      return Promise.reject(new Error("扣除的信用分不能超过100"));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
             >
-              确认
-            </Button>
-          </Form>
+              <TextField
+                name="credits"
+                fullWidth
+                id="credits"
+                label="扣除的信用分"
+                autoFocus
+                type="number"
+              />
+            </Form.Item>
+            <p>管理员需要对{pass ? "被举报者" : "被驳回的举报"}进行说明</p>
+            <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
+              <TextField
+                name="description"
+                fullWidth
+                id="description"
+                label="原因说明"
+                autoFocus
+                type="description"
+                multiline
+              />
+            </Form.Item>
+          </Grid>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              marginBottom: "5px",
+            }}
+          >
+            确认
+          </Button>
+        </Form>
 
       </Modal>
       <Modal
@@ -256,7 +255,7 @@ const AdministratorReport = () => {
           </ImageFormatter>
         )}
       </Modal>
-      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing&&loading}/>
+      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} />
     </>
   )
 };

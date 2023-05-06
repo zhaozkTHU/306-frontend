@@ -1,4 +1,4 @@
-import { Card, Checkbox, Divider, Image, Radio } from "antd";
+import { Card, Checkbox, Col, Divider, Image, Radio, Row } from "antd";
 import CanvasImage from "../canvas_image/canvas-image";
 import ImageFormatter from "../image-formatter";
 import MyAudio from "../my-audio";
@@ -29,8 +29,9 @@ const Problem = (props: ProbelmProps) => {
   } else if (props.template == "ImagesClassification") {
     problemContent = (
       <Image.PreviewGroup>
+        <Row wrap={true}>
         {props.problem.options.map((option: string, index: number) => (
-          <div key={index}>
+          <Col key={index}>
             <Checkbox
               defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
               disabled={true}
@@ -48,9 +49,9 @@ const Problem = (props: ProbelmProps) => {
                 />
               </ImageFormatter>
             </Checkbox>
-            <Divider />
-          </div>
+            </Col>
         ))}
+        </Row>
       </Image.PreviewGroup>
     );
   } else if (props.template == "FaceTag") {
@@ -180,10 +181,12 @@ const Problem = (props: ProbelmProps) => {
     );
   }
   return (
-    <Card title={`题目${props.index + 1}`}>
-      <h1>{props.problem.description}</h1>
+    <>
+    {/* <Card title={`题目${props.index + 1}`}> */}
+      <h3>第{props.index+1}题: {props.problem.description}</h3>
       {problemContent}
-    </Card>
+    {/* </Card> */}
+    </>
   );
 };
 

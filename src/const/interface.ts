@@ -228,9 +228,9 @@ type Level2Exp = {
 };
 
 export const mapLevel2Exp: Level2Exp = {
-  bronze: 0,
-  silver: 200,
-  gold: 500,
+  bronze: 200,
+  silver: 500,
+  gold: 1000,
   diamond: 1000
 }
 
@@ -243,4 +243,15 @@ export const mapLevel2Zh: Level2Zh = {
   silver: { name: "白银", color: "rgb(233, 233, 216 )" },
   gold: { name: "黄金", color: "rgb(242, 192, 86 )" },
   diamond: { name: "钻石", color: "rgb(32, 108, 221)" }
+}
+
+type Entag2Zh = {
+  [state: string]: string
+}
+
+export const mapTag2Zh: Entag2Zh = {
+  sentiment: "情感分类/分析",
+  "part-of-speech": "词性分类",
+  intent: "意图揣测",
+  event: "事件概括"
 }

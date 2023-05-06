@@ -48,3 +48,24 @@ network.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+export const downLoadZip = async(url: string) => {
+  request("/api/file", "GET", {
+    params: { url: url },
+    responseType: 'blob'
+  })
+  .then((response) => {
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a')
+    link.style.display = 'none'
+    link.href = url;
+    link.download = 'task.zip'
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(link.href)
+    document.body.removeChild(link)
+  })
+  .catch(() => {
+    message.error("文件下载失败")
+  })
+}

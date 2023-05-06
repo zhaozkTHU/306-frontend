@@ -243,6 +243,7 @@ const Register = (props: RegisterProps) => {
                         <MenuItem value="demander">需求方</MenuItem>
                         <MenuItem value="labeler">标注方</MenuItem>
                         <MenuItem value="administrator">管理员</MenuItem>
+                        <MenuItem value="agent">中介</MenuItem>
                       </Select>
                       {/* </FormControl> */}
                     </Form.Item>

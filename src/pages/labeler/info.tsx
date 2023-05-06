@@ -1,22 +1,7 @@
-import { Progress, Space } from "antd";
-import { useEffect, useState } from "react";
+import UserInfo from "@/components/user_info/user-info";
 
 const LabelerInfo = () => {
-  const [exp, setExp] = useState(0);
-
-  useEffect(() => {
-    setExp(0);
-  }, []);
-
-  return (
-    <Space>
-      <Progress
-        percent={exp - 100 * Math.floor(exp / 100)}
-        format={() => `${Math.floor(exp / 100)}级`}
-        type="circle"
-      />
-    </Space>
-  );
+  return <UserInfo role="labeler"/>
 };
 
 export default LabelerInfo;

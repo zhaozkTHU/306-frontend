@@ -71,7 +71,14 @@ const administratorItems: MenuItem[] = [
   getItem("个人信息", "/administrator/info", <UserOutlined />),
 ];
 
-const agentItems: MenuItem[] = [];
+
+
+const agentItems: MenuItem[] = [
+  getItem("可配发任务", "/agent/available_task", <MonitorOutlined />),
+  getItem("可配发标注者", "/agent/available_labeler", <TeamOutlined />),
+  getItem("已配发任务", "/agent/distributed_task", <CarryOutOutlined />),
+  getItem("个人信息", "/agent/info", <UserOutlined />),
+];
 
 const mapRole2Menu = {
   demander: demanderItems,
@@ -153,7 +160,7 @@ const MyLayout = (props: MyLayoutProps) => {
         >
           <Image src={"/logo/logo.png"} width="200" alt={"logo加载失败"} height="80" />
         </div>
-        <div style={{ height: "2%" }} />
+        <div style={{ height: "10%" }} />
         <AntMenu
           style={{
             border: "none",
@@ -312,7 +319,7 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        {/* <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer> */}
+        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
   );
