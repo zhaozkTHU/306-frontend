@@ -25,16 +25,15 @@ const App = ({ Component, pageProps }: AppProps) => {
   if (
     router.pathname.startsWith("/demander/") ||
     router.pathname.startsWith("/labeler/") ||
-    router.pathname.startsWith("/administrator/")
+    router.pathname.startsWith("/administrator/")||
+    router.pathname.startsWith("/agent/")
   ) {
     return (
-      // <RoleContext.Provider value={role}>
       <Provider store={store}>
         <MyLayout role={role}>
           <Component {...pageProps} />
         </MyLayout>
       </Provider>
-      // </RoleContext.Provider>
     );
   } else if (router.pathname === "/") {
     // login

@@ -244,3 +244,14 @@ export const mapLevel2Zh: Level2Zh = {
   gold: { name: "黄金", color: "rgb(242, 192, 86 )" },
   diamond: { name: "钻石", color: "rgb(32, 108, 221)" }
 }
+
+type Entag2Zh = {
+  [state: string]: string
+}
+
+export const mapTag2Zh: Entag2Zh = {
+  sentiment: "情感分类/分析",
+  "part-of-speech": "词性分类",
+  intent: "意图揣测",
+  event: "事件概括"
+}

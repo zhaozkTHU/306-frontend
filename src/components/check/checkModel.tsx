@@ -1,8 +1,8 @@
-import { Button, Radio, RadioChangeEvent, Spin } from "antd";
+import { Button, Carousel, Col, Divider, Radio, RadioChangeEvent, Row, Spin } from "antd";
 import { message } from "antd/lib";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Problem from "../demander_problem/problem";
 
 interface CheckModelProps {
@@ -11,8 +11,7 @@ interface CheckModelProps {
   is_sample: boolean;
   template: string;
   rate: number;
-  setIsCheckModalOpen: Dispatch<SetStateAction<boolean>>;
-  setRefreshing: Dispatch<SetStateAction<boolean>>;
+  setIsLabelerList: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -22,8 +21,12 @@ interface CheckModelProps {
 const CheckModel = (props: CheckModelProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [passedNumber, setPassedNumber] = useState<number>(0);
-  const [problems, setProblems] = useState<any[]>([]);
+  // const [problems, setProblems] = useState<any[]>([]);
+  const [result, setResult] = useState<any[]>([]);
+  const [checkedNumber, setCheckedNumber] = useState<number>(0);
   const router = useRouter();
+  const CarouselRef = useRef<any>(null);
+  // let result: any[] = [];
   /**
    * Request for the labeled data
    *
@@ -37,19 +40,38 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .then((response) => {
         const newProblems: any[] = JSON.parse(response.data.label_data);
-        setProblems(newProblems);
+        const totalNumber = newProblems.length;
+        setCheckedNumber(Math.ceil(totalNumber * props.rate / 100))
+        setResult(newProblems);
+        if (props.is_sample) {
+          for (let i = result.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newProblems[i], newProblems[j]] = [newProblems[j], newProblems[i]];
+          }
+          setResult(newProblems.slice(0, Math.ceil(totalNumber * props.rate / 100)));
+        }
       })
       .catch((err) => {
         console.log(err);
       })
       .finally(() => {
         setRefreshing(false);
-        props.setRefreshing(true);
+        // props.setRefreshing(true);
       });
   }, [router, props.labeler_index, props.task_id]);
-  useEffect(() => {
-    result = problems.slice();
-  }, [problems]);
+
+  // useEffect(() => {
+  //   result = problems.slice();
+  //   const totalNumber = problems.length;
+  //   if (props.is_sample) {
+  //     for (let i = result.length - 1; i > 0; i--) {
+  //       const j = Math.floor(Math.random() * (i + 1));
+  //       [result[i], result[j]] = [result[j], result[i]];
+  //     }
+  //     result = result.slice(0, Math.ceil(totalNumber * props.rate / 100));
+  //   }
+  //   checkedNumber = result.length;
+  // }, [problems]);
 
   const postCheck = async (is_passed: boolean) => {
     axios
@@ -69,7 +91,7 @@ const CheckModel = (props: CheckModelProps) => {
       )
       .then(() => {
         message.success("审核结果提交成功");
-        props.setIsCheckModalOpen(false);
+        // props.setIsCheckModalOpen(false);
       })
       .catch((error) => {
         if (error.response) {
@@ -80,76 +102,103 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-        props.setRefreshing(true);
+        // props.setRefreshing(true);
       });
   };
   /**
    *
    * Deal with the all checking or sampling checking
    */
-  let result = problems.slice();
-  const totalNumber = problems.length;
-  if (props.is_sample) {
-    for (let i = result.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [result[i], result[j]] = [result[j], result[i]];
-    }
-    result = result.slice(0, Math.ceil(totalNumber * props.rate / 100));
-  }
-
-  const checkedNumber: number = result.length;
   return (
     <Spin spinning={refreshing}>
-      <p>审核题目数量: {checkedNumber}</p>
-      <p>通过题目数量: {passedNumber}</p>
-      <p>当前通过率: {(passedNumber / checkedNumber).toFixed(3)}</p>
+      <Row>
+        <Col span={8}>审核题目数量: {checkedNumber}</Col>
+        <Col span={8}>通过题目数量: {passedNumber}</Col>
+        <Col span={8}>当前通过率: {(passedNumber / checkedNumber).toFixed(2)}</Col>
+      </Row>
+      <br />
       {refreshing ? (
         <p>Loading...</p>
       ) : (
-        result.map((items, index) => (
-          <>
-            <Problem
-              problem={items}
-              index={index}
-              template={`${props.template}`}
-              showto="demander"
-            />
-            <Radio.Group
-              defaultValue="fail"
-              onChange={(e: RadioChangeEvent) => {
-                if (e.target.value === "pass") {
-                  setPassedNumber((b) => b + 1);
-                } else if (e.target.value === "fail") {
-                  setPassedNumber((b) => b - 1);
-                }
-              }}
-            >
-              <Radio value="pass">合格</Radio>
-              <Radio value="fail">不合格</Radio>
-            </Radio.Group>
-          </>
-        ))
+        <Carousel dots={false} ref={CarouselRef}>
+          {result.map((items, index) => (
+            <div key={index}>
+              <Problem
+                problem={items}
+                index={index}
+                template={`${props.template}`}
+                showto="demander"
+              />
+              <Divider />
+              <Row>
+                <Col span={14}>
+                  <Radio.Group
+                    defaultValue="fail"
+                    onChange={(e: RadioChangeEvent) => {
+                      if (e.target.value === "pass") {
+                        setPassedNumber((b) => b + 1);
+                      } else if (e.target.value === "fail") {
+                        setPassedNumber((b) => b - 1);
+                      }
+                    }}
+                  >
+                    <Radio value="pass">合格</Radio>
+                    <Radio value="fail">不合格</Radio>
+                  </Radio.Group>
+                </Col>
+                <Col span={6}>
+                  <Button disabled={index === 0} onClick={() => { CarouselRef.current?.goTo(index - 1, true); }}>上一题</Button>
+                </Col>
+                <Col span={4}>
+                  <Button disabled={index === result.length - 1} onClick={() => { CarouselRef.current?.goTo(index + 1, true); }}>下一题</Button>
+                </Col>
+              </Row>
+              <Divider />
+            </div>
+          ))}
+        </Carousel>
       )}
-      <Button
-        size="large"
-        block
-        onClick={() => {
-          setRefreshing(true);
-          postCheck(true);
-        }}
-      >
-        合格
-      </Button>
-      <Button
-        size="large"
-        block
-        onClick={() => {
-          setRefreshing(true);
-          postCheck(false);
-        }}
-      >
-        不合格
-      </Button>
+      <Row>
+        <Col span={20}>
+          <Button
+            size="large"
+            onClick={() => {
+              setRefreshing(true);
+              postCheck(true);
+            }}
+            style={{
+              backgroundColor: "#3b5999",
+              color: "white"
+            }}
+          >
+            合格
+          </Button>
+          <Divider type="vertical"/>
+          <Button
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              color: "white"
+            }}
+            onClick={() => {
+              setRefreshing(true);
+              postCheck(false);
+            }}
+          >
+            不合格
+          </Button>
+          </Col>
+          <Col>
+          <Button size="large" style={{
+            backgroundColor: "#3b5999",
+            color: "white"
+          }}
+          onClick={() => {
+            props.setIsLabelerList(true)
+          }}
+          >退出审核</Button>
+          </Col>
+      </Row>
     </Spin>
   );
 };

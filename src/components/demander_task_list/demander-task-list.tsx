@@ -29,25 +29,31 @@ import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interfa
 import { request } from "../../utils/network";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
-import { Slide, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 import store from "@/store";
 import { add } from "../task_manage/deleteList";
 
 
-interface DemanderTaskTableEntry {
+export interface DemanderTaskTableEntry {
   task_id: number;
   create_at: number;
   deadline: number;
   title: string;
   state: string[];
+  reward: number;
+  time: number;
   labeler_number: number;
   labeler_id: number[];
   template: string;
   label_state: string[];
   pass_check: boolean;
   labeler_credits: number[];
+  distribute: "system"|"agent";
+  distribute_type: "order"|"smart";
+  type: "sentiment"|"part-of-speech"|"intent"|"event";
+  agent: string;
 }
 
 interface DemanderTaskListProps {
@@ -68,12 +74,13 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
   const [autoCheckingModalOpen, setAutoCheckingModalOpen] = useState<boolean>(false)
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false)
-  const [slideValue, setSlideValue] = useState<number>(0);
-
-  const postSingleAutoChecking = async (task_id: number, labeler_id: number) => {
+  const [slideValue, setSlideValue] = useState<number>(1);
+  const [slideAccuracyValue, setSlideAccuracyValue] = useState<number>(1);
+  const postSingleAutoChecking = async (task_id: number, labeler_id: number, accuracy: number) => {
     request("/api/demander/single_auto_check", "POST", {
       task_id: task_id,
-      labeler_id: labeler_id
+      labeler_id: labeler_id,
+      accuracy: accuracy
     })
       .then(() => {
         message.success("自动审核请求发送成功")
@@ -162,10 +169,11 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     setPreviewOpen(true);
     setPreviewTitle(file.name);
   };
-  const auto_check = async (task_id: number, credits: number) => {
+  const auto_check = async (task_id: number, credits: number, accuracy: number) => {
     request("/api/get_agent", "POST", {
       task_id: task_id,
-      credits: credits
+      credits: credits,
+      accuracy: accuracy
     })
       .then(() => {
         message.success("自动审核请求提交成功，请稍后查看结果")
@@ -213,7 +221,13 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     template: "模板五个字",
     label_state: [],
     pass_check: false,
-    labeler_credits: []
+    labeler_credits: [],
+    reward: 0,
+    time: 0,
+    distribute: "agent",
+    distribute_type: "order",
+    type: "event",
+    agent: "agent1"
   });
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
@@ -371,7 +385,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             </Tooltip>
             <Tooltip title="处于待审核状态可以审核">
               <Popconfirm
-                disabled = {record.labeler_state != "checking"}
+                disabled={record.labeler_state != "checking"}
                 placement="bottom"
                 title="抽样审核"
                 okText="确认"
@@ -383,6 +397,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                       onChange={(value) => {
                         setSlideValue(value)
                       }}
+                      value={slideValue}
                       min={1} max={100}
                     />
                   </>
@@ -403,15 +418,27 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             </Tooltip>
             <Tooltip title="对该用户单独进行自动审核" >
               <Popconfirm
-                disabled = {record.labeler_state != "checking"}
+                disabled={record.labeler_state != "checking"}
                 placement="bottom"
                 title="自动审核"
                 okText="确认"
                 cancelText="取消"
-                description={`该标注方的信用分为${record.labeler_credits}，${record.credits < 80 ? "用户信用分较低，不建议进行自动审核" : "可以自动审核"}，确定要自动审核吗?`}
+                description={
+                  <>
+                    <p>该标注方的信用分为{record.labeler_credits}，{record.credits < 80 ? "用户信用分较低，不建议进行自动审核" : "可以自动审核"}，确定要自动审核吗?</p>
+                    <p>若要自动审核，请先指定下面的正确率标准</p>
+                    <Slider
+                      onChange={(value) => {
+                        setSlideAccuracyValue(value)
+                      }}
+                      value={slideAccuracyValue}
+                      min={1} max={100}
+                    />
+                  </>
+                }
                 onConfirm={() => {
                   setLoading(true)
-                  postSingleAutoChecking(detail.task_id, record.labeler_id)
+                  postSingleAutoChecking(detail.task_id, record.labeler_id, slideAccuracyValue)
                 }}
               >
                 <Button disabled={record.labeler_state != "checking"} type="link">
@@ -466,7 +493,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               initialValues={{ remember: true }}
               onFinish={(values) => {
                 setLoading(true)
-                auto_check(detail.task_id, values.credits);
+                auto_check(detail.task_id, values.credits, values.accuracy);
                 setAutoCheckingModalOpen(false)
               }}
             >
@@ -499,6 +526,33 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                   type="number"
                 />
               </Form.Item>
+              <p>您还需要指定正确率标准，高于此标准的标注将会通过审核，否则不通过审核。</p>
+              <Form.Item
+                name="accuracy"
+                rules={[
+                  { required: true, message: "不能为空" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value < 0) {
+                        return Promise.reject(new Error("正确率标准不能为负数"));
+                      }
+                      if (value > 100) {
+                        return Promise.reject(new Error("正确率标准不能超过100"));
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <TextField
+                  name="accuracy"
+                  fullWidth
+                  id="accuracy"
+                  label="正确率标准"
+                  autoFocus
+                  type="number"
+                />
+              </Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -519,8 +573,8 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               setIsDetailModalOpen(false);
             }}
             footer={null}
-            width={"100%"}
-            destroyOnClose={true}
+            width={"80%"}
+            destroyOnClose
             centered
           >
             <Modal open={reportModalOpen}
@@ -597,35 +651,34 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 setIsCheckModalOpen(false);
               }}
               footer={null}
-              destroyOnClose={true}
-              width={"100%"}
+              destroyOnClose
+              centered
             >
               <CheckModel
                 task_id={detail.task_id}
                 labeler_index={labelerId}
                 is_sample={isSample}
                 template={detail.template}
-                setIsCheckModalOpen={setIsCheckModalOpen}
-                setRefreshing={setRefreshing}
                 rate={slideValue}
+                setIsLabelerList={setLoading}
               />
             </Modal>
             {detail.pass_check ? <></> : <Alert severity="warning">该任务尚未通过管理员审核</Alert>}
             <h3>任务详情</h3>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label="标题" span={2}>
+            <Descriptions bordered column={4}>
+              <Descriptions.Item label="标题" span={4}>
                 {detail.title}
               </Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={1}>
+              <Descriptions.Item label="创建时间" span={2}>
                 {transTime(detail.create_at)}
               </Descriptions.Item>
-              <Descriptions.Item label="截止时间" span={1}>
+              <Descriptions.Item label="截止时间" span={2}>
                 {transTime(detail.deadline)}
               </Descriptions.Item>
-              <Descriptions.Item label="模板" span={1}>
+              <Descriptions.Item label="模板" span={2}>
                 {mapEntemplate2Zhtemplate[detail.template]}
               </Descriptions.Item>
-              <Descriptions.Item label="状态" span={1}>
+              <Descriptions.Item label="状态" span={2}>
                 <Space size={[0, 8]} wrap>
                   {detail.state.map((s: string, idx: number) => (
                     <Tag color={mapState2ColorChinese[s].color} key={idx}>
@@ -636,6 +689,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               </Descriptions.Item>
               <Descriptions.Item label="要求标注方人数" span={1}>
                 {detail.labeler_number}
+              </Descriptions.Item>
+              <Descriptions.Item label="单题奖励" span={1}>
+                {detail.reward}
+              </Descriptions.Item>
+              <Descriptions.Item label="单题限时" span={1}>
+                {detail.time}秒
               </Descriptions.Item>
             </Descriptions>
             <h3>标注者信息</h3>
@@ -655,7 +714,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               </Panel>
             </Collapse>
           </Modal>
-          <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing}></Table>
+          <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing} pagination={{ pageSize: 6 }}/>
         </Spin>
       </Spin>
     </>

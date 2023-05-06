@@ -3,7 +3,7 @@ import { ProCard } from "@ant-design/pro-components";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { HelpOutline } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { mapLevel2Exp, mapLevel2Zh } from "@/const/interface";
+import { mapLevel2Exp, mapLevel2Zh, mapTag2Zh } from "@/const/interface";
 import { request } from "@/utils/network";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -56,7 +56,7 @@ export interface UsersInfo {
   points: number;
   email: string;
   credits: number;
-  label_type: string[];
+  prefer: string|null;
   is_bound: boolean;
 }
 
@@ -73,7 +73,7 @@ const UserInfo = (props: UsersInfoProps) => {
     points: 0,
     email: "",
     credits: 0,
-    label_type: [],
+    prefer: null,
     is_bound: false
   });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false)
@@ -110,8 +110,10 @@ const UserInfo = (props: UsersInfoProps) => {
       })
       .catch((err) => {
         console.log(err);
-      });
-    getBoundAccounts();
+      })
+      .finally(() => {
+        getBoundAccounts();
+      })
   }, [refreshing]);
 
   function a11yProps(index: number) {
@@ -207,7 +209,7 @@ const UserInfo = (props: UsersInfoProps) => {
 
   const preferTag: SelectProps['options'] = [{
     label: "情感分类/分析",
-    value: "sentiment"
+    value: "sentiment",
   },
   {
     label: "词性分类",
@@ -224,474 +226,477 @@ const UserInfo = (props: UsersInfoProps) => {
   ];
   return (
     <>
-      <Spin spinning={refreshing||loading}>
-      <Modal open={isInviteModalOpen}
-        onCancel={() => { setIsInviteModalOpen(false) }}
-        footer={null}
-      >
-        <h2 style={{ textAlign: 'center' }}>邀请码</h2>
-        <Divider />
-        <p>为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。</p>
-        <p>请将这个邀请码分享给您的朋友，如果他们在注册本平台账号可以填写您的邀请码，您和您的朋友将获得丰厚的<span style={{ color: "green" }}>点数奖励</span>，<b>邀请越多，奖励越多</b>。</p>
-        <p>赶快将邀请码分享到<span style={{ color: "red" }}>QQ群、微信群</span>等平台赢取精美大奖吧！！！</p>
-      </Modal>
-      <ProCard split="vertical">
-        <ProCard colSpan={'50%'}>
-          <Card hoverable>
-            <Row style={{
-              textAlign: 'center'
-            }}>
-              <Col span={24}>
-                <Avatar size={60} style={{
-                  backgroundColor: "rgb(243, 196, 41)",
-                  fontSize: 35
-                }}>{info.username[0]}</Avatar>
-              </Col>
-            </Row>
-            <Row style={{
-              textAlign: 'center'
-            }}>
-              <Col span={24}>
-                <div style={{
-                  textAlign: 'center'
-                }}>
-                  <h2>{info.username} <Divider type="vertical" /><Tag color={mapLevel2Zh[info.level]['color']}>{mapLevel2Zh[info.level]['name']}</Tag></h2>
-                  <span style={{ color: "#999999" }}>{info.email}</span>
-                </div>
-              </Col>
-            </Row>
-            <Divider />
-            <Row>
-            
-              <Col span={8}>
-                经验:  
-                <Tooltip title={`当前经验：${info.exp}/${mapLevel2Exp[info.level]}`}>
-                <Progress size="small" percent={info.exp/mapLevel2Exp[info.level]} type="circle" 
-                   format={() => `${info.exp}`}
-                />
-                </Tooltip>
-              </Col>
-              <Col span={8}>
-                点数: 
-                <Tooltip title="需求方发布任务需要消耗点数，可提现">
-                <Progress size="small" percent={info.points} type="circle" 
-                  format={() => `${info.points}分`}
-                />
-                </Tooltip>
-              </Col>
-              <Col>
-              
-                信用分: 
-                <Tooltip title="维持较高的信用分有利于你更快的获取服务">
-                <Progress size="small" percent={info.credits} type="circle"
-                  format={(percent) => `${percent}分`}
-                  strokeColor={info.credits < 70 ? "red" : (info.credits > 90 ? "rgb(33, 198, 39)" : "orange")}
-                />
-                </Tooltip>
-              </Col>
-            </Row>
-            <Divider />
-            {
-              props.role==="labeler"?
-            
-            <>
-            <Tooltip title="设置偏好标签有助于你获得任务">
-            <h3>偏好标签</h3>
-            </Tooltip>
-            <Form
-              onFinish={(values) => {
-                setLoading(true)
-                update_prefer(values.prefer)
-              }}
-            >
-              <Row>
-                <Col span={20}>
-                  <Form.Item
-                    name="prefer"
-                  >
-                    <Select
-                      mode="multiple"
-                      allowClear
-                      options={preferTag}
-                      defaultValue={info.label_type}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={2}>
-                  <Button type="primary" htmlType="submit">更新</Button>
+      <Spin spinning={refreshing || loading}>
+        <Modal open={isInviteModalOpen}
+          onCancel={() => { setIsInviteModalOpen(false) }}
+          footer={null}
+        >
+          <h2 style={{ textAlign: 'center' }}>邀请码</h2>
+          <Divider />
+          <p>为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。</p>
+          <p>请将这个邀请码分享给您的朋友，如果他们在注册本平台账号可以填写您的邀请码，您和您的朋友将获得丰厚的<span style={{ color: "green" }}>点数奖励</span>，<b>邀请越多，奖励越多</b>。</p>
+          <p>赶快将邀请码分享到<span style={{ color: "red" }}>QQ群、微信群</span>等平台赢取精美大奖吧！！！</p>
+        </Modal>
+        <ProCard split="vertical">
+          <ProCard colSpan={'50%'}>
+            <Card hoverable>
+              <Row style={{
+                textAlign: 'center'
+              }}>
+                <Col span={24}>
+                  <Avatar size={60} style={{
+                    backgroundColor: "rgb(243, 196, 41)",
+                    fontSize: 35
+                  }}>{info.username[0]}</Avatar>
                 </Col>
               </Row>
-            </Form>
-            <Divider />
-            </>:
-            <></>
-            }
-            <Row>
-              <Col span={18}>
-                <b>邀请码: <span id="invitecode">{info.invitecode}</span></b>
-              </Col>
-              <Col span={2}>
-                <Tooltip title="什么是邀请码">
-                  <Button type="text" size="small"
-                    onClick={() => {
-                      setIsInviteModalOpen(true)
-                    }}
-                    icon={<HelpOutline />}
-                  />
-                </Tooltip>
-              </Col>
-              <Col>
-                <Tooltip title="点击此处复制邀请码">
-                  <Button type="text" size="small"
-                    onClick={() => {
-                      const invitecode = document.getElementById("invitecode")
-                      const clipboardObj = navigator.clipboard
-                      clipboardObj.writeText(invitecode ? invitecode.innerText : "")
-                        .then(() => {
-                          message.success("复制成功")
-                        })
-                        .catch(() => {
-                          message.error("复制失败，请稍后重试")
-                        })
-                    }}
-                    icon={<ContentCopyIcon />}
-                  />
-                </Tooltip>
-              </Col>
-            </Row>
-          </Card>
-        </ProCard>
-        <ProCard>
-          <Box sx={{ width: "100%" }}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                <Tab label="排行榜" {...a11yProps(0)} />
-                <Tab label="账户与充值" {...a11yProps(1)} />
-              </Tabs>
-            </Box>
-            <TabPanel value={value} index={0}>
-              <div>
+              <Row style={{
+                textAlign: 'center'
+              }}>
+                <Col span={24}>
+                  <div style={{
+                    textAlign: 'center'
+                  }}>
+                    <h2>{info.username} <Divider type="vertical" /><Tag color={mapLevel2Zh[info.level]['color']}>{mapLevel2Zh[info.level]['name']}</Tag></h2>
+                    <span style={{ color: "#999999" }}>{info.email}</span>
+                  </div>
+                </Col>
+              </Row>
+              <Divider />
+              <Row>
 
-              </div>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              <Modal
-                open={isBoundModalOpen}
-                onCancel={() => {
-                  setIsBoundModalOpen(false);
-                }}
-                onOk={() => {
-                  setIsBoundModalOpen(false);
-                }}
-                footer={null}
-                destroyOnClose
-              >
-                <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-                  绑定银行卡
-                </Typography>
-                <Divider />
-                <Form
-                  name="basic"
-                  initialValues={{ remember: true }}
-                  onFinish={(values) => {
-                    setLoading(true);
-                    const hashPassword = CryptoJS.SHA256(values.password).toString();
-                    postBound(values.bank_account, hashPassword);
+                <Col span={8}>
+                  经验:
+                  <Tooltip title={`当前经验：${info.exp}/${mapLevel2Exp[info.level]}`}>
+                    <Progress size="small" percent={info.exp / mapLevel2Exp[info.level]} type="circle"
+                      format={() => `${info.exp}`}
+                    />
+                  </Tooltip>
+                </Col>
+                <Col span={8}>
+                  点数:
+                  <Tooltip title="需求方发布任务需要消耗点数，可提现">
+                    <Progress size="small" percent={info.points} type="circle"
+                      format={() => `${info.points}分`}
+                    />
+                  </Tooltip>
+                </Col>
+                <Col>
+
+                  信用分:
+                  <Tooltip title="维持较高的信用分有利于你更快的获取服务">
+                    <Progress size="small" percent={info.credits} type="circle"
+                      format={(percent) => `${percent}分`}
+                      strokeColor={info.credits < 70 ? "red" : (info.credits > 90 ? "rgb(33, 198, 39)" : "orange")}
+                    />
+                  </Tooltip>
+                </Col>
+              </Row>
+              <Divider />
+              {
+                props.role === "labeler" ?
+
+                  <>
+                    <Tooltip title="设置偏好标签有助于你获得任务">
+                      <>
+                        <h3>偏好标签：
+                          <Tag color="cyan">{info.prefer?mapTag2Zh[info.prefer]:"暂无标签"}</Tag>
+                        </h3>
+                      </>
+                    </Tooltip>
+                    <Form
+                      onFinish={(values) => {
+                        setLoading(true)
+                        update_prefer(values.prefer)
+                      }}
+                    >
+                      <Row>
+                        <Col span={20}>
+                          <Form.Item
+                            name="prefer"
+                          >
+                            <Select
+                              allowClear
+                              options={preferTag}
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={2}>
+                          <Button type="primary" htmlType="submit">更新</Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                    <Divider />
+                  </> :
+                  <></>
+              }
+              <Row>
+                <Col span={18}>
+                  <b>邀请码: <span id="invitecode">{info.invitecode}</span></b>
+                </Col>
+                <Col span={2}>
+                  <Tooltip title="什么是邀请码">
+                    <Button type="text" size="small"
+                      onClick={() => {
+                        setIsInviteModalOpen(true)
+                      }}
+                      icon={<HelpOutline />}
+                    />
+                  </Tooltip>
+                </Col>
+                <Col>
+                  <Tooltip title="点击此处复制邀请码">
+                    <Button type="text" size="small"
+                      onClick={() => {
+                        const invitecode = document.getElementById("invitecode")
+                        const clipboardObj = navigator.clipboard
+                        clipboardObj.writeText(invitecode ? invitecode.innerText : "")
+                          .then(() => {
+                            message.success("复制成功")
+                          })
+                          .catch(() => {
+                            message.error("复制失败，请稍后重试")
+                          })
+                      }}
+                      icon={<ContentCopyIcon />}
+                    />
+                  </Tooltip>
+                </Col>
+              </Row>
+            </Card>
+          </ProCard>
+          <ProCard>
+            <Box sx={{ width: "100%" }}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                  <Tab label="排行榜" {...a11yProps(0)} />
+                  <Tab label="账户与充值" {...a11yProps(1)} />
+                </Tabs>
+              </Box>
+              <TabPanel value={value} index={0}>
+                <div>
+
+                </div>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <Modal
+                  open={isBoundModalOpen}
+                  onCancel={() => {
                     setIsBoundModalOpen(false);
                   }}
-                  autoComplete="off"
-                >
-                  <Form.Item
-                    name="bank_account"
-                    rules={[
-                      {
-                        required: true,
-                        message: "不得为空",
-                      },
-                      ({ }) => ({
-                        validator(_, value) {
-                          const r = /^\+?[1-9][0-9]*$/;
-                          if (value && !r.test(value)) {
-                            return Promise.reject(new Error("银行卡账号必须由数字组成"));
-                          }
-                          if (value && (value.length < 15 || value.length > 19)) {
-                            return Promise.reject(new Error("银行卡账号必须为15~19位"));
-                          }
-                          return Promise.resolve();
-                        },
-                      }),
-                    ]}
-                  >
-                    <TextField
-                      margin="normal"
-                      fullWidth
-                      id="bank_account"
-                      label="银行卡账号"
-                      name="bank_account"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "不得为空",
-                      },
-                      ({ }) => ({
-                        validator(_, value) {
-                          const r = /^\+?[1-9][0-9]*$/;
-                          if (value && !r.test(value)) {
-                            return Promise.reject(new Error("银行卡密码必须由数字组成"));
-                          }
-                          if (value && value.length !== 6) {
-                            return Promise.reject(new Error("银行卡密码必须为6位"));
-                          }
-                          return Promise.resolve();
-                        },
-                      }),
-                    ]}
-                  >
-                    <TextField
-                      type="password"
-                      margin="normal"
-                      fullWidth
-                      id="password"
-                      label="密码"
-                      name="password"
-                      autoFocus
-                    />
-                  </Form.Item>
-                  <Button
-                    type="primary"
-                    block
-                    htmlType="submit"
-                    size="large"
-                    style={{
-                      backgroundColor: "#3b5999",
-                      marginTop: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    绑定
-                  </Button>
-                </Form>
-              </Modal>
-              <Alert severity={info.is_bound ? "success" : "warning"}>
-                该账号{info.is_bound ? "已" : "未"}绑定银行卡
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={() => {
-                    setIsBoundModalOpen(true);
+                  onOk={() => {
+                    setIsBoundModalOpen(false);
                   }}
+                  footer={null}
+                  destroyOnClose
                 >
-                  点击此处绑定
-                </Button>
-              </Alert>
-
-              <Card
-                title={"账户信息 "}
-                extra={
-                  <Button
-                    type="text"
-                    size="large"
-                    disabled={!info.is_bound}
-                    onClick={() => {
-                      setVisible((i) => !i);
+                  <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+                    绑定银行卡
+                  </Typography>
+                  <Divider />
+                  <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={(values) => {
+                      setLoading(true);
+                      const hashPassword = CryptoJS.SHA256(values.password).toString();
+                      postBound(values.bank_account, hashPassword);
+                      setIsBoundModalOpen(false);
                     }}
-                    icon={visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  />
-                }
-              >
-                <Box sx={{ width: "100%" }}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <Tabs
-                      value={accountValue}
-                      onChange={handleChange2}
-                      aria-label="basic tabs example"
+                    autoComplete="off"
+                  >
+                    <Form.Item
+                      name="bank_account"
+                      rules={[
+                        {
+                          required: true,
+                          message: "不得为空",
+                        },
+                        ({ }) => ({
+                          validator(_, value) {
+                            const r = /^\+?[1-9][0-9]*$/;
+                            if (value && !r.test(value)) {
+                              return Promise.reject(new Error("银行卡账号必须由数字组成"));
+                            }
+                            if (value && (value.length < 15 || value.length > 19)) {
+                              return Promise.reject(new Error("银行卡账号必须为15~19位"));
+                            }
+                            return Promise.resolve();
+                          },
+                        }),
+                      ]}
                     >
-                      {accountBalance.map((_, idx) => (
-                        <Tab label={`账户${idx + 1}`} {...a11yProps(idx)} key={idx} />
-                      ))}
-                    </Tabs>
-                  </Box>
-                  {accountBalance.map((account, idx) => (
-                    <TabPanel value={accountValue} index={idx} key={idx}>
-                      <Row>
-                      <Col span={14}>
-                      <h3>银行卡卡号 (No.) : </h3>
-                      <p>{visible ? account.bank_account : "******************"}</p>
-                      </Col>
-                      <Col>
-                      <h3>账户余额 (CNY) : </h3>
-                      <p>{visible ? `${account.balance}.00` : "********"}</p>
-                      </Col>
-                      </Row>
-                      <br/>
-                      <br/>
-                      <SpeedDial
-                        ariaLabel="SpeedDial basic example"
-                        sx={{ position: 'absolute', bottom: 16, right: 16 }}
-                        icon={<SpeedDialIcon />}
+                      <TextField
+                        margin="normal"
+                        fullWidth
+                        id="bank_account"
+                        label="银行卡账号"
+                        name="bank_account"
+                        autoFocus
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="password"
+                      rules={[
+                        {
+                          required: true,
+                          message: "不得为空",
+                        },
+                        ({ }) => ({
+                          validator(_, value) {
+                            const r = /^\+?[1-9][0-9]*$/;
+                            if (value && !r.test(value)) {
+                              return Promise.reject(new Error("银行卡密码必须由数字组成"));
+                            }
+                            if (value && value.length !== 6) {
+                              return Promise.reject(new Error("银行卡密码必须为6位"));
+                            }
+                            return Promise.resolve();
+                          },
+                        }),
+                      ]}
+                    >
+                      <TextField
+                        type="password"
+                        margin="normal"
+                        fullWidth
+                        id="password"
+                        label="密码"
+                        name="password"
+                        autoFocus
+                      />
+                    </Form.Item>
+                    <Button
+                      type="primary"
+                      block
+                      htmlType="submit"
+                      size="large"
+                      style={{
+                        backgroundColor: "#3b5999",
+                        marginTop: "10px",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      绑定
+                    </Button>
+                  </Form>
+                </Modal>
+                <Alert severity={info.is_bound ? "success" : "warning"}>
+                  该账号{info.is_bound ? "已" : "未"}绑定银行卡
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => {
+                      setIsBoundModalOpen(true);
+                    }}
+                  >
+                    点击此处绑定
+                  </Button>
+                </Alert>
+
+                <Card
+                  title={"账户信息 "}
+                  extra={
+                    <Button
+                      type="text"
+                      size="large"
+                      disabled={!info.is_bound}
+                      onClick={() => {
+                        setVisible((i) => !i);
+                      }}
+                      icon={visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    />
+                  }
+                >
+                  <Box sx={{ width: "100%" }}>
+                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                      <Tabs
+                        value={accountValue}
+                        onChange={handleChange2}
+                        aria-label="basic tabs example"
                       >
-                        <SpeedDialAction
-                          onClick={() => {
-                            setAddScore(true);
-                            setIsCXModalOpen(true);
-                          }}
-                          icon ={<AddShoppingCartIcon/>}
-                          tooltipTitle="充值"
-                        />
-                        <SpeedDialAction
-                          onClick={() => {
-                            setAddScore(false);
-                            setIsCXModalOpen(true);
-                          }}
-                          icon={<CurrencyYuanIcon/>}
-                          tooltipTitle="提现"
-                        />
-                        <SpeedDialAction
-                          onClick={() => {
-                            setDisboundModalOpen(true)
-                            // setLoading(true);
-                            // disbound(account.bank_account);
-                          }}
-                          icon={<LockOpenIcon/>}
-                          tooltipTitle="解绑"
-                        />
-                      </SpeedDial>
-                      <Modal open={disboundModalOpen}
+                        {accountBalance.map((_, idx) => (
+                          <Tab label={`账户${idx + 1}`} {...a11yProps(idx)} key={idx} />
+                        ))}
+                      </Tabs>
+                    </Box>
+                    {accountBalance.map((account, idx) => (
+                      <TabPanel value={accountValue} index={idx} key={idx}>
+                        <Row>
+                          <Col span={14}>
+                            <h3>银行卡卡号 (No.) : </h3>
+                            <p>{visible ? account.bank_account : "******************"}</p>
+                          </Col>
+                          <Col>
+                            <h3>账户余额 (CNY) : </h3>
+                            <p>{visible ? `${account.balance}.00` : "********"}</p>
+                          </Col>
+                        </Row>
+                        <br />
+                        <br />
+                        <SpeedDial
+                          ariaLabel="SpeedDial basic example"
+                          sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                          icon={<SpeedDialIcon />}
+                        >
+                          <SpeedDialAction
+                            onClick={() => {
+                              setAddScore(true);
+                              setIsCXModalOpen(true);
+                            }}
+                            icon={<AddShoppingCartIcon />}
+                            tooltipTitle="充值"
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              setAddScore(false);
+                              setIsCXModalOpen(true);
+                            }}
+                            icon={<CurrencyYuanIcon />}
+                            tooltipTitle="提现"
+                          />
+                          <SpeedDialAction
+                            onClick={() => {
+                              setDisboundModalOpen(true)
+                              // setLoading(true);
+                              // disbound(account.bank_account);
+                            }}
+                            icon={<LockOpenIcon />}
+                            tooltipTitle="解绑"
+                          />
+                        </SpeedDial>
+                        <Modal open={disboundModalOpen}
                           footer={[
-                            <Button onClick={() => {
+                            <Button key="ok" onClick={() => {
                               setLoading(true);
                               disbound(account.bank_account);
                               setDisboundModalOpen(false)
                             }}
-                            style={{backgroundColor: "#3b5999",
-                            color: "white"
-                          }}
+                              style={{
+                                backgroundColor: "#3b5999",
+                                color: "white"
+                              }}
                             >确认</Button>,
-                            <Button
-                              style={{backgroundColor: "#3b5999", color: "white"}}
+                            <Button key="cancel"
+                              style={{ backgroundColor: "#3b5999", color: "white" }}
                               onClick={() => {
                                 setDisboundModalOpen(false)
                               }}
                             >取消</Button>
                           ]}
                           title="确认要解绑该账户吗?"
-                          onCancel={() => {setDisboundModalOpen(false)}}
-                      >
-                        解绑之后你将无法对该账户进行充值和提现操作，但你可以重新将这张卡绑定
-                      </Modal>
-                      <Modal
-                        open={isCXModalOpen}
-                        onCancel={() => setIsCXModalOpen(false)}
-                        footer={null}
-                        destroyOnClose
-                      >
-                        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-                          {addScore ? "充值" : "提现"}
-                        </Typography>
-                        <Divider />
-                        <p>注: 1 元 = 10 点数</p>
-                        <Form
-                          name="basic"
-                          initialValues={{ remember: true }}
-                          onFinish={(values) => {
-                            setLoading(true);
-                            const hashPassword = CryptoJS.SHA256(values.password).toString();
-                            exchange(values.score, addScore, account.bank_account, hashPassword);
-                            setIsCXModalOpen(false);
-                          }}
-                          autoComplete="off"
+                          onCancel={() => { setDisboundModalOpen(false) }}
                         >
-                          <Form.Item
-                            name="score"
-                            rules={[
-                              {
-                                required: true,
-                                message: "不得为空",
-                              },
-                              ({}) => ({
-                                validator(_, value) {
-                                  const r = /^\+?[1-9][0-9]*$/;
-                                  if (value && !r.test(value)) {
-                                    return Promise.reject(new Error("请输入数字"));
-                                  }
-                                  if (value && addScore && parseInt(account.balance) * 10 < value) {
-                                    return Promise.reject(new Error("余额不足"));
-                                  }
-                                  if (value && !addScore && info.points < value) {
-                                    return Promise.reject(new Error("点数不足"));
-                                  }
-                                  return Promise.resolve();
-                                },
-                              }),
-                            ]}
-                          >
-                            <TextField
-                              margin="normal"
-                              fullWidth
-                              id="score"
-                              label={`${addScore ? "充值" : "提现"}点数`}
-                              name="score"
-                              autoFocus
-                            />
-                          </Form.Item>
-                          <Form.Item
-                            name="password"
-                            rules={[
-                              {
-                                required: true,
-                                message: "不得为空",
-                              },
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  const r = /^\+?[1-9][0-9]*$/;
-                                  if (value && !r.test(value)) {
-                                    return Promise.reject(new Error("银行卡密码必须由数字组成"));
-                                  }
-                                  if (value && value.length !== 6) {
-                                    return Promise.reject(new Error("银行卡密码必须为6位"));
-                                  }
-                                  return Promise.resolve();
-                                },
-                              }),
-                            ]}
-                          >
-                            <TextField
-                              type="password"
-                              margin="normal"
-                              fullWidth
-                              id="password"
-                              label="密码"
-                              name="password"
-                              autoFocus
-                            />
-                          </Form.Item>
-                          <Button
-                            type="primary"
-                            htmlType="submit"
-                            block
-                            size="large"
-                            style={{
-                              backgroundColor: "#3b5999",
-                              marginBottom: "5px",
-                            }}
-                          >
+                          解绑之后你将无法对该账户进行充值和提现操作，但你可以重新将这张卡绑定
+                        </Modal>
+                        <Modal
+                          open={isCXModalOpen}
+                          onCancel={() => setIsCXModalOpen(false)}
+                          footer={null}
+                          destroyOnClose
+                        >
+                          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
                             {addScore ? "充值" : "提现"}
-                          </Button>
-                        </Form>
-                      </Modal>
-                    </TabPanel>
-                  ))}
-                </Box>
-              </Card>
-            </TabPanel>
-          </Box>
+                          </Typography>
+                          <Divider />
+                          <p>注: 1 元 = 10 点数</p>
+                          <Form
+                            name="basic"
+                            initialValues={{ remember: true }}
+                            onFinish={(values) => {
+                              setLoading(true);
+                              const hashPassword = CryptoJS.SHA256(values.password).toString();
+                              exchange(values.score, addScore, account.bank_account, hashPassword);
+                              setIsCXModalOpen(false);
+                            }}
+                            autoComplete="off"
+                          >
+                            <Form.Item
+                              name="score"
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "不得为空",
+                                },
+                                ({ }) => ({
+                                  validator(_, value) {
+                                    const r = /^\+?[1-9][0-9]*$/;
+                                    if (value && !r.test(value)) {
+                                      return Promise.reject(new Error("请输入数字"));
+                                    }
+                                    if (value && addScore && parseInt(account.balance) * 10 < value) {
+                                      return Promise.reject(new Error("余额不足"));
+                                    }
+                                    if (value && !addScore && info.points < value) {
+                                      return Promise.reject(new Error("点数不足"));
+                                    }
+                                    return Promise.resolve();
+                                  },
+                                }),
+                              ]}
+                            >
+                              <TextField
+                                margin="normal"
+                                fullWidth
+                                id="score"
+                                label={`${addScore ? "充值" : "提现"}点数`}
+                                name="score"
+                                autoFocus
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              name="password"
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "不得为空",
+                                },
+                                ({ getFieldValue }) => ({
+                                  validator(_, value) {
+                                    const r = /^\+?[1-9][0-9]*$/;
+                                    if (value && !r.test(value)) {
+                                      return Promise.reject(new Error("银行卡密码必须由数字组成"));
+                                    }
+                                    if (value && value.length !== 6) {
+                                      return Promise.reject(new Error("银行卡密码必须为6位"));
+                                    }
+                                    return Promise.resolve();
+                                  },
+                                }),
+                              ]}
+                            >
+                              <TextField
+                                type="password"
+                                margin="normal"
+                                fullWidth
+                                id="password"
+                                label="密码"
+                                name="password"
+                                autoFocus
+                              />
+                            </Form.Item>
+                            <Button
+                              type="primary"
+                              htmlType="submit"
+                              block
+                              size="large"
+                              style={{
+                                backgroundColor: "#3b5999",
+                                marginBottom: "5px",
+                              }}
+                            >
+                              {addScore ? "充值" : "提现"}
+                            </Button>
+                          </Form>
+                        </Modal>
+                      </TabPanel>
+                    ))}
+                  </Box>
+                </Card>
+              </TabPanel>
+            </Box>
+          </ProCard>
         </ProCard>
-      </ProCard>
       </Spin>
     </>
   );

@@ -160,7 +160,7 @@ const MyLayout = (props: MyLayoutProps) => {
         >
           <Image src={"/logo/logo.png"} width="200" alt={"logo加载失败"} height="80" />
         </div>
-        <div style={{ height: "2%" }} />
+        <div style={{ height: "10%" }} />
         <AntMenu
           style={{
             border: "none",

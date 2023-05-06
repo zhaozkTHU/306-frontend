@@ -36,7 +36,7 @@ const AdministratorAccount = () => {
   useEffect(() => {
     request('/api/administrator/user_info', "GET")
       .then((response) => {
-        setUserList(response.data.user_list)
+        setUserList(response.data.data)
       })
       .catch((error) => {
         if (error.response) {
