@@ -73,7 +73,7 @@ const Problem = (props: ProbelmProps) => {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
-        <Divider/>
+        <Divider />
         <Radio.Group
           value={props.problem.data ? props.problem.data.choiceIndex : null}
           disabled={true}
@@ -171,7 +171,7 @@ const Problem = (props: ProbelmProps) => {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
-        <Divider/>
+        <Divider />
         <Radio.Group value={props.problem.data} disabled>
           <Radio value={true}>合格</Radio>
           <Radio value={false}>不合格</Radio>

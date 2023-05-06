@@ -16,6 +16,7 @@ import {
   Alert,
   Upload,
   Switch,
+  Radio,
 } from "antd";
 import type { UploadFile, SelectProps } from "antd";
 import dayjs from "dayjs";
@@ -102,10 +103,16 @@ const TaskInfoForm: React.FC<{
   const [form] = Form.useForm<TaskInfo>();
   const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
+  const distribute = Form.useWatch("distribute", form);
 
   useEffect(() => {
     form.setFieldValue("task_data", undefined);
   }, [batch, form]);
+
+  useEffect(() => {
+    form.setFieldValue("distribute_type", undefined);
+    form.setFieldValue("agent_username", undefined);
+  }, [distribute, form]);
 
   const onFinish = () => {
     setLoading(true);
@@ -210,6 +217,20 @@ const TaskInfoForm: React.FC<{
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item
+          label="任务内容分类标签"
+          name="type"
+          rules={[{ required: true, message: "请选择任务内容分类标签" }]}
+        >
+          <Select
+            options={[
+              { value: "sentiment", label: "情感分类、分析" },
+              { value: "part-of-speech", label: "词性分类" },
+              { value: "intent", label: "意图揣测" },
+              { value: "event", label: "事件概括" },
+            ]}
+          />
+        </Form.Item>
         <Row>
           <Col span={4}>
             <Form.Item
@@ -239,6 +260,37 @@ const TaskInfoForm: React.FC<{
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item
+          label="分发方式"
+          name="distribute"
+          rules={[{ required: true, message: "请选择分发方式" }]}
+        >
+          <Radio.Group>
+            <Radio.Button value="system">系统分发</Radio.Button>
+            <Radio.Button value="agent">中介分发</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        {distribute === "system" && (
+          <Form.Item
+            label="系统分发方式"
+            name="distribute_type"
+            rules={[{ required: true, message: "请选择系统分发方式" }]}
+          >
+            <Radio.Group>
+              <Radio.Button value="order">顺序分发</Radio.Button>
+              <Radio.Button value="smart">智能分发</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        )}
+        {distribute === "agent" && (
+          <Form.Item
+            label="分发中介名"
+            name="agent_username"
+            rules={[{ required: true, message: "请输入分发中介名" }]}
+          >
+            <Input />
+          </Form.Item>
+        )}
         <Row>
           <Space>
             <Col>

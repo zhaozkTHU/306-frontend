@@ -43,7 +43,7 @@ const DemanderInfo = () => {
   const [username, setUsername] = useState<string>("");
   const [invitecode, setInvitecode] = useState<string>("");
   const [level, setLevel] = useState<string>("bronze");
-  const [labelType, setLabelType] = useState<string[]>([])
+  const [labelType, setLabelType] = useState<string[]>([]);
   const [exp, setExp] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
   const [value, setValue] = React.useState(0);
@@ -151,9 +151,9 @@ const DemanderInfo = () => {
         setExp(response.data.exp);
         setPoints(response.data.points);
         setIsBound(response.data.is_bound);
-        setEmail(response.data.email)
-        setCredits(response.data.credits)
-        setLabelType(response.data.label_type)
+        setEmail(response.data.email);
+        setCredits(response.data.credits);
+        setLabelType(response.data.label_type);
       })
       .catch((err) => {
         console.log(err);
@@ -203,7 +203,7 @@ const DemanderInfo = () => {
                   required: true,
                   message: "不得为空",
                 },
-                ({ }) => ({
+                ({}) => ({
                   validator(_, value) {
                     const r = /^\+?[1-9][0-9]*$/;
                     if (value && !r.test(value)) {
@@ -233,7 +233,7 @@ const DemanderInfo = () => {
                   required: true,
                   message: "不得为空",
                 },
-                ({ }) => ({
+                ({}) => ({
                   validator(_, value) {
                     const r = /^\+?[1-9][0-9]*$/;
                     if (value && !r.test(value)) {
@@ -296,7 +296,6 @@ const DemanderInfo = () => {
             </div>
           </TabPanel>
           <TabPanel value={value} index={1}>
-
             <Alert severity={isBound ? "success" : "warning"}>
               该账号{isBound ? "已" : "未"}绑定银行卡
               <Button
@@ -402,7 +401,7 @@ const DemanderInfo = () => {
                               required: true,
                               message: "不得为空",
                             },
-                            ({ }) => ({
+                            ({}) => ({
                               validator(_, value) {
                                 const r = /^\+?[1-9][0-9]*$/;
                                 if (value && !r.test(value)) {

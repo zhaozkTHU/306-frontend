@@ -123,17 +123,17 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
           Undo
         </Button>
       </div>
-        <MyImage
-          url={`${props.src}`}
-          onImageLoad={handleImageLoad}
-          style={{
-            objectFit: "contain",
-            objectPosition: "center center",
-          }}
-          alt="图片加载失败"
-          height="100%"
-          width="100%"
-        />
+      <MyImage
+        url={`${props.src}`}
+        onImageLoad={handleImageLoad}
+        style={{
+          objectFit: "contain",
+          objectPosition: "center center",
+        }}
+        alt="图片加载失败"
+        height="100%"
+        width="100%"
+      />
       <canvas ref={canvasRef} style={annotationOverlayStyle} />
     </div>
   );
