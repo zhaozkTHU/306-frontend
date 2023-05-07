@@ -41,14 +41,14 @@ const CheckModel = (props: CheckModelProps) => {
       .then((response) => {
         const newProblems: any[] = JSON.parse(response.data.label_data);
         const totalNumber = newProblems.length;
-        setCheckedNumber(Math.ceil(totalNumber * props.rate / 100))
+        setCheckedNumber(Math.ceil((totalNumber * props.rate) / 100));
         setResult(newProblems);
         if (props.is_sample) {
           for (let i = result.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [newProblems[i], newProblems[j]] = [newProblems[j], newProblems[i]];
           }
-          setResult(newProblems.slice(0, Math.ceil(totalNumber * props.rate / 100)));
+          setResult(newProblems.slice(0, Math.ceil((totalNumber * props.rate) / 100)));
         }
       })
       .catch((err) => {
@@ -147,10 +147,24 @@ const CheckModel = (props: CheckModelProps) => {
                   </Radio.Group>
                 </Col>
                 <Col span={6}>
-                  <Button disabled={index === 0} onClick={() => { CarouselRef.current?.goTo(index - 1, true); }}>上一题</Button>
+                  <Button
+                    disabled={index === 0}
+                    onClick={() => {
+                      CarouselRef.current?.goTo(index - 1, true);
+                    }}
+                  >
+                    上一题
+                  </Button>
                 </Col>
                 <Col span={4}>
-                  <Button disabled={index === result.length - 1} onClick={() => { CarouselRef.current?.goTo(index + 1, true); }}>下一题</Button>
+                  <Button
+                    disabled={index === result.length - 1}
+                    onClick={() => {
+                      CarouselRef.current?.goTo(index + 1, true);
+                    }}
+                  >
+                    下一题
+                  </Button>
                 </Col>
               </Row>
               <Divider />
@@ -168,17 +182,17 @@ const CheckModel = (props: CheckModelProps) => {
             }}
             style={{
               backgroundColor: "#3b5999",
-              color: "white"
+              color: "white",
             }}
           >
             合格
           </Button>
-          <Divider type="vertical"/>
+          <Divider type="vertical" />
           <Button
             size="large"
             style={{
               backgroundColor: "#3b5999",
-              color: "white"
+              color: "white",
             }}
             onClick={() => {
               setRefreshing(true);
@@ -187,17 +201,21 @@ const CheckModel = (props: CheckModelProps) => {
           >
             不合格
           </Button>
-          </Col>
-          <Col>
-          <Button size="large" style={{
-            backgroundColor: "#3b5999",
-            color: "white"
-          }}
-          onClick={() => {
-            props.setIsLabelerList(true)
-          }}
-          >退出审核</Button>
-          </Col>
+        </Col>
+        <Col>
+          <Button
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              color: "white",
+            }}
+            onClick={() => {
+              props.setIsLabelerList(true);
+            }}
+          >
+            退出审核
+          </Button>
+        </Col>
       </Row>
     </Spin>
   );

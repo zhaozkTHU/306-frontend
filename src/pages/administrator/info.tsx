@@ -1,9 +1,6 @@
 import React from "react";
 const AdministratorInfo = () => {
-  return (
-    <>
-    </>
-  );
+  return <></>;
 };
 
 export default AdministratorInfo;

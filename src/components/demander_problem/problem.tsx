@@ -30,27 +30,27 @@ const Problem = (props: ProbelmProps) => {
     problemContent = (
       <Image.PreviewGroup>
         <Row wrap={true}>
-        {props.problem.options.map((option: string, index: number) => (
-          <Col key={index}>
-            <Checkbox
-              defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
-              disabled={true}
-            >
-              <ImageFormatter>
-                <MyImage
-                  url={`${option}`}
-                  style={{
-                    objectFit: "contain",
-                    objectPosition: "center center",
-                  }}
-                  alt="图片加载失败"
-                  height="100%"
-                  width="100%"
-                />
-              </ImageFormatter>
-            </Checkbox>
+          {props.problem.options.map((option: string, index: number) => (
+            <Col key={index}>
+              <Checkbox
+                defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
+                disabled={true}
+              >
+                <ImageFormatter>
+                  <MyImage
+                    url={`${option}`}
+                    style={{
+                      objectFit: "contain",
+                      objectPosition: "center center",
+                    }}
+                    alt="图片加载失败"
+                    height="100%"
+                    width="100%"
+                  />
+                </ImageFormatter>
+              </Checkbox>
             </Col>
-        ))}
+          ))}
         </Row>
       </Image.PreviewGroup>
     );
@@ -74,7 +74,7 @@ const Problem = (props: ProbelmProps) => {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
-        <Divider/>
+        <Divider />
         <Radio.Group
           value={props.problem.data ? props.problem.data.choiceIndex : null}
           disabled={true}
@@ -172,7 +172,7 @@ const Problem = (props: ProbelmProps) => {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
-        <Divider/>
+        <Divider />
         <Radio.Group value={props.problem.data} disabled>
           <Radio value={true}>合格</Radio>
           <Radio value={false}>不合格</Radio>
@@ -182,10 +182,12 @@ const Problem = (props: ProbelmProps) => {
   }
   return (
     <>
-    {/* <Card title={`题目${props.index + 1}`}> */}
-      <h3>第{props.index+1}题: {props.problem.description}</h3>
+      {/* <Card title={`题目${props.index + 1}`}> */}
+      <h3>
+        第{props.index + 1}题: {props.problem.description}
+      </h3>
       {problemContent}
-    {/* </Card> */}
+      {/* </Card> */}
     </>
   );
 };

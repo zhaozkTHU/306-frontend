@@ -35,7 +35,6 @@ import { RcFile } from "antd/es/upload";
 import store from "@/store";
 import { add } from "../task_manage/deleteList";
 
-
 export interface DemanderTaskTableEntry {
   task_id: number;
   create_at: number;
@@ -50,9 +49,9 @@ export interface DemanderTaskTableEntry {
   label_state: string[];
   pass_check: boolean;
   labeler_credits: number[];
-  distribute: "system"|"agent";
-  distribute_type: "order"|"smart";
-  type: "sentiment"|"part-of-speech"|"intent"|"event";
+  distribute: "system" | "agent";
+  distribute_type: "order" | "smart";
+  type: "sentiment" | "part-of-speech" | "intent" | "event";
   agent: string;
 }
 
@@ -72,18 +71,18 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const [isSample, setIsSample] = useState<boolean>(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
-  const [autoCheckingModalOpen, setAutoCheckingModalOpen] = useState<boolean>(false)
-  const [reportModalOpen, setReportModalOpen] = useState<boolean>(false)
+  const [autoCheckingModalOpen, setAutoCheckingModalOpen] = useState<boolean>(false);
+  const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
   const [slideValue, setSlideValue] = useState<number>(1);
   const [slideAccuracyValue, setSlideAccuracyValue] = useState<number>(1);
   const postSingleAutoChecking = async (task_id: number, labeler_id: number, accuracy: number) => {
     request("/api/demander/single_auto_check", "POST", {
       task_id: task_id,
       labeler_id: labeler_id,
-      accuracy: accuracy
+      accuracy: accuracy,
     })
       .then(() => {
-        message.success("自动审核请求发送成功")
+        message.success("自动审核请求发送成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -91,19 +90,25 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         } else {
           message.error("自动审核请求发送失败，网络错误");
         }
-      })
-    setLoading(false)
-  }
-  const postReport = async (task_id: number, user_id: number, demander_post: boolean, description: string, image_description: string[]) => {
+      });
+    setLoading(false);
+  };
+  const postReport = async (
+    task_id: number,
+    user_id: number,
+    demander_post: boolean,
+    description: string,
+    image_description: string[]
+  ) => {
     request("/api/report", "POST", {
       task_id: task_id,
       user_id: user_id,
       demander_post: demander_post,
       description: description,
-      image_description: image_description
+      image_description: image_description,
     })
       .then(() => {
-        message.success("举报发送成功")
+        message.success("举报发送成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -114,8 +119,8 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       })
       .finally(() => {
         setLoading(false);
-      })
-  }
+      });
+  };
   const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
     action: "/api/file",
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -173,10 +178,10 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     request("/api/get_agent", "POST", {
       task_id: task_id,
       credits: credits,
-      accuracy: accuracy
+      accuracy: accuracy,
     })
       .then(() => {
-        message.success("自动审核请求提交成功，请稍后查看结果")
+        message.success("自动审核请求提交成功，请稍后查看结果");
       })
       .catch((error) => {
         if (error.response) {
@@ -184,9 +189,9 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         } else {
           message.error("自动审核请求提交失败，网络错误");
         }
-      })
-    setLoading(false)
-  }
+      });
+    setLoading(false);
+  };
   const delete_task = async (task_id: number) => {
     axios
       .delete(`/api/task`, {
@@ -227,7 +232,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     distribute: "agent",
     distribute_type: "order",
     type: "event",
-    agent: "agent1"
+    agent: "agent1",
   });
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
@@ -328,7 +333,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 type="link"
                 onClick={() => {
                   setDetail(record);
-                  setAutoCheckingModalOpen(true)
+                  setAutoCheckingModalOpen(true);
                 }}
               >
                 自动审核
@@ -395,10 +400,11 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                     请选择抽样百分比（%）
                     <Slider
                       onChange={(value) => {
-                        setSlideValue(value)
+                        setSlideValue(value);
                       }}
                       value={slideValue}
-                      min={1} max={100}
+                      min={1}
+                      max={100}
                     />
                   </>
                 }
@@ -408,15 +414,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                   setIsCheckModalOpen(true);
                 }}
               >
-                <Button
-                  type="link"
-                  disabled={record.labeler_state != "checking"}
-                >
+                <Button type="link" disabled={record.labeler_state != "checking"}>
                   抽样审核
                 </Button>
               </Popconfirm>
             </Tooltip>
-            <Tooltip title="对该用户单独进行自动审核" >
+            <Tooltip title="对该用户单独进行自动审核">
               <Popconfirm
                 disabled={record.labeler_state != "checking"}
                 placement="bottom"
@@ -425,20 +428,25 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 cancelText="取消"
                 description={
                   <>
-                    <p>该标注方的信用分为{record.labeler_credits}，{record.credits < 80 ? "用户信用分较低，不建议进行自动审核" : "可以自动审核"}，确定要自动审核吗?</p>
+                    <p>
+                      该标注方的信用分为{record.labeler_credits}，
+                      {record.credits < 80 ? "用户信用分较低，不建议进行自动审核" : "可以自动审核"}
+                      ，确定要自动审核吗?
+                    </p>
                     <p>若要自动审核，请先指定下面的正确率标准</p>
                     <Slider
                       onChange={(value) => {
-                        setSlideAccuracyValue(value)
+                        setSlideAccuracyValue(value);
                       }}
                       value={slideAccuracyValue}
-                      min={1} max={100}
+                      min={1}
+                      max={100}
                     />
                   </>
                 }
                 onConfirm={() => {
-                  setLoading(true)
-                  postSingleAutoChecking(detail.task_id, record.labeler_id, slideAccuracyValue)
+                  setLoading(true);
+                  postSingleAutoChecking(detail.task_id, record.labeler_id, slideAccuracyValue);
                 }}
               >
                 <Button disabled={record.labeler_state != "checking"} type="link">
@@ -447,10 +455,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               </Popconfirm>
             </Tooltip>
             <Tooltip title="审核未通过可以举报">
-              <Button disabled={record.labeler_state != "failed"} type="link"
+              <Button
+                disabled={record.labeler_state != "failed"}
+                type="link"
                 onClick={() => {
                   setLabelerId(record.labeler_id);
-                  setReportModalOpen(true)
+                  setReportModalOpen(true);
                 }}
               >
                 举报
@@ -479,12 +489,15 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     <>
       <Spin spinning={refreshing} tip="任务列表加载中">
         <Spin spinning={loading} tip="Loading...">
-          <Modal open={autoCheckingModalOpen}
-            onCancel={() => { setAutoCheckingModalOpen(false) }}
+          <Modal
+            open={autoCheckingModalOpen}
+            onCancel={() => {
+              setAutoCheckingModalOpen(false);
+            }}
             footer={null}
             destroyOnClose
           >
-            <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+            <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
               自动审核
             </Typography>
             <Divider></Divider>
@@ -492,13 +505,16 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               name="basic"
               initialValues={{ remember: true }}
               onFinish={(values) => {
-                setLoading(true)
+                setLoading(true);
                 auto_check(detail.task_id, values.credits, values.accuracy);
-                setAutoCheckingModalOpen(false)
+                setAutoCheckingModalOpen(false);
               }}
             >
               <p>我们将根据您创建任务时上传的带标注数据对标注方的标注进行自动审核。</p>
-              <p><b>注：</b>为了审核结果的可靠性，请您在自动审核时指定一个信用分标准，对于信用分低于此标准的标注者，我们不会进行自动审核。</p>
+              <p>
+                <b>注：</b>
+                为了审核结果的可靠性，请您在自动审核时指定一个信用分标准，对于信用分低于此标准的标注者，我们不会进行自动审核。
+              </p>
               <p>如果您不想考虑信用分，希望对所有标注方都进行自动审核，请将该标准设置为0。</p>
               <Form.Item
                 name="credits"
@@ -577,12 +593,15 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             destroyOnClose
             centered
           >
-            <Modal open={reportModalOpen}
-              onCancel={() => { setReportModalOpen(false) }}
+            <Modal
+              open={reportModalOpen}
+              onCancel={() => {
+                setReportModalOpen(false);
+              }}
               footer={null}
               destroyOnClose
             >
-              <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+              <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
                 举报
               </Typography>
               <Divider></Divider>
@@ -590,14 +609,21 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 name="basic"
                 initialValues={{ remember: true }}
                 onFinish={(values) => {
-                  const image_url = values.image_description.map((image: any) => image.response?.url);
-                  postReport(detail.task_id, labelerId, true, values.description, image_url)
+                  const image_url = values.image_description.map(
+                    (image: any) => image.response?.url
+                  );
+                  postReport(detail.task_id, labelerId, true, values.description, image_url);
                 }}
                 autoComplete="off"
               >
                 <p>如果您认为该标注者有恶意刷题等行为，欢迎您对该标注者进行举报。</p>
-                <p><b>注:</b> 请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分</p>
-                <p>请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高</p>
+                <p>
+                  <b>注:</b>{" "}
+                  请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分
+                </p>
+                <p>
+                  请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高
+                </p>
                 <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
                   <TextField
                     name="description"
@@ -609,7 +635,9 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                     multiline
                   />
                 </Form.Item>
-                <p>请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高</p>
+                <p>
+                  请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高
+                </p>
                 <Form.Item
                   name="image_description"
                   rules={[{ required: true, message: "请上传文件" }]}
@@ -619,7 +647,11 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                     return e?.fileList;
                   }}
                 >
-                  <Upload {...UploadPropsByType("image")} listType="picture-card" onPreview={handlePreview} >
+                  <Upload
+                    {...UploadPropsByType("image")}
+                    listType="picture-card"
+                    onPreview={handlePreview}
+                  >
                     <PlusOutlined style={{ fontSize: "24px" }} />
                   </Upload>
                 </Form.Item>
@@ -714,7 +746,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               </Panel>
             </Collapse>
           </Modal>
-          <Table columns={DemanderTaskTableColumns} dataSource={tasks} loading={refreshing} pagination={{ pageSize: 6 }}/>
+          <Table
+            columns={DemanderTaskTableColumns}
+            dataSource={tasks}
+            loading={refreshing}
+            pagination={{ pageSize: 6 }}
+          />
         </Spin>
       </Spin>
     </>

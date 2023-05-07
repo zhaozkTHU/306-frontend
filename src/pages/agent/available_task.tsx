@@ -25,8 +25,8 @@ interface AgentTaskInfo {
 const AgentAvailableTask = () => {
   const [tasks, setTasks] = useState<AgentTaskInfo[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(true);
-  const [labelerLists, setLabelerLists] = useState<AgentLabeler[]>([])
-  const [distributeModalOpen, setDistributeModalOpen] = useState<boolean>(false)
+  const [labelerLists, setLabelerLists] = useState<AgentLabeler[]>([]);
+  const [distributeModalOpen, setDistributeModalOpen] = useState<boolean>(false);
 
   const [detail, setDetail] = useState<AgentTaskInfo>({
     task_id: 1,
@@ -40,14 +40,14 @@ const AgentAvailableTask = () => {
     demander_id: 3,
     type: "intent",
     template: "TextClassification",
-  })
-  const [loading, setLoading] = useState<boolean>(false)
-  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false)
+  });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
   const fetchList = async () => {
     request("/api/agent_acquire_labeler_list", "GET")
       .then((response) => {
-        setLabelerLists(response.data.data)
+        setLabelerLists(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -55,12 +55,12 @@ const AgentAvailableTask = () => {
         } else {
           message.error("获取标注方列表失败，网络错误");
         }
-      })
-  }
+      });
+  };
   useEffect(() => {
     request("/api/agent_distribute", "GET")
       .then((response) => {
-        setTasks(response.data.data)
+        setTasks(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -68,27 +68,27 @@ const AgentAvailableTask = () => {
         } else {
           message.error("获取可分发任务失败，网络错误");
         }
-      })
+      });
     fetchList();
-    setRefreshing(false)
-  }, [refreshing])
+    setRefreshing(false);
+  }, [refreshing]);
 
-  const distribute = async(task_id: number, labeler: string[]) => {
+  const distribute = async (task_id: number, labeler: string[]) => {
     request("/api/agent_distribute", "POST", {
       task_id: task_id,
       labeler: labeler,
     })
-    .then(() => {
-      message.success("派发成功")
-    })
-    .catch((error) => {
-      if (error.response) {
-        message.error(`任务派发失败，${error.response.data.message}`);
-      } else {
-        message.error("任务派发失败，网络错误");
-      }
-    })
-  }
+      .then(() => {
+        message.success("派发成功");
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`任务派发失败，${error.response.data.message}`);
+        } else {
+          message.error("任务派发失败，网络错误");
+        }
+      });
+  };
 
   const TasksTableColumns: ColumnsType<any> = [
     {
@@ -96,7 +96,7 @@ const AgentAvailableTask = () => {
       dataIndex: "title",
       key: "title",
       align: "center",
-      width: "30%"
+      width: "30%",
     },
     {
       title: "任务模板",
@@ -105,10 +105,8 @@ const AgentAvailableTask = () => {
       align: "center",
       width: "30%",
       render: (template) => {
-        return (
-          mapEntemplate2Zhtemplate[template]
-        )
-      }
+        return mapEntemplate2Zhtemplate[template];
+      },
     },
     {
       title: "操作",
@@ -118,27 +116,48 @@ const AgentAvailableTask = () => {
       render: (_, record) => {
         return (
           <>
-            <Button type="link" onClick={() => {
-              setDetail(record)
-              setDetailModalOpen(true)
-            }}>查看</Button>
-            <Button type="link" onClick={() => {
-              downLoadZip(record.batch_file)
-            }}>下载</Button>
-            <Button type="link" onClick={() => {
-              setDetail(record)
-              setDistributeModalOpen(true)
-            }}>分发</Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setDetail(record);
+                setDetailModalOpen(true);
+              }}
+            >
+              查看
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                downLoadZip(record.batch_file);
+              }}
+            >
+              下载
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setDetail(record);
+                setDistributeModalOpen(true);
+              }}
+            >
+              分发
+            </Button>
           </>
-        )
-      }
-    }
-  ]
+        );
+      },
+    },
+  ];
 
   return (
     <>
-      <Modal open={detailModalOpen} onCancel={() => { setDetailModalOpen(false) }} footer={null}>
-        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+      <Modal
+        open={detailModalOpen}
+        onCancel={() => {
+          setDetailModalOpen(false);
+        }}
+        footer={null}
+      >
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           任务详情
         </Typography>
         <Descriptions bordered column={4}>
@@ -169,41 +188,44 @@ const AgentAvailableTask = () => {
         </Descriptions>
       </Modal>
 
-      <Modal open={distributeModalOpen} footer={null} onCancel={() => { setDistributeModalOpen(false) }} destroyOnClose>
-        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+      <Modal
+        open={distributeModalOpen}
+        footer={null}
+        onCancel={() => {
+          setDistributeModalOpen(false);
+        }}
+        destroyOnClose
+      >
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           分配任务
         </Typography>
-        <Divider/>
+        <Divider />
         <Form
           name="basic"
           initialValues={{ remember: true }}
           onFinish={(values) => {
-            setLoading(true)
-            distribute(detail.task_id, values.labeler)
-            setDistributeModalOpen(false)
+            setLoading(true);
+            distribute(detail.task_id, values.labeler);
+            setDistributeModalOpen(false);
           }}
           autoComplete="off"
         >
           <p>作为中介，您可以将该委托给您的任务分发给标注方，请在下面选择您要分发的标注方的名字</p>
-          <Form.Item
-            name="labeler"
-            rules={[
-              { required: true, message: "不能为空" },
-            ]}
-          >
-          <Select
-            size="large"
-            showSearch
-            mode="multiple"
-            allowClear
-            style={{ width: '100%' }}
-            placeholder="请选择要分配的标注方"
-            options={labelerLists.map((labeler) => {
-              return {
-              label: labeler.username,
-              value: labeler.username
-            }})}
-          />
+          <Form.Item name="labeler" rules={[{ required: true, message: "不能为空" }]}>
+            <Select
+              size="large"
+              showSearch
+              mode="multiple"
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="请选择要分配的标注方"
+              options={labelerLists.map((labeler) => {
+                return {
+                  label: labeler.username,
+                  value: labeler.username,
+                };
+              })}
+            />
           </Form.Item>
           <Button
             type="primary"
@@ -219,9 +241,9 @@ const AgentAvailableTask = () => {
           </Button>
         </Form>
       </Modal>
-      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing}/>
+      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing} />
     </>
-  )
-}
+  );
+};
 
-export default AgentAvailableTask
+export default AgentAvailableTask;

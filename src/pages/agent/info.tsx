@@ -1,7 +1,5 @@
-
-
 const AgentInfo = () => {
-    return <></>
-}
+  return <></>;
+};
 
-export default AgentInfo
+export default AgentInfo;

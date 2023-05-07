@@ -8,19 +8,19 @@ import Typography from "@mui/material/Typography";
 import { Grid, TextField } from "@mui/material";
 
 interface Report {
-  report_id: number,
-  reporter_id: number,
-  task_id: number,
-  user_id: number,
-  demander_post: boolean,
-  description: string,
-  image_description: string[]
+  report_id: number;
+  reporter_id: number;
+  task_id: number;
+  user_id: number;
+  demander_post: boolean;
+  description: string;
+  image_description: string[];
 }
 
 const AdministratorReport = () => {
-  const [refreshing, setRefreshing] = useState<boolean>(true)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [reportList, setReportList] = useState<Report[]>([])
+  const [refreshing, setRefreshing] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [reportList, setReportList] = useState<Report[]>([]);
   const [dealReportModalOpen, setDealReportModalOpen] = useState<boolean>(false);
   const [pass, setPass] = useState<boolean>(false);
   const [reportId, setReportId] = useState<number>(-1);
@@ -31,14 +31,14 @@ const AdministratorReport = () => {
     user_id: -1,
     demander_post: true,
     description: "",
-    image_description: []
-  })
+    image_description: [],
+  });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     request("/api/administrator/report", "GET")
       .then((reponse) => {
-        setReportList(reponse.data.report_list)
+        setReportList(reponse.data.report_list);
       })
       .catch((error) => {
         if (error.response) {
@@ -48,19 +48,24 @@ const AdministratorReport = () => {
         }
       })
       .finally(() => {
-        setRefreshing(false)
-      })
-  }, [refreshing])
+        setRefreshing(false);
+      });
+  }, [refreshing]);
 
-  const deal_report = async (report_id: number, pass: boolean, credits: number, description: string) => {
+  const deal_report = async (
+    report_id: number,
+    pass: boolean,
+    credits: number,
+    description: string
+  ) => {
     request("/api/administrator/report", "POST", {
       report_id: report_id,
       pass: pass,
       credits: credits,
-      description: description
+      description: description,
     })
       .then(() => {
-        message.success("处理成功")
+        message.success("处理成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -70,10 +75,10 @@ const AdministratorReport = () => {
         }
       })
       .finally(() => {
-        setLoading(false)
-        setRefreshing(true)
-      })
-  }
+        setLoading(false);
+        setRefreshing(true);
+      });
+  };
   const ReportTableColumns: ColumnsType<any> = [
     {
       title: "举报ID",
@@ -84,12 +89,17 @@ const AdministratorReport = () => {
       sorter: (a, b) => a.report_id - b.report_id,
       render: (id, record) => {
         return (
-          <Button type="link" onClick={() => {
-            setDetailModalOpen(true)
-            setDetail(record)
-          }}>{id}</Button>
-        )
-      }
+          <Button
+            type="link"
+            onClick={() => {
+              setDetailModalOpen(true);
+              setDetail(record);
+            }}
+          >
+            {id}
+          </Button>
+        );
+      },
     },
     {
       title: "举报者ID",
@@ -113,12 +123,12 @@ const AdministratorReport = () => {
         {
           text: "标注方",
           value: false,
-        }
+        },
       ],
       onFilter: (values, record) => record.demamder_post === values,
       render: (role) => {
-        return role ? "需求方" : "标注方"
-      }
+        return role ? "需求方" : "标注方";
+      },
     },
     {
       title: "被举报者ID",
@@ -137,28 +147,41 @@ const AdministratorReport = () => {
       render: (_, record) => {
         return (
           <>
-            <Button type="link" onClick={() => {
-              setPass(true)
-              setDealReportModalOpen(true)
-              setReportId(record.report_id)
-            }}>通过</Button>
-            <Button type="link" onClick={() => {
-              setPass(false)
-              setDealReportModalOpen(true)
-              setReportId(record.report_id)
-            }}>驳回</Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setPass(true);
+                setDealReportModalOpen(true);
+                setReportId(record.report_id);
+              }}
+            >
+              通过
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setPass(false);
+                setDealReportModalOpen(true);
+                setReportId(record.report_id);
+              }}
+            >
+              驳回
+            </Button>
           </>
-        )
-      }
-    }
-  ]
+        );
+      },
+    },
+  ];
   return (
     <>
-      <Modal open={dealReportModalOpen}
-        onCancel={() => { setDealReportModalOpen(false) }}
+      <Modal
+        open={dealReportModalOpen}
+        onCancel={() => {
+          setDealReportModalOpen(false);
+        }}
         footer={null}
       >
-        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           {pass ? "通过举报" : "驳回举报"}
         </Typography>
         <Divider></Divider>
@@ -166,8 +189,8 @@ const AdministratorReport = () => {
           name="basic"
           initialValues={{ remember: true }}
           onFinish={(values) => {
-            setLoading(true)
-            deal_report(reportId, pass, values.credits, values.description)
+            setLoading(true);
+            deal_report(reportId, pass, values.credits, values.description);
           }}
           autoComplete="off"
         >
@@ -225,22 +248,26 @@ const AdministratorReport = () => {
             确认
           </Button>
         </Form>
-
       </Modal>
       <Modal
         open={detailModalOpen}
-        onCancel={() => { setDetailModalOpen(false) }}
+        onCancel={() => {
+          setDetailModalOpen(false);
+        }}
         footer={null}
         title="举报详情"
       >
         <br />
-        <b>举报ID: {detail.report_id} <Divider type="vertical" /> 举报者ID: {detail.reporter_id} <Divider type="vertical" /> 被举报者ID: {detail.user_id}</b>
+        <b>
+          举报ID: {detail.report_id} <Divider type="vertical" /> 举报者ID: {detail.reporter_id}{" "}
+          <Divider type="vertical" /> 被举报者ID: {detail.user_id}
+        </b>
         <Divider />
         <p>举报者身份: {detail.demander_post ? "需求方" : "标注方"}</p>
         <p>举报者描述:</p>
         <p>{detail.description}</p>
         <p>图片证据:</p>
-        {detail.image_description.map((idx, url) =>
+        {detail.image_description.map((idx, url) => (
           <ImageFormatter key={idx}>
             <MyImage
               url={`${url}`}
@@ -253,11 +280,11 @@ const AdministratorReport = () => {
               width="100%"
             />
           </ImageFormatter>
-        )}
+        ))}
       </Modal>
       <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} />
     </>
-  )
+  );
 };
 
 export default AdministratorReport;
