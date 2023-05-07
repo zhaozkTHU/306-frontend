@@ -245,7 +245,7 @@ const AdministratorReport = () => {
         <p>图片证据:</p>
         <Row>
           {detail.image_description.map((idx, url) =>
-            <Col>
+            <Col key={idx}>
               <ImageFormatter key={idx}>
                 <MyImage
                   url={`${url}`}

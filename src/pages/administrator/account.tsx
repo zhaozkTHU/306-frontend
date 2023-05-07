@@ -1,6 +1,5 @@
 import { mapLevel2Zh, mapRole2En } from "@/const/interface";
 import { request } from "@/utils/network";
-import { transTime } from "@/utils/valid";
 import Typography from "@mui/material/Typography";
 import { Button, Tag, message, Table, Modal, Divider, Descriptions } from "antd";
 import { ColumnsType } from "antd/es/table"
