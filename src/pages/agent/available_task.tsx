@@ -73,21 +73,25 @@ const AgentAvailableTask = () => {
     setRefreshing(false)
   }, [refreshing])
 
-  const distribute = async(task_id: number, labeler: string[]) => {
+  const distribute = async (task_id: number, labeler: string[]) => {
     request("/api/agent_distribute", "POST", {
       task_id: task_id,
       labeler: labeler,
     })
-    .then(() => {
-      message.success("派发成功")
-    })
-    .catch((error) => {
-      if (error.response) {
-        message.error(`任务派发失败，${error.response.data.message}`);
-      } else {
-        message.error("任务派发失败，网络错误");
-      }
-    })
+      .then(() => {
+        message.success("派发成功")
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`任务派发失败，${error.response.data.message}`);
+        } else {
+          message.error("任务派发失败，网络错误");
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+        setRefreshing(true);
+      })
   }
 
   const TasksTableColumns: ColumnsType<any> = [
@@ -173,7 +177,7 @@ const AgentAvailableTask = () => {
         <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
           分配任务
         </Typography>
-        <Divider/>
+        <Divider />
         <Form
           name="basic"
           initialValues={{ remember: true }}
@@ -191,19 +195,20 @@ const AgentAvailableTask = () => {
               { required: true, message: "不能为空" },
             ]}
           >
-          <Select
-            size="large"
-            showSearch
-            mode="multiple"
-            allowClear
-            style={{ width: '100%' }}
-            placeholder="请选择要分配的标注方"
-            options={labelerLists.map((labeler) => {
-              return {
-              label: labeler.username,
-              value: labeler.username
-            }})}
-          />
+            <Select
+              size="large"
+              showSearch
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="请选择要分配的标注方，支持搜索"
+              options={labelerLists.map((labeler) => {
+                return {
+                  label: labeler.username,
+                  value: labeler.username
+                }
+              })}
+            />
           </Form.Item>
           <Button
             type="primary"
@@ -219,7 +224,7 @@ const AgentAvailableTask = () => {
           </Button>
         </Form>
       </Modal>
-      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing}/>
+      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} />
     </>
   )
 }

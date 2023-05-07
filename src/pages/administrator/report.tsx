@@ -1,5 +1,5 @@
 import { ColumnsType } from "antd/es/table";
-import { Button, Divider, Form, Modal, Table, message } from "antd";
+import { Button, Col, Divider, Form, Modal, Row, Table, message } from "antd";
 import { useEffect, useState } from "react";
 import MyImage from "@/components/my-img";
 import ImageFormatter from "@/components/image-formatter";
@@ -225,7 +225,6 @@ const AdministratorReport = () => {
             确认
           </Button>
         </Form>
-
       </Modal>
       <Modal
         open={detailModalOpen}
@@ -240,20 +239,24 @@ const AdministratorReport = () => {
         <p>举报者描述:</p>
         <p>{detail.description}</p>
         <p>图片证据:</p>
-        {detail.image_description.map((idx, url) =>
-          <ImageFormatter key={idx}>
-            <MyImage
-              url={`${url}`}
-              style={{
-                objectFit: "contain",
-                objectPosition: "center center",
-              }}
-              alt="图片加载失败"
-              height="100%"
-              width="100%"
-            />
-          </ImageFormatter>
-        )}
+        <Row>
+          {detail.image_description.map((idx, url) =>
+            <Col>
+              <ImageFormatter key={idx}>
+                <MyImage
+                  url={`${url}`}
+                  style={{
+                    objectFit: "contain",
+                    objectPosition: "center center",
+                  }}
+                  alt="图片加载失败"
+                  height="100%"
+                  width="100%"
+                />
+              </ImageFormatter>
+            </Col>
+          )}
+        </Row>
       </Modal>
       <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} />
     </>
