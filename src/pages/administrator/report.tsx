@@ -6,13 +6,15 @@ import ImageFormatter from "@/components/image-formatter";
 import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
 import { Grid, TextField } from "@mui/material";
+import { mapRole2En } from "@/const/interface";
 
 interface Report {
   report_id: number,
   reporter_id: number,
   task_id: number,
   user_id: number,
-  demander_post: boolean,
+  reporter_role: string,
+  reported_role: string,
   description: string,
   image_description: string[]
 }
@@ -29,9 +31,10 @@ const AdministratorReport = () => {
     reporter_id: -1,
     task_id: -1,
     user_id: -1,
-    demander_post: true,
     description: "",
-    image_description: []
+    image_description: [],
+    reporter_role: "demander",
+    reported_role: "labeler",
   })
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
@@ -108,16 +111,16 @@ const AdministratorReport = () => {
       filters: [
         {
           text: "需求方",
-          value: true,
+          value: "demander",
         },
         {
           text: "标注方",
-          value: false,
-        }
+          value: "labeler",
+        },
       ],
-      onFilter: (values, record) => record.demamder_post === values,
+      onFilter: (values, record) => record.role === values,
       render: (role) => {
-        return role ? "需求方" : "标注方"
+        return mapRole2En[role]
       }
     },
     {
@@ -235,7 +238,8 @@ const AdministratorReport = () => {
         <br />
         <b>举报ID: {detail.report_id} <Divider type="vertical" /> 举报者ID: {detail.reporter_id} <Divider type="vertical" /> 被举报者ID: {detail.user_id}</b>
         <Divider />
-        <p>举报者身份: {detail.demander_post ? "需求方" : "标注方"}</p>
+        <p>举报者身份: {mapRole2En[detail.reporter_role]}</p>
+        <p>被举报者身份: {mapRole2En[detail.reported_role]}</p>
         <p>举报者描述:</p>
         <p>{detail.description}</p>
         <p>图片证据:</p>
@@ -258,7 +262,7 @@ const AdministratorReport = () => {
           )}
         </Row>
       </Modal>
-      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} />
+      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} pagination={{ pageSize: 6 }}/>
     </>
   )
 };

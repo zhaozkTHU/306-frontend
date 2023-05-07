@@ -56,6 +56,9 @@ const AgentAvailableTask = () => {
           message.error("获取标注方列表失败，网络错误");
         }
       })
+      .finally(() => {
+        setRefreshing(false);
+      })
   }
   useEffect(() => {
     request("/api/agent_distribute", "GET")
@@ -70,7 +73,6 @@ const AgentAvailableTask = () => {
         }
       })
     fetchList();
-    setRefreshing(false)
   }, [refreshing])
 
   const distribute = async (task_id: number, labeler: string[]) => {
@@ -224,7 +226,7 @@ const AgentAvailableTask = () => {
           </Button>
         </Form>
       </Modal>
-      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} />
+      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 8 }}/>
     </>
   )
 }

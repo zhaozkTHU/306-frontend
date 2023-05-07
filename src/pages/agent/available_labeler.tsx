@@ -179,7 +179,7 @@ const AgentAvailableLabeler = () => {
           </Descriptions.Item>
         </Descriptions>
       </Modal>
-      <Table columns={LabelerTableColumns} dataSource={labelerLists} loading={refreshing} pagination={{ pageSize: 5 }} />
+      <Table columns={LabelerTableColumns} dataSource={labelerLists} loading={refreshing} pagination={{ pageSize: 7 }} />
     </>
   )
 }
