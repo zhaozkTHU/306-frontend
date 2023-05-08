@@ -23,7 +23,7 @@ interface LabelerTask {
   title: string,
   template: string,
   reward: number,
-  task_data: any
+  task_data: any[]
 }
 
 const { Search } = Input;
@@ -185,7 +185,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             setReportModalOpen(true)
           }}>举报</Button>
           <Button type="link" onClick={() => {
-            setDetail(record)
+            setDetail({...record, task_data: JSON.parse(JSON.parse(record.task_data))})
             setProblemsModalOpen(true)
           }}>查看</Button>
         </>

@@ -406,14 +406,15 @@ const UserInfo = (props: UsersInfoProps) => {
                   </Tooltip>
                 </Col>
                 <Col>
-                  <Tooltip title="点击此处复制邀请码">
+                  <Tooltip title="点击此处复制邀请码，请确保您使用的是https连接。">
                     <Button
                       type="text"
                       size="small"
                       onClick={() => {
                         const invitecode = document.getElementById("invitecode");
                         const clipboardObj = navigator.clipboard;
-                        clipboardObj
+                        if(clipboardObj) {
+                          clipboardObj
                           .writeText(invitecode ? invitecode.innerText : "")
                           .then(() => {
                             message.success("复制成功");
@@ -421,6 +422,9 @@ const UserInfo = (props: UsersInfoProps) => {
                           .catch(() => {
                             message.error("复制失败，请稍后重试");
                           });
+                        } else {
+                          message.warning("复制失败，请确保您采用的是https安全连接")
+                        }
                       }}
                       icon={<ContentCopyIcon />}
                     />
