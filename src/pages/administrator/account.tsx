@@ -1,6 +1,5 @@
 import { mapLevel2Zh, mapRole2En } from "@/const/interface";
 import { request } from "@/utils/network";
-import { SearchOutlined } from "@ant-design/icons";
 import Typography from "@mui/material/Typography";
 import { Button, Tag, message, Table, Modal, Divider, Descriptions, Input, Space, InputRef } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -80,36 +79,6 @@ const AdministratorAccount = () => {
       align: "center",
       width: "25%",
       filtered: true,
-      filterDropdown: () => (
-        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`搜索用户名`}
-          value={searchText}
-          onChange={(e) => {setSearchText(e.target.value?e.target.value:"");}}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => {}}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            搜索
-          </Button>
-          <Button
-            onClick={() => {}}
-            size="small"
-            style={{ width: 90 }}
-          >
-            重置
-          </Button>
-        </Space>
-      </div>
-      ),
-      onFilter: (value, record) => searchText.indexOf(value.toString())===-1,
       render: (username, record) => {
         return (
           <Button
