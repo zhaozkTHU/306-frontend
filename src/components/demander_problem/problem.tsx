@@ -1,4 +1,4 @@
-import { Card, Checkbox, Col, Divider, Image, Radio, Row } from "antd";
+import { Checkbox, Col, Divider, Image, Radio, Row } from "antd";
 import CanvasImage from "../canvas_image/canvas-image";
 import ImageFormatter from "../image-formatter";
 import MyAudio from "../my-audio";

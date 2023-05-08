@@ -167,8 +167,7 @@ const AdministratorCheckTask = () => {
     },
   ];
   return (
-    <Spin spinning={refreshing} tip="加载中...">
-      <Spin spinning={loading} tip="加载中...">
+    <>
         <Modal
           open={denyModalOpen}
           footer={null}
@@ -295,9 +294,8 @@ const AdministratorCheckTask = () => {
             </Collapse>
           </>
         </Modal>
-        <Table columns={columns} dataSource={tasks} />
-      </Spin>
-    </Spin>
+        <Table columns={columns} dataSource={tasks} loading={refreshing||loading} pagination={{ pageSize: 6 }}/>
+        </>
   );
 };
 

@@ -54,10 +54,10 @@ const demanderItems: MenuItem[] = [
 ];
 
 const labelerItems: MenuItem[] = [
-  getItem("全部任务", "/labeler/all_task", <OrderedListOutlined />),
   getItem("新任务", "/labeler/new_task", <EditOutlined />),
   getItem("标注中", "/labeler/labeling", <MonitorOutlined />),
   getItem("审核中", "/labeler/checking", <QuestionCircleOutlined />),
+  getItem("审核未通过", "/labeler/failed", <ExclamationCircleOutlined />),
   getItem("已完成", "/labeler/completed", <CarryOutOutlined />),
   getItem("用户信息", "/labeler/info", <UserOutlined />),
 ];
@@ -178,7 +178,6 @@ const MyLayout = (props: MyLayoutProps) => {
             background: "#3b5999",
             height: "80px",
             width: "100%",
-            // position: "fixed",
             position: "sticky",
             top: 0,
             zIndex: 3,
@@ -321,7 +320,7 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        <Footer style={{ textAlign: "center"}}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
   );

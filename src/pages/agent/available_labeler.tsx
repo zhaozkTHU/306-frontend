@@ -1,7 +1,7 @@
 import { mapLevel2Zh, mapTag2Zh } from "@/const/interface";
 import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
-import { Button, Descriptions, Divider, Modal, Table, Tag, message } from "antd";
+import { Button, Descriptions, Divider, Modal, Table, Tag, Tooltip, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 
@@ -100,6 +100,17 @@ const AgentAvailableLabeler = () => {
       key: "credits",
       align: "center",
       width: "15%",
+      render:(credits) => {
+        return (
+          <>
+            <Tooltip title={credits>90?"该标注方信用分十分良好，推荐选择":(credits<80?"改标注方信用分不佳，请谨慎选择":"该标注方的信用分为一般水平")}>
+              <Tag
+                color={credits>90?"green":(credits<80?"red":"orange")}
+              >{credits}</Tag>
+            </Tooltip>
+          </>
+        )
+      },
       sorter: (a, b) => a.credits - b.credits,
     },
     {
@@ -180,12 +191,7 @@ const AgentAvailableLabeler = () => {
           </Descriptions.Item>
         </Descriptions>
       </Modal>
-      <Table
-        columns={LabelerTableColumns}
-        dataSource={labelerLists}
-        loading={refreshing}
-        pagination={{ pageSize: 5 }}
-      />
+      <Table columns={LabelerTableColumns} dataSource={labelerLists} loading={refreshing} pagination={{ pageSize: 7 }} />
     </>
   );
 };

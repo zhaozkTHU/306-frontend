@@ -1,9 +1,9 @@
 import { Button, Carousel, Col, Divider, Radio, RadioChangeEvent, Row, Spin } from "antd";
 import { message } from "antd/lib";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Problem from "../demander_problem/problem";
+import { request } from "@/utils/network";
 
 interface CheckModelProps {
   task_id: number;
@@ -32,12 +32,7 @@ const CheckModel = (props: CheckModelProps) => {
    *
    */
   useEffect(() => {
-    axios
-      .get(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+    request(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, "GET")
       .then((response) => {
         const newProblems: any[] = JSON.parse(response.data.label_data);
         const totalNumber = newProblems.length;
@@ -56,39 +51,16 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-        // props.setRefreshing(true);
       });
   }, [router, props.labeler_index, props.task_id]);
 
-  // useEffect(() => {
-  //   result = problems.slice();
-  //   const totalNumber = problems.length;
-  //   if (props.is_sample) {
-  //     for (let i = result.length - 1; i > 0; i--) {
-  //       const j = Math.floor(Math.random() * (i + 1));
-  //       [result[i], result[j]] = [result[j], result[i]];
-  //     }
-  //     result = result.slice(0, Math.ceil(totalNumber * props.rate / 100));
-  //   }
-  //   checkedNumber = result.length;
-  // }, [problems]);
-
   const postCheck = async (is_passed: boolean) => {
-    axios
-      .post(
-        "/api/checking",
-        {
-          task_id: props.task_id,
-          labeler_id: props.labeler_index,
-          is_passed: is_passed,
-          correct_number: props.is_sample ? undefined : passedNumber,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
+    request("/api/checking", "POST", {
+        task_id: props.task_id,
+        labeler_id: props.labeler_index,
+        is_passed: is_passed,
+        correct_number: props.is_sample ? undefined : passedNumber,
+    })
       .then(() => {
         message.success("审核结果提交成功");
         // props.setIsCheckModalOpen(false);

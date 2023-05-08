@@ -268,13 +268,14 @@ const UserInfo = (props: UsersInfoProps) => {
           </p>
         </Modal>
         <ProCard split="vertical">
-          <ProCard colSpan={"50%"}>
-            <Card hoverable>
-              <Row
-                style={{
-                  textAlign: "center",
-                }}
-              >
+          <ProCard colSpan={'50%'}>
+            <Card hoverable style={{
+              marginTop: props.role === "labeler" ? 0 : 50,
+              // boxShadow: "3px 3px 10px #00000038",
+            }}>
+              <Row style={{
+                textAlign: 'center'
+              }}>
                 <Col span={24}>
                   <Avatar
                     size={60}
@@ -432,14 +433,11 @@ const UserInfo = (props: UsersInfoProps) => {
             <Box sx={{ width: "100%" }}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                  <Tab label="排行榜" {...a11yProps(0)} />
-                  <Tab label="账户与充值" {...a11yProps(1)} />
+                  <Tab label="账户与充值" {...a11yProps(0)} />
+                  <Tab label="排行榜" {...a11yProps(1)} />
                 </Tabs>
               </Box>
               <TabPanel value={value} index={0}>
-                <div></div>
-              </TabPanel>
-              <TabPanel value={value} index={1}>
                 <Modal
                   open={isBoundModalOpen}
                   onCancel={() => {
@@ -543,18 +541,19 @@ const UserInfo = (props: UsersInfoProps) => {
                   </Form>
                 </Modal>
                 <Alert severity={info.is_bound ? "success" : "warning"}>
-                  该账号{info.is_bound ? "已" : "未"}绑定银行卡
-                  <Button
-                    type="link"
-                    size="small"
-                    onClick={() => {
-                      setIsBoundModalOpen(true);
-                    }}
-                  >
-                    点击此处绑定
-                  </Button>
+                  该账号{info.is_bound ? "已" : "未"}绑定{accountBalance.length == 3 ? "3张" : ""}银行卡{accountBalance.length == 3 ? "，无法继续绑定" : ""}
+                  {accountBalance.length == 3 ? <></> :
+                    <Button
+                      type="link"
+                      size="small"
+                      onClick={() => {
+                        setIsBoundModalOpen(true);
+                      }}
+                    >
+                      点击此处绑定
+                    </Button>
+                  }
                 </Alert>
-
                 <Card
                   title={"账户信息 "}
                   extra={
@@ -565,7 +564,7 @@ const UserInfo = (props: UsersInfoProps) => {
                       onClick={() => {
                         setVisible((i) => !i);
                       }}
-                      icon={visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      icon={<Tooltip title={visible ? "点击此处隐藏" : "点击此处显示"}>{visible ? <VisibilityOffIcon /> : <VisibilityIcon />}</Tooltip>}
                     />
                   }
                 >
@@ -768,6 +767,11 @@ const UserInfo = (props: UsersInfoProps) => {
                     ))}
                   </Box>
                 </Card>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <div>
+
+                </div>
               </TabPanel>
             </Box>
           </ProCard>
