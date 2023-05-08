@@ -1,5 +1,7 @@
+import LabelerTaskList from "@/components/task_list/labeler-task-list";
+
 const LabelerFailed = () => {
-    return <></>
-  };
-  
-  export default LabelerFailed;
+  return <LabelerTaskList state="rejected" />
+};
+
+export default LabelerFailed;

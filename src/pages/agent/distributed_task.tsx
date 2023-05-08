@@ -1,5 +1,5 @@
 const AgentDistributedTask = () => {
-  return <p>TODO</p>;
+  return ;
 };
 
 export default AgentDistributedTask;

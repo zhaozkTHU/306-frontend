@@ -1,9 +1,10 @@
 import { mapLevel2Zh, mapRole2En } from "@/const/interface";
 import { request } from "@/utils/network";
+import { SearchOutlined } from "@ant-design/icons";
 import Typography from "@mui/material/Typography";
-import { Button, Tag, message, Table, Modal, Divider, Descriptions } from "antd";
+import { Button, Tag, message, Table, Modal, Divider, Descriptions, Input, Space, InputRef } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UserDetail {
   username: string;
@@ -21,6 +22,7 @@ const AdministratorAccount = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [userList, setUserList] = useState<UserDetail[]>([]);
+  const searchInput = useRef<InputRef>(null);
   const [detail, setDetail] = useState<UserDetail>({
     username: "",
     invitecode: "",
@@ -33,6 +35,7 @@ const AdministratorAccount = () => {
     is_vip: false,
   });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>("");
   useEffect(() => {
     request("/api/administrator/user_info", "GET")
       .then((response) => {
@@ -76,6 +79,37 @@ const AdministratorAccount = () => {
       key: "username",
       align: "center",
       width: "25%",
+      filtered: true,
+      filterDropdown: () => (
+        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <Input
+          ref={searchInput}
+          placeholder={`搜索用户名`}
+          value={searchText}
+          onChange={(e) => {setSearchText(e.target.value?e.target.value:"");}}
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => {}}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            搜索
+          </Button>
+          <Button
+            onClick={() => {}}
+            size="small"
+            style={{ width: 90 }}
+          >
+            重置
+          </Button>
+        </Space>
+      </div>
+      ),
+      onFilter: (value, record) => searchText.indexOf(value.toString())===-1,
       render: (username, record) => {
         return (
           <Button

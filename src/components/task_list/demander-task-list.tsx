@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Space,
-  Spin,
   Modal,
   Descriptions,
   Collapse,
@@ -103,7 +102,6 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     request("/api/report", "POST", {
       task_id: task_id,
       user_id: user_id,
-      demander_post: demander_post,
       description: description,
       image_description: image_description,
     })
@@ -487,273 +485,269 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   }, [router, refreshing]);
   return (
     <>
-      <Spin spinning={refreshing} tip="任务列表加载中">
-        <Spin spinning={loading} tip="Loading...">
-          <Modal
-            open={autoCheckingModalOpen}
-            onCancel={() => {
-              setAutoCheckingModalOpen(false);
-            }}
-            footer={null}
-            destroyOnClose
+      <Modal
+        open={autoCheckingModalOpen}
+        onCancel={() => {
+          setAutoCheckingModalOpen(false);
+        }}
+        footer={null}
+        destroyOnClose
+      >
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+          自动审核
+        </Typography>
+        <Divider></Divider>
+        <Form
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={(values) => {
+            setLoading(true);
+            auto_check(detail.task_id, values.credits, values.accuracy);
+            setAutoCheckingModalOpen(false);
+          }}
+        >
+          <p>我们将根据您创建任务时上传的带标注数据对标注方的标注进行自动审核。</p>
+          <p>
+            <b>注：</b>
+            为了审核结果的可靠性，请您在自动审核时指定一个信用分标准，对于信用分低于此标准的标注者，我们不会进行自动审核。
+          </p>
+          <p>如果您不想考虑信用分，希望对所有标注方都进行自动审核，请将该标准设置为0。</p>
+          <Form.Item
+            name="credits"
+            rules={[
+              { required: true, message: "不能为空" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (value < 0) {
+                    return Promise.reject(new Error("信用分标准不能为负数"));
+                  }
+                  if (value > 100) {
+                    return Promise.reject(new Error("信用分标准不能超过100"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
           >
-            <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-              自动审核
-            </Typography>
-            <Divider></Divider>
-            <Form
-              name="basic"
-              initialValues={{ remember: true }}
-              onFinish={(values) => {
-                setLoading(true);
-                auto_check(detail.task_id, values.credits, values.accuracy);
-                setAutoCheckingModalOpen(false);
-              }}
-            >
-              <p>我们将根据您创建任务时上传的带标注数据对标注方的标注进行自动审核。</p>
-              <p>
-                <b>注：</b>
-                为了审核结果的可靠性，请您在自动审核时指定一个信用分标准，对于信用分低于此标准的标注者，我们不会进行自动审核。
-              </p>
-              <p>如果您不想考虑信用分，希望对所有标注方都进行自动审核，请将该标准设置为0。</p>
-              <Form.Item
-                name="credits"
-                rules={[
-                  { required: true, message: "不能为空" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value < 0) {
-                        return Promise.reject(new Error("信用分标准不能为负数"));
-                      }
-                      if (value > 100) {
-                        return Promise.reject(new Error("信用分标准不能超过100"));
-                      }
-                      return Promise.resolve();
-                    },
-                  }),
-                ]}
-              >
-                <TextField
-                  name="credits"
-                  fullWidth
-                  id="credits"
-                  label="信用分标准"
-                  autoFocus
-                  type="number"
-                />
-              </Form.Item>
-              <p>您还需要指定正确率标准，高于此标准的标注将会通过审核，否则不通过审核。</p>
-              <Form.Item
-                name="accuracy"
-                rules={[
-                  { required: true, message: "不能为空" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value < 0) {
-                        return Promise.reject(new Error("正确率标准不能为负数"));
-                      }
-                      if (value > 100) {
-                        return Promise.reject(new Error("正确率标准不能超过100"));
-                      }
-                      return Promise.resolve();
-                    },
-                  }),
-                ]}
-              >
-                <TextField
-                  name="accuracy"
-                  fullWidth
-                  id="accuracy"
-                  label="正确率标准"
-                  autoFocus
-                  type="number"
-                />
-              </Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                block
-                size="large"
-                style={{
-                  backgroundColor: "#3b5999",
-                  marginBottom: "5px",
-                }}
-              >
-                确认
-              </Button>
-            </Form>
-          </Modal>
-          <Modal
-            open={isDetailModalOpen}
-            onCancel={() => {
-              setIsDetailModalOpen(false);
-            }}
-            footer={null}
-            width={"80%"}
-            destroyOnClose
-            centered
-          >
-            <Modal
-              open={reportModalOpen}
-              onCancel={() => {
-                setReportModalOpen(false);
-              }}
-              footer={null}
-              destroyOnClose
-            >
-              <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-                举报
-              </Typography>
-              <Divider></Divider>
-              <Form
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={(values) => {
-                  const image_url = values.image_description.map(
-                    (image: any) => image.response?.url
-                  );
-                  postReport(detail.task_id, labelerId, true, values.description, image_url);
-                }}
-                autoComplete="off"
-              >
-                <p>如果您认为该标注者有恶意刷题等行为，欢迎您对该标注者进行举报。</p>
-                <p>
-                  <b>注:</b>{" "}
-                  请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分
-                </p>
-                <p>
-                  请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高
-                </p>
-                <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
-                  <TextField
-                    name="description"
-                    fullWidth
-                    id="description"
-                    label="原因说明"
-                    autoFocus
-                    type="description"
-                    multiline
-                  />
-                </Form.Item>
-                <p>
-                  请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高
-                </p>
-                <Form.Item
-                  name="image_description"
-                  rules={[{ required: true, message: "请上传文件" }]}
-                  valuePropName="fileList"
-                  getValueFromEvent={(e) => {
-                    console.log(e);
-                    return e?.fileList;
-                  }}
-                >
-                  <Upload
-                    {...UploadPropsByType("image")}
-                    listType="picture-card"
-                    onPreview={handlePreview}
-                  >
-                    <PlusOutlined style={{ fontSize: "24px" }} />
-                  </Upload>
-                </Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  block
-                  size="large"
-                  style={{
-                    backgroundColor: "#3b5999",
-                    marginBottom: "5px",
-                  }}
-                >
-                  发布举报
-                </Button>
-                <Modal
-                  open={previewOpen}
-                  title={previewTitle}
-                  footer={null}
-                  onCancel={() => setPreviewOpen(false)}
-                >
-                  <Image alt="image" style={{ width: "100%" }} src={previewImage} />
-                </Modal>
-              </Form>
-            </Modal>
-            <Modal
-              open={isCheckModalOpen}
-              onCancel={() => {
-                setIsCheckModalOpen(false);
-              }}
-              footer={null}
-              destroyOnClose
-              centered
-            >
-              <CheckModel
-                task_id={detail.task_id}
-                labeler_index={labelerId}
-                is_sample={isSample}
-                template={detail.template}
-                rate={slideValue}
-                setIsLabelerList={setLoading}
-              />
-            </Modal>
-            {detail.pass_check ? <></> : <Alert severity="warning">该任务尚未通过管理员审核</Alert>}
-            <h3>任务详情</h3>
-            <Descriptions bordered column={4}>
-              <Descriptions.Item label="标题" span={4}>
-                {detail.title}
-              </Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={2}>
-                {transTime(detail.create_at)}
-              </Descriptions.Item>
-              <Descriptions.Item label="截止时间" span={2}>
-                {transTime(detail.deadline)}
-              </Descriptions.Item>
-              <Descriptions.Item label="模板" span={2}>
-                {mapEntemplate2Zhtemplate[detail.template]}
-              </Descriptions.Item>
-              <Descriptions.Item label="状态" span={2}>
-                <Space size={[0, 8]} wrap>
-                  {detail.state.map((s: string, idx: number) => (
-                    <Tag color={mapState2ColorChinese[s].color} key={idx}>
-                      {mapState2ColorChinese[s].description}
-                    </Tag>
-                  ))}
-                </Space>
-              </Descriptions.Item>
-              <Descriptions.Item label="要求标注方人数" span={1}>
-                {detail.labeler_number}
-              </Descriptions.Item>
-              <Descriptions.Item label="单题奖励" span={1}>
-                {detail.reward}
-              </Descriptions.Item>
-              <Descriptions.Item label="单题限时" span={1}>
-                {detail.time}秒
-              </Descriptions.Item>
-            </Descriptions>
-            <h3>标注者信息</h3>
-            <Table
-              columns={LabelerTableColumns}
-              dataSource={detail.labeler_id.map((id, idx) => {
-                return {
-                  labeler_id: id,
-                  labeler_state: detail.label_state[idx],
-                };
-              })}
+            <TextField
+              name="credits"
+              fullWidth
+              id="credits"
+              label="信用分标准"
+              autoFocus
+              type="number"
             />
-            <h3>题目详情</h3>
-            <Collapse>
-              <Panel key={""} header={"点击此处查看题目详情，尚未分发的任务可以更改题目内容"}>
-                <UpdateTask taskId={detail.task_id} />
-              </Panel>
-            </Collapse>
-          </Modal>
-          <Table
-            columns={DemanderTaskTableColumns}
-            dataSource={tasks}
-            loading={refreshing}
-            pagination={{ pageSize: 6 }}
+          </Form.Item>
+          <p>您还需要指定正确率标准，高于此标准的标注将会通过审核，否则不通过审核。</p>
+          <Form.Item
+            name="accuracy"
+            rules={[
+              { required: true, message: "不能为空" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (value < 0) {
+                    return Promise.reject(new Error("正确率标准不能为负数"));
+                  }
+                  if (value > 100) {
+                    return Promise.reject(new Error("正确率标准不能超过100"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <TextField
+              name="accuracy"
+              fullWidth
+              id="accuracy"
+              label="正确率标准"
+              autoFocus
+              type="number"
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              marginBottom: "5px",
+            }}
+          >
+            确认
+          </Button>
+        </Form>
+      </Modal>
+      <Modal
+        open={isDetailModalOpen}
+        onCancel={() => {
+          setIsDetailModalOpen(false);
+        }}
+        footer={null}
+        width={"80%"}
+        destroyOnClose
+        centered
+      >
+        <Modal
+          open={reportModalOpen}
+          onCancel={() => {
+            setReportModalOpen(false);
+          }}
+          footer={null}
+          destroyOnClose
+        >
+          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+            举报
+          </Typography>
+          <Divider></Divider>
+          <Form
+            name="basic"
+            initialValues={{ remember: true }}
+            onFinish={(values) => {
+              const image_url = values.image_description.map(
+                (image: any) => image.response?.url
+              );
+              postReport(detail.task_id, labelerId, true, values.description, image_url);
+            }}
+            autoComplete="off"
+          >
+            <p>如果您认为该标注者有恶意刷题等行为，欢迎您对该标注者进行举报。</p>
+            <p>
+              <b>注:</b>{" "}
+              请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分
+            </p>
+            <p>
+              请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高
+            </p>
+            <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
+              <TextField
+                name="description"
+                fullWidth
+                id="description"
+                label="原因说明"
+                autoFocus
+                type="description"
+                multiline
+              />
+            </Form.Item>
+            <p>
+              请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高
+            </p>
+            <Form.Item
+              name="image_description"
+              rules={[{ required: true, message: "请上传文件" }]}
+              valuePropName="fileList"
+              getValueFromEvent={(e) => {
+                console.log(e);
+                return e?.fileList;
+              }}
+            >
+              <Upload
+                {...UploadPropsByType("image")}
+                listType="picture-card"
+                onPreview={handlePreview}
+              >
+                <PlusOutlined style={{ fontSize: "24px" }} />
+              </Upload>
+            </Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              style={{
+                backgroundColor: "#3b5999",
+                marginBottom: "5px",
+              }}
+            >
+              发布举报
+            </Button>
+            <Modal
+              open={previewOpen}
+              title={previewTitle}
+              footer={null}
+              onCancel={() => setPreviewOpen(false)}
+            >
+              <Image alt="image" style={{ width: "100%" }} src={previewImage} />
+            </Modal>
+          </Form>
+        </Modal>
+        <Modal
+          open={isCheckModalOpen}
+          onCancel={() => {
+            setIsCheckModalOpen(false);
+          }}
+          footer={null}
+          destroyOnClose
+          centered
+        >
+          <CheckModel
+            task_id={detail.task_id}
+            labeler_index={labelerId}
+            is_sample={isSample}
+            template={detail.template}
+            rate={slideValue}
+            setIsLabelerList={setLoading}
           />
-        </Spin>
-      </Spin>
+        </Modal>
+        {detail.pass_check ? <></> : <Alert severity="warning">该任务尚未通过管理员审核</Alert>}
+        <h3>任务详情</h3>
+        <Descriptions bordered column={4}>
+          <Descriptions.Item label="标题" span={4}>
+            {detail.title}
+          </Descriptions.Item>
+          <Descriptions.Item label="创建时间" span={2}>
+            {transTime(detail.create_at)}
+          </Descriptions.Item>
+          <Descriptions.Item label="截止时间" span={2}>
+            {transTime(detail.deadline)}
+          </Descriptions.Item>
+          <Descriptions.Item label="模板" span={2}>
+            {mapEntemplate2Zhtemplate[detail.template]}
+          </Descriptions.Item>
+          <Descriptions.Item label="状态" span={2}>
+            <Space size={[0, 8]} wrap>
+              {detail.state.map((s: string, idx: number) => (
+                <Tag color={mapState2ColorChinese[s].color} key={idx}>
+                  {mapState2ColorChinese[s].description}
+                </Tag>
+              ))}
+            </Space>
+          </Descriptions.Item>
+          <Descriptions.Item label="要求标注方人数" span={1}>
+            {detail.labeler_number}
+          </Descriptions.Item>
+          <Descriptions.Item label="单题奖励" span={1}>
+            {detail.reward}
+          </Descriptions.Item>
+          <Descriptions.Item label="单题限时" span={1}>
+            {detail.time}秒
+          </Descriptions.Item>
+        </Descriptions>
+        <h3>标注者信息</h3>
+        <Table
+          columns={LabelerTableColumns}
+          dataSource={detail.labeler_id.map((id, idx) => {
+            return {
+              labeler_id: id,
+              labeler_state: detail.label_state[idx],
+            };
+          })}
+        />
+        <h3>题目详情</h3>
+        <Collapse>
+          <Panel key={""} header={"点击此处查看题目详情，尚未分发的任务可以更改题目内容"}>
+            <UpdateTask taskId={detail.task_id} />
+          </Panel>
+        </Collapse>
+      </Modal>
+      <Table
+        columns={DemanderTaskTableColumns}
+        dataSource={tasks}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 6 }}
+      />
     </>
   );
 };

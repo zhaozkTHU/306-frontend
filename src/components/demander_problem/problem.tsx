@@ -6,34 +6,31 @@ import MyImage from "../my-img";
 import MyVideo from "../my-video";
 
 interface ProbelmProps {
+  total: number;
   problem: any;
   index: number;
-  template: string;
-  showto: string;
 }
 
 const Problem = (props: ProbelmProps) => {
   let problemContent;
-  if (props.template == "TextClassification") {
+  if (props.problem.template == "TextClassification") {
     const selected: string[] = [];
-    if (props.showto == "demander") {
-      for (let i = 0; i < props.problem.options.length; i++) {
-        if (props.problem.chosen[i]) {
-          selected.push(props.problem.options[i]);
-        }
+    for (let i = 0; i < props.problem.options.length; i++) {
+      if (props.problem.chosen[i]) {
+        selected.push(props.problem.options[i]);
       }
     }
     problemContent = (
       <Checkbox.Group options={props.problem.options} defaultValue={selected} disabled={true} />
     );
-  } else if (props.template == "ImagesClassification") {
+  } else if (props.problem.template == "ImagesClassification") {
     problemContent = (
       <Image.PreviewGroup>
         <Row wrap={true}>
           {props.problem.options.map((option: string, index: number) => (
             <Col key={index}>
               <Checkbox
-                defaultChecked={props.showto == "demander" ? props.problem.chosen[index] : false}
+                defaultChecked={props.problem.chosen[index]}
                 disabled={true}
               >
                 <ImageFormatter>
@@ -43,7 +40,7 @@ const Problem = (props: ProbelmProps) => {
                       objectFit: "contain",
                       objectPosition: "center center",
                     }}
-                    alt="图片加载失败"
+                    alt="图片加载中，若长时间无反应请刷新重试"
                     height="100%"
                     width="100%"
                   />
@@ -54,45 +51,46 @@ const Problem = (props: ProbelmProps) => {
         </Row>
       </Image.PreviewGroup>
     );
-  } else if (props.template == "FaceTag") {
+  } else if (props.problem.template == "FaceTag") {
     problemContent = (
       <CanvasImage
-        data={props.problem.data ? props.problem.data : []}
+        data={props.problem.data}
         src={props.problem.url}
         type="point"
       />
     );
-  } else if (props.template == "ImageFrame") {
+  } else if (props.problem.template == "ImageFrame") {
     problemContent = (
       <CanvasImage
-        data={props.problem.data ? props.problem.data : []}
+        data={props.problem.data}
         src={props.problem.url}
         type="rectangle"
       />
     );
-  } else if (props.template == "SoundTag") {
+  } else if (props.problem.template == "SoundTag") {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
         <Divider />
         <Radio.Group
-          value={props.problem.data ? props.problem.data.choiceIndex : null}
+          value={props.problem.data.choiceIndex}
           disabled={true}
         >
           {props.problem.choice.map((ch: any, idx: number) => (
             <Radio value={idx} key={idx}>
-              <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
-              <p>
+              <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
+              <Divider type="vertical" />
+              <>
                 {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
                   ? `标注方输入: ${props.problem.data.input}`
                   : "无输入"}
-              </p>
+              </>
             </Radio>
           ))}
         </Radio.Group>
       </>
     );
-  } else if (props.template == "VideoTag") {
+  } else if (props.problem.template == "VideoTag") {
     problemContent = (
       <>
         <MyVideo
@@ -104,7 +102,7 @@ const Problem = (props: ProbelmProps) => {
         />
         <Divider />
         <Radio.Group
-          value={props.problem.data ? props.problem.data.choiceIndex : null}
+          value={props.problem.data.choiceIndex}
           disabled={true}
         >
           {props.problem.choice.map((ch: any, idx: number) => (
@@ -120,7 +118,7 @@ const Problem = (props: ProbelmProps) => {
         </Radio.Group>
       </>
     );
-  } else if (props.template == "TextReview") {
+  } else if (props.problem.template == "TextReview") {
     problemContent = (
       <>
         <p>{props.problem.content}</p>
@@ -130,7 +128,7 @@ const Problem = (props: ProbelmProps) => {
         </Radio.Group>
       </>
     );
-  } else if (props.template == "ImageReview") {
+  } else if (props.problem.template == "ImageReview") {
     problemContent = (
       <>
         <ImageFormatter>
@@ -151,7 +149,7 @@ const Problem = (props: ProbelmProps) => {
         </Radio.Group>
       </>
     );
-  } else if (props.template == "VideoReview") {
+  } else if (props.problem.template == "VideoReview") {
     problemContent = (
       <>
         <MyVideo
@@ -168,7 +166,7 @@ const Problem = (props: ProbelmProps) => {
         </Radio.Group>
       </>
     );
-  } else if (props.template == "AudioReview") {
+  } else if (props.problem.template == "AudioReview") {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
@@ -179,15 +177,17 @@ const Problem = (props: ProbelmProps) => {
         </Radio.Group>
       </>
     );
+  } else {
+    problemContent = (
+      <>Error Task Template</>
+    )
   }
   return (
     <>
-      {/* <Card title={`题目${props.index + 1}`}> */}
       <h3>
-        第{props.index + 1}题: {props.problem.description}
+        第{props.index + 1}/{props.total}题: {props.problem.description}
       </h3>
       {problemContent}
-      {/* </Card> */}
     </>
   );
 };

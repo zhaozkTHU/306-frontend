@@ -1,5 +1,5 @@
 import CheckModel from "@/components/check/checkModel";
-import { DemanderTaskTableEntry } from "@/components/demander_task_list/demander-task-list";
+import { DemanderTaskTableEntry } from "@/components/task_list/demander-task-list";
 import { add } from "@/components/task_manage/deleteList";
 import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
 import { request } from "@/utils/network";

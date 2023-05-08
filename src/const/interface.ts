@@ -210,6 +210,11 @@ export const mapEntemplate2Zhtemplate: EnEntemplateZhtemplate = {
   ImageFrame: "图片框选",
   SoundTag: "音频标注",
   VideoTag: "视频标注",
+  TextReview: "文本审核",
+  ImageReview: "图片审核",
+  VideoReview: "视频审核",
+  AudioReview: "音频审核",
+  Custom: "自定义模板",
 };
 
 type Role2En = {

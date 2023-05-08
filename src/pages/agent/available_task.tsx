@@ -201,6 +201,7 @@ const AgentAvailableTask = () => {
           setDistributeModalOpen(false);
         }}
         destroyOnClose
+        maskClosable={false}
       >
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           分配任务
