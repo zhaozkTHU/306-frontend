@@ -1,6 +1,6 @@
 import { translateUrl } from "@/utils/valid";
 import { useRef, useEffect, useState } from "react";
-import { Image } from "antd";
+import { Image, Spin } from "antd";
 import ImageFormatter from "../image-formatter";
 
 interface CanvasImageProps {
@@ -49,14 +49,15 @@ const CanvasImage = (props: CanvasImageProps) => {
       <ImageFormatter>
         <Image
           src={imageUrl}
-          alt="加载图片失败"
+          // alt="图片加载中，长时间无反应请刷新"
           width={"100%"}
           height={"100%"}
           style={{
             objectFit: "contain",
             objectPosition: "center center",
           }}
-          placeholder
+          placeholder = {<>ndiuehndiu</>}
+          loading="lazy"
         />
       </ImageFormatter>
     </>

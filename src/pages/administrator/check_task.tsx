@@ -1,12 +1,11 @@
 import { mapEntemplate2Zhtemplate, TaskInfo } from "@/const/interface";
-import { Button, Collapse, Descriptions, Divider, Form, message, Modal, Spin } from "antd";
+import { Button, Collapse, Descriptions, Divider, Form, message, Modal, Spin, Tooltip } from "antd";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { Table } from "antd/lib";
 import { transTime } from "@/utils/valid";
-import Problem from "@/components/demander_problem/problem";
-import { request } from "@/utils/network";
+import { downLoadZip, request } from "@/utils/network";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -81,8 +80,6 @@ const AdministratorCheckTask = () => {
         setRefreshing(true);
       });
   };
-
-  const { Panel } = Collapse;
   const columns: ColumnsType<any> = [
     {
       title: "标题",
@@ -162,123 +159,130 @@ const AdministratorCheckTask = () => {
           >
             不通过
           </Button>
+          <Tooltip title="点击此处下载题目文件">
+            <Button type="link" onClick={() => {
+              downLoadZip(record.batch_file)
+            }}>
+              下载
+            </Button>
+          </Tooltip>
         </>
       ),
     },
   ];
   return (
     <>
-        <Modal
-          open={denyModalOpen}
-          footer={null}
-          onCancel={() => setDenyModalOpen(false)}
-          destroyOnClose
+      <Modal
+        open={denyModalOpen}
+        footer={null}
+        onCancel={() => setDenyModalOpen(false)}
+        destroyOnClose
+      >
+        <Typography component="h1" variant="h5">
+          扣除信用分和原因说明
+        </Typography>
+        <Divider></Divider>
+        <Form
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={(values) => {
+            setLoading(true);
+            postCheckTask(taskId, false, values.credits, values.message);
+          }}
+          autoComplete="off"
         >
-          <Typography component="h1" variant="h5">
-            扣除信用分和原因说明
-          </Typography>
-          <Divider></Divider>
-          <Form
-            name="basic"
-            initialValues={{ remember: true }}
-            onFinish={(values) => {
-              setLoading(true);
-              postCheckTask(taskId, false, values.credits, values.message);
-            }}
-            autoComplete="off"
-          >
-            <Grid item xs={24} sm={12}>
-              <p>管理员可以对审核不通过的任务扣除信用分</p>
-              <Form.Item
-                name="credits"
-                rules={[
-                  { required: true, message: "不能为空" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value < 0) {
-                        return Promise.reject(new Error("扣除的信用分不能为负数"));
-                      }
-                      if (value > 100) {
-                        return Promise.reject(new Error("扣除的信用分不能超过100"));
-                      }
-                      return Promise.resolve();
-                    },
-                  }),
-                ]}
-              >
-                <TextField
-                  name="credits"
-                  fullWidth
-                  id="credits"
-                  label="扣除的信用分"
-                  autoFocus
-                  type="number"
-                />
-              </Form.Item>
-              <p>管理员需要对审核不通过的原因进行说明</p>
-              <Form.Item name="message" rules={[{ required: true, message: "原因不能为空" }]}>
-                <TextField
-                  name="message"
-                  fullWidth
-                  id="message"
-                  label="原因说明"
-                  autoFocus
-                  type="message"
-                  multiline
-                />
-              </Form.Item>
-            </Grid>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              size="large"
-              style={{
-                backgroundColor: "#3b5999",
-                marginBottom: "5px",
-              }}
+          <Grid item xs={24} sm={12}>
+            <p>管理员可以对审核不通过的任务扣除信用分</p>
+            <Form.Item
+              name="credits"
+              rules={[
+                { required: true, message: "不能为空" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (value < 0) {
+                      return Promise.reject(new Error("扣除的信用分不能为负数"));
+                    }
+                    if (value > 100) {
+                      return Promise.reject(new Error("扣除的信用分不能超过100"));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
             >
-              确认
-            </Button>
-          </Form>
-        </Modal>
-        <Modal
-          open={taskDetailModalOpen}
-          onCancel={() => setTaskDetailModalOpen(false)}
-          footer={null}
-          width={"80%"}
-          centered
-          destroyOnClose
-        >
-          <>
-            <h3>基本信息</h3>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label="标题" span={2}>
-                {taskDetail.title}
-              </Descriptions.Item>
-              <Descriptions.Item label="创建时间" span={1}>
-                {transTime(taskDetail.create_at)}
-              </Descriptions.Item>
-              <Descriptions.Item label="截止时间" span={1}>
-                {transTime(taskDetail.deadline)}
-              </Descriptions.Item>
-              <Descriptions.Item label="创建人ID" span={1}>
-                {taskDetail.demander_id}
-              </Descriptions.Item>
-              <Descriptions.Item label="模板" span={1}>
-                {mapEntemplate2Zhtemplate[taskDetail.template]}
-              </Descriptions.Item>
-              <Descriptions.Item label="单题奖励" span={1}>
-                {taskDetail.reward}
-              </Descriptions.Item>
-              <Descriptions.Item label="单题限时" span={1}>
-                {taskDetail.time}
-              </Descriptions.Item>
-              <Descriptions.Item label="标注者人数" span={1}>
-                {taskDetail.labeler_number}
-              </Descriptions.Item>
-            </Descriptions>
-            <h3>题目详情</h3>
+              <TextField
+                name="credits"
+                fullWidth
+                id="credits"
+                label="扣除的信用分"
+                autoFocus
+                type="number"
+              />
+            </Form.Item>
+            <p>管理员需要对审核不通过的原因进行说明</p>
+            <Form.Item name="message" rules={[{ required: true, message: "原因不能为空" }]}>
+              <TextField
+                name="message"
+                fullWidth
+                id="message"
+                label="原因说明"
+                autoFocus
+                type="message"
+                multiline
+              />
+            </Form.Item>
+          </Grid>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              marginBottom: "5px",
+            }}
+          >
+            确认
+          </Button>
+        </Form>
+      </Modal>
+      <Modal
+        open={taskDetailModalOpen}
+        onCancel={() => setTaskDetailModalOpen(false)}
+        footer={null}
+        width={"80%"}
+        centered
+        destroyOnClose
+      >
+        <>
+          <h3>基本信息</h3>
+          <Descriptions bordered column={2}>
+            <Descriptions.Item label="标题" span={2}>
+              {taskDetail.title}
+            </Descriptions.Item>
+            <Descriptions.Item label="创建时间" span={1}>
+              {transTime(taskDetail.create_at)}
+            </Descriptions.Item>
+            <Descriptions.Item label="截止时间" span={1}>
+              {transTime(taskDetail.deadline)}
+            </Descriptions.Item>
+            <Descriptions.Item label="创建人ID" span={1}>
+              {taskDetail.demander_id}
+            </Descriptions.Item>
+            <Descriptions.Item label="模板" span={1}>
+              {mapEntemplate2Zhtemplate[taskDetail.template]}
+            </Descriptions.Item>
+            <Descriptions.Item label="单题奖励" span={1}>
+              {taskDetail.reward}
+            </Descriptions.Item>
+            <Descriptions.Item label="单题限时" span={1}>
+              {taskDetail.time}
+            </Descriptions.Item>
+            <Descriptions.Item label="标注者人数" span={1}>
+              {taskDetail.labeler_number}
+            </Descriptions.Item>
+          </Descriptions>
+          {/* <h3>题目详情</h3>
             <Collapse>
               <Panel key={""} header={"点击此处查看题目详情"}>
                 {taskDetail.task_data?.map((problem, idx) => (
@@ -286,16 +290,15 @@ const AdministratorCheckTask = () => {
                     problem={problem}
                     index={idx}
                     template={`${taskDetail.template}`}
-                    showto="administrator"
                     key={idx}
                   />
                 ))}
               </Panel>
-            </Collapse>
-          </>
-        </Modal>
-        <Table columns={columns} dataSource={tasks} loading={refreshing||loading} pagination={{ pageSize: 6 }}/>
+            </Collapse> */}
         </>
+      </Modal>
+      <Table columns={columns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 6 }} />
+    </>
   );
 };
 
