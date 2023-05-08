@@ -71,17 +71,17 @@ export interface TaskInfo {
   create_at: number;
   deadline: number;
   template:
-  | "TextClassification"
-  | "ImagesClassification"
-  | "FaceTag"
-  | "ImageFrame"
-  | "SoundTag"
-  | "VideoTag"
-  | "TextReview"
-  | "ImageReview"
-  | "VideoReview"
-  | "AudioReview"
-  | "Custom";
+    | "TextClassification"
+    | "ImagesClassification"
+    | "FaceTag"
+    | "ImageFrame"
+    | "SoundTag"
+    | "VideoTag"
+    | "TextReview"
+    | "ImageReview"
+    | "VideoReview"
+    | "AudioReview"
+    | "Custom";
   /** 仅在`template`为`Custom`时非空 */
   templates?: string[];
   reward: number;
@@ -90,14 +90,14 @@ export interface TaskInfo {
   demander_id?: number;
   batch: boolean;
   task_data?:
-  | TextClassificationProblem[]
-  | ImagesClassificationProblem[]
-  | FaceTagProblem[]
-  | ImageFrameProblem[]
-  | TagProblem[]
-  | TextReviewProblem[]
-  | FileReviewProblem[]
-  | Problem[];
+    | TextClassificationProblem[]
+    | ImagesClassificationProblem[]
+    | FaceTagProblem[]
+    | ImageFrameProblem[]
+    | TagProblem[]
+    | TextReviewProblem[]
+    | FileReviewProblem[]
+    | Problem[];
   batch_file?: string;
 }
 
@@ -196,7 +196,7 @@ export const mapState2ColorChinese: StateColors = {
   completed: { color: "rgb(33, 198, 39)", description: "已完成" },
   failed: { color: "rgb(252, 61, 14)", description: "不合格" },
   blocked: { color: "rgb(252, 61, 14)", description: "已封禁" },
-  unblocked: { color: "rgb(33, 198, 39)", description: "正常" }
+  unblocked: { color: "rgb(33, 198, 39)", description: "正常" },
 };
 
 type EnEntemplateZhtemplate = {
@@ -220,38 +220,38 @@ export const mapRole2En: Role2En = {
   demander: "需求方",
   labeler: "标注方",
   administrator: "管理员",
-  agent: "中介"
-}
+  agent: "中介",
+};
 
 type Level2Exp = {
-  [state: string]: number,
+  [state: string]: number;
 };
 
 export const mapLevel2Exp: Level2Exp = {
   bronze: 200,
   silver: 500,
   gold: 1000,
-  diamond: 1000
-}
+  diamond: 1000,
+};
 
 type Level2Zh = {
-  [state: string]: { name: string, color: string },
+  [state: string]: { name: string; color: string };
 };
 
 export const mapLevel2Zh: Level2Zh = {
   bronze: { name: "青铜", color: "rgb(186, 110, 64)" },
   silver: { name: "白银", color: "rgb(233, 233, 216 )" },
   gold: { name: "黄金", color: "rgb(242, 192, 86 )" },
-  diamond: { name: "钻石", color: "rgb(32, 108, 221)" }
-}
+  diamond: { name: "钻石", color: "rgb(32, 108, 221)" },
+};
 
 type Entag2Zh = {
-  [state: string]: string
-}
+  [state: string]: string;
+};
 
 export const mapTag2Zh: Entag2Zh = {
   sentiment: "情感分类/分析",
   "part-of-speech": "词性分类",
   intent: "意图揣测",
-  event: "事件概括"
-}
+  event: "事件概括",
+};

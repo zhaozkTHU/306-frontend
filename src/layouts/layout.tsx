@@ -14,17 +14,16 @@ import {
   ExclamationCircleOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  BellFilled
+  BellFilled,
 } from "@ant-design/icons";
 import { Col, MenuProps, Row } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar } from "antd";
 import Image from "next/image";
-import Menu from '@mui/material/Menu';
+import Menu from "@mui/material/Menu";
 import { MenuItem } from "@mui/material";
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import Logout from '@mui/icons-material/Logout';
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
-
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -70,8 +69,6 @@ const administratorItems: MenuItem[] = [
   getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
   getItem("个人信息", "/administrator/info", <UserOutlined />),
 ];
-
-
 
 const agentItems: MenuItem[] = [
   getItem("可配发任务", "/agent/available_task", <MonitorOutlined />),
@@ -203,9 +200,7 @@ const MyLayout = (props: MyLayoutProps) => {
                 }}
               />
             </Col>
-            <Col span={12}>
-
-            </Col>
+            <Col span={12}></Col>
             <Col span={2}>
               <Button
                 type="text"
@@ -222,7 +217,7 @@ const MyLayout = (props: MyLayoutProps) => {
               <Button
                 type="text"
                 onClick={(event) => {
-                  setAnchorEl(event.currentTarget)
+                  setAnchorEl(event.currentTarget);
                 }}
                 style={{
                   fontSize: "25px",
@@ -230,66 +225,73 @@ const MyLayout = (props: MyLayoutProps) => {
                   height: 80,
                 }}
                 size="large"
-                aria-controls={open ? 'account-menu' : undefined}
+                aria-controls={open ? "account-menu" : undefined}
                 aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
+                aria-expanded={open ? "true" : undefined}
               >
                 <Avatar
-                  size='large'
+                  size="large"
                   style={{
-                    backgroundColor: 'rgb(33, 204, 73)'
+                    backgroundColor: "rgb(33, 204, 73)",
                   }}
                   shape="square"
-                >{mapRole2En[props.role]}</Avatar>
+                >
+                  {mapRole2En[props.role]}
+                </Avatar>
               </Button>
-              <Menu open={open}
+              <Menu
+                open={open}
                 anchorEl={anchorEl}
                 id="account-menu"
                 onClose={() => {
-                  setAnchorEl(null)
+                  setAnchorEl(null);
                 }}
                 onClick={() => {
-                  setAnchorEl(null)
+                  setAnchorEl(null);
                 }}
-                transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                transformOrigin={{ horizontal: "left", vertical: "top" }}
+                anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
                 PaperProps={{
                   elevation: 0,
                   sx: {
-                    overflow: 'visible',
-                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                     mt: 1.5,
-                    '& .MuiAvatar-root': {
+                    "& .MuiAvatar-root": {
                       width: 32,
                       height: 32,
                       ml: -0.5,
                       mr: 1,
                     },
-                    '&:before': {
+                    "&:before": {
                       content: '""',
-                      display: 'block',
-                      position: 'absolute',
+                      display: "block",
+                      position: "absolute",
                       top: 0,
                       right: 14,
                       width: 10,
                       height: 10,
-                      bgcolor: 'background.paper',
-                      transform: 'translateY(-50%) rotate(45deg)',
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
                       zIndex: 0,
                     },
                   },
                 }}
               >
-                <MenuItem onClick={() => {
-                  localStorage.clear();
-                  router.push("/");
-                }}>
+                <MenuItem
+                  onClick={() => {
+                    localStorage.clear();
+                    router.push("/");
+                  }}
+                >
                   <Logout />
                   退出登录
                 </MenuItem>
-                <MenuItem onClick={() => {
-                  router.push(`/${props.role}/info`)
-                }}>
+                <MenuItem
+                  onClick={() => {
+                    router.push(`/${props.role}/info`);
+                  }}
+                >
                   <PersonOutlineOutlinedIcon />
                   查看信息
                 </MenuItem>

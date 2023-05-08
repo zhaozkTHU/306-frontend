@@ -1,6 +1,24 @@
-import { Avatar, Button, Card, Col, Divider, Form, Modal, Progress, Row, Select, SelectProps, Tag, Tooltip, message, Space, Spin, Grid } from "antd";
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Divider,
+  Form,
+  Modal,
+  Progress,
+  Row,
+  Select,
+  SelectProps,
+  Tag,
+  Tooltip,
+  message,
+  Space,
+  Spin,
+  Grid,
+} from "antd";
 import { ProCard } from "@ant-design/pro-components";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { HelpOutline } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { mapLevel2Exp, mapLevel2Zh, mapTag2Zh } from "@/const/interface";
@@ -16,11 +34,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CryptoJS from "crypto-js";
 import { SpeedDial } from "@mui/material";
-import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import CurrencyYuanIcon from '@mui/icons-material/CurrencyYuan';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import CurrencyYuanIcon from "@mui/icons-material/CurrencyYuan";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -61,7 +79,7 @@ export interface UsersInfo {
 }
 
 interface UsersInfoProps {
-  role: "demander" | "labeler" | "administrator" | "agent"
+  role: "demander" | "labeler" | "administrator" | "agent";
 }
 
 const UserInfo = (props: UsersInfoProps) => {
@@ -74,9 +92,9 @@ const UserInfo = (props: UsersInfoProps) => {
     email: "",
     credits: 0,
     prefer: null,
-    is_bound: false
+    is_bound: false,
   });
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false)
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
   const [value, setValue] = React.useState(0);
   const [accountBalance, setAccountBalance] = useState<{ bank_account: string; balance: string }[]>(
     []
@@ -106,14 +124,14 @@ const UserInfo = (props: UsersInfoProps) => {
   useEffect(() => {
     request("/api/account_info", "GET")
       .then((response) => {
-        setInfo(response.data)
+        setInfo(response.data);
       })
       .catch((err) => {
         console.log(err);
       })
       .finally(() => {
         getBoundAccounts();
-      })
+      });
   }, [refreshing]);
 
   function a11yProps(index: number) {
@@ -131,10 +149,10 @@ const UserInfo = (props: UsersInfoProps) => {
   };
   const update_prefer = async (prefer: string[]) => {
     request("/api/update_prefer", "POST", {
-      prefer: prefer
+      prefer: prefer,
     })
       .then(() => {
-        message.success("更新偏好标签成功")
+        message.success("更新偏好标签成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -144,10 +162,10 @@ const UserInfo = (props: UsersInfoProps) => {
         }
       })
       .finally(() => {
-        setLoading(false)
-        setRefreshing(true)
-      })
-  }
+        setLoading(false);
+        setRefreshing(true);
+      });
+  };
 
   const postBound = async (bank_account: string, hashedPassword: string) => {
     request("/api/bound", "POST", {
@@ -207,35 +225,47 @@ const UserInfo = (props: UsersInfoProps) => {
       });
   };
 
-  const preferTag: SelectProps['options'] = [{
-    label: "情感分类/分析",
-    value: "sentiment",
-  },
-  {
-    label: "词性分类",
-    value: "part-of-speech",
-  },
-  {
-    label: "意图揣测",
-    value: "intent",
-  },
-  {
-    label: "事件概括",
-    value: "event",
-  }
+  const preferTag: SelectProps["options"] = [
+    {
+      label: "情感分类/分析",
+      value: "sentiment",
+    },
+    {
+      label: "词性分类",
+      value: "part-of-speech",
+    },
+    {
+      label: "意图揣测",
+      value: "intent",
+    },
+    {
+      label: "事件概括",
+      value: "event",
+    },
   ];
   return (
     <>
       <Spin spinning={refreshing || loading}>
-        <Modal open={isInviteModalOpen}
-          onCancel={() => { setIsInviteModalOpen(false) }}
+        <Modal
+          open={isInviteModalOpen}
+          onCancel={() => {
+            setIsInviteModalOpen(false);
+          }}
           footer={null}
         >
-          <h2 style={{ textAlign: 'center' }}>邀请码</h2>
+          <h2 style={{ textAlign: "center" }}>邀请码</h2>
           <Divider />
-          <p>为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。</p>
-          <p>请将这个邀请码分享给您的朋友，如果他们在注册本平台账号可以填写您的邀请码，您和您的朋友将获得丰厚的<span style={{ color: "green" }}>点数奖励</span>，<b>邀请越多，奖励越多</b>。</p>
-          <p>赶快将邀请码分享到<span style={{ color: "red" }}>QQ群、微信群</span>等平台赢取精美大奖吧！！！</p>
+          <p>
+            为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。
+          </p>
+          <p>
+            请将这个邀请码分享给您的朋友，如果他们在注册本平台账号可以填写您的邀请码，您和您的朋友将获得丰厚的
+            <span style={{ color: "green" }}>点数奖励</span>，<b>邀请越多，奖励越多</b>。
+          </p>
+          <p>
+            赶快将邀请码分享到<span style={{ color: "red" }}>QQ群、微信群</span>
+            等平台赢取精美大奖吧！！！
+          </p>
         </Modal>
         <ProCard split="vertical">
           <ProCard colSpan={'50%'}>
@@ -247,31 +277,47 @@ const UserInfo = (props: UsersInfoProps) => {
                 textAlign: 'center'
               }}>
                 <Col span={24}>
-                  <Avatar size={60} style={{
-                    backgroundColor: "rgb(243, 196, 41)",
-                    fontSize: 35
-                  }}>{info.username[0]}</Avatar>
+                  <Avatar
+                    size={60}
+                    style={{
+                      backgroundColor: "rgb(243, 196, 41)",
+                      fontSize: 35,
+                    }}
+                  >
+                    {info.username[0]}
+                  </Avatar>
                 </Col>
               </Row>
-              <Row style={{
-                textAlign: 'center'
-              }}>
+              <Row
+                style={{
+                  textAlign: "center",
+                }}
+              >
                 <Col span={24}>
-                  <div style={{
-                    textAlign: 'center'
-                  }}>
-                    <h2>{info.username} <Divider type="vertical" /><Tag color={mapLevel2Zh[info.level]['color']}>{mapLevel2Zh[info.level]['name']}</Tag></h2>
+                  <div
+                    style={{
+                      textAlign: "center",
+                    }}
+                  >
+                    <h2>
+                      {info.username} <Divider type="vertical" />
+                      <Tag color={mapLevel2Zh[info.level]["color"]}>
+                        {mapLevel2Zh[info.level]["name"]}
+                      </Tag>
+                    </h2>
                     <span style={{ color: "#999999" }}>{info.email}</span>
                   </div>
                 </Col>
               </Row>
               <Divider />
               <Row>
-
                 <Col span={8}>
                   经验:
                   <Tooltip title={`当前经验：${info.exp}/${mapLevel2Exp[info.level]}`}>
-                    <Progress size="small" percent={info.exp / mapLevel2Exp[info.level]} type="circle"
+                    <Progress
+                      size="small"
+                      percent={info.exp / mapLevel2Exp[info.level]}
+                      type="circle"
                       format={() => `${info.exp}`}
                     />
                   </Tooltip>
@@ -279,69 +325,81 @@ const UserInfo = (props: UsersInfoProps) => {
                 <Col span={8}>
                   点数:
                   <Tooltip title="需求方发布任务需要消耗点数，可提现">
-                    <Progress size="small" percent={info.points / 100} type="circle"
+                    <Progress
+                      size="small"
+                      percent={info.points}
+                      type="circle"
                       format={() => `${info.points}分`}
                     />
                   </Tooltip>
                 </Col>
                 <Col>
-
                   信用分:
                   <Tooltip title="维持较高的信用分有利于你更快的获取服务">
-                    <Progress size="small" percent={info.credits} type="circle"
+                    <Progress
+                      size="small"
+                      percent={info.credits}
+                      type="circle"
                       format={(percent) => `${percent}分`}
-                      strokeColor={info.credits < 70 ? "red" : (info.credits > 90 ? "rgb(33, 198, 39)" : "orange")}
+                      strokeColor={
+                        info.credits < 70
+                          ? "red"
+                          : info.credits > 90
+                          ? "rgb(33, 198, 39)"
+                          : "orange"
+                      }
                     />
                   </Tooltip>
                 </Col>
               </Row>
               <Divider />
-              {
-                props.role === "labeler" ?
-
-                  <>
-                    <Tooltip title="设置偏好标签有助于你获得任务">
-                      <>
-                        <h3>偏好标签：
-                          <Tag color="cyan">{info.prefer ? mapTag2Zh[info.prefer] : "暂无标签"}</Tag>
-                        </h3>
-                      </>
-                    </Tooltip>
-                    <Form
-                      onFinish={(values) => {
-                        setLoading(true)
-                        update_prefer(values.prefer)
-                      }}
-                    >
-                      <Row>
-                        <Col span={20}>
-                          <Form.Item
-                            name="prefer"
-                          >
-                            <Select
-                              allowClear
-                              options={preferTag}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={2}>
-                          <Button type="primary" htmlType="submit">更新</Button>
-                        </Col>
-                      </Row>
-                    </Form>
-                    <Divider />
-                  </> :
-                  <></>
-              }
+              {props.role === "labeler" ? (
+                <>
+                  <Tooltip title="设置偏好标签有助于你获得任务">
+                    <>
+                      <h3>
+                        偏好标签：
+                        <Tag color="cyan">{info.prefer ? mapTag2Zh[info.prefer] : "暂无标签"}</Tag>
+                      </h3>
+                    </>
+                  </Tooltip>
+                  <Form
+                    onFinish={(values) => {
+                      setLoading(true);
+                      update_prefer(values.prefer);
+                    }}
+                  >
+                    <Row>
+                      <Col span={20}>
+                        <Form.Item name="prefer">
+                          <Select allowClear options={preferTag} />
+                        </Form.Item>
+                      </Col>
+                      <Col span={2}>
+                        <Button type="primary" htmlType="submit">
+                          更新
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                  <Divider />
+                </>
+              ) : (
+                <></>
+              )}
               <Row>
                 <Col span={18}>
-                  <b>邀请码: <span id="invitecode">{info.invitecode}</span></b>
+                  <b>
+                    邀请码: <span id="invitecode">{info.invitecode}</span>
+                  </b>
                 </Col>
                 <Col span={2}>
                   <Tooltip title="什么是邀请码">
-                    <Button type="text" size="small"
+                    <Button
+                      type="text"
+                      size="small"
                       onClick={() => {
-                        setIsInviteModalOpen(true)
+                        setIsInviteModalOpen(true);
                       }}
                       icon={<HelpOutline />}
                     />
@@ -349,17 +407,20 @@ const UserInfo = (props: UsersInfoProps) => {
                 </Col>
                 <Col>
                   <Tooltip title="点击此处复制邀请码">
-                    <Button type="text" size="small"
+                    <Button
+                      type="text"
+                      size="small"
                       onClick={() => {
-                        const invitecode = document.getElementById("invitecode")
-                        const clipboardObj = navigator.clipboard
-                        clipboardObj.writeText(invitecode ? invitecode.innerText : "")
+                        const invitecode = document.getElementById("invitecode");
+                        const clipboardObj = navigator.clipboard;
+                        clipboardObj
+                          .writeText(invitecode ? invitecode.innerText : "")
                           .then(() => {
-                            message.success("复制成功")
+                            message.success("复制成功");
                           })
                           .catch(() => {
-                            message.error("复制失败，请稍后重试")
-                          })
+                            message.error("复制失败，请稍后重试");
+                          });
                       }}
                       icon={<ContentCopyIcon />}
                     />
@@ -410,7 +471,7 @@ const UserInfo = (props: UsersInfoProps) => {
                           required: true,
                           message: "不得为空",
                         },
-                        ({ }) => ({
+                        ({}) => ({
                           validator(_, value) {
                             const r = /^\+?[1-9][0-9]*$/;
                             if (value && !r.test(value)) {
@@ -440,7 +501,7 @@ const UserInfo = (props: UsersInfoProps) => {
                           required: true,
                           message: "不得为空",
                         },
-                        ({ }) => ({
+                        ({}) => ({
                           validator(_, value) {
                             const r = /^\+?[1-9][0-9]*$/;
                             if (value && !r.test(value)) {
@@ -535,7 +596,7 @@ const UserInfo = (props: UsersInfoProps) => {
                         <br />
                         <SpeedDial
                           ariaLabel="SpeedDial basic example"
-                          sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                          sx={{ position: "absolute", bottom: 16, right: 16 }}
                           icon={<SpeedDialIcon />}
                         >
                           <SpeedDialAction
@@ -556,7 +617,7 @@ const UserInfo = (props: UsersInfoProps) => {
                           />
                           <SpeedDialAction
                             onClick={() => {
-                              setDisboundModalOpen(true)
+                              setDisboundModalOpen(true);
                               // setLoading(true);
                               // disbound(account.bank_account);
                             }}
@@ -564,27 +625,37 @@ const UserInfo = (props: UsersInfoProps) => {
                             tooltipTitle="解绑"
                           />
                         </SpeedDial>
-                        <Modal open={disboundModalOpen}
+                        <Modal
+                          open={disboundModalOpen}
                           footer={[
-                            <Button key="ok" onClick={() => {
-                              setLoading(true);
-                              disbound(account.bank_account);
-                              setDisboundModalOpen(false)
-                            }}
+                            <Button
+                              key="ok"
+                              onClick={() => {
+                                setLoading(true);
+                                disbound(account.bank_account);
+                                setDisboundModalOpen(false);
+                              }}
                               style={{
                                 backgroundColor: "#3b5999",
-                                color: "white"
+                                color: "white",
                               }}
-                            >确认</Button>,
-                            <Button key="cancel"
+                            >
+                              确认
+                            </Button>,
+                            <Button
+                              key="cancel"
                               style={{ backgroundColor: "#3b5999", color: "white" }}
                               onClick={() => {
-                                setDisboundModalOpen(false)
+                                setDisboundModalOpen(false);
                               }}
-                            >取消</Button>
+                            >
+                              取消
+                            </Button>,
                           ]}
                           title="确认要解绑该账户吗?"
-                          onCancel={() => { setDisboundModalOpen(false) }}
+                          onCancel={() => {
+                            setDisboundModalOpen(false);
+                          }}
                         >
                           解绑之后你将无法对该账户进行充值和提现操作，但你可以重新将这张卡绑定
                         </Modal>
@@ -617,13 +688,17 @@ const UserInfo = (props: UsersInfoProps) => {
                                   required: true,
                                   message: "不得为空",
                                 },
-                                ({ }) => ({
+                                ({}) => ({
                                   validator(_, value) {
                                     const r = /^\+?[1-9][0-9]*$/;
                                     if (value && !r.test(value)) {
                                       return Promise.reject(new Error("请输入数字"));
                                     }
-                                    if (value && addScore && parseInt(account.balance) * 10 < value) {
+                                    if (
+                                      value &&
+                                      addScore &&
+                                      parseInt(account.balance) * 10 < value
+                                    ) {
                                       return Promise.reject(new Error("余额不足"));
                                     }
                                     if (value && !addScore && info.points < value) {

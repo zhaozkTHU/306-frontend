@@ -5,7 +5,24 @@ import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interfa
 import { request } from "@/utils/network";
 import { transTime } from "@/utils/valid";
 import { ProCard } from "@ant-design/pro-components";
-import { Button, Descriptions, Divider, Form, Image, Modal, Popconfirm, Slider, Space, Table, Tag, Tooltip, Upload, UploadFile, UploadProps, message } from "antd";
+import {
+  Button,
+  Descriptions,
+  Divider,
+  Form,
+  Image,
+  Modal,
+  Popconfirm,
+  Slider,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  Upload,
+  UploadFile,
+  UploadProps,
+  message,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -22,13 +39,13 @@ const TasktaskScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [slideValue, setSlideValue] = useState<number>(1);
   const [slideAccuracyValue, setSlideAccuracyValue] = useState<number>(1);
-  const [isLabelerList, setIsLabelerList] = useState<boolean>(true)
-  const [labelerId, setLabelerId] = useState<number>(-1)
+  const [isLabelerList, setIsLabelerList] = useState<boolean>(true);
+  const [labelerId, setLabelerId] = useState<number>(-1);
   const [isSample, setIsSample] = useState<boolean>(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
-  const [reportModalOpen, setReportModalOpen] = useState<boolean>(false)
+  const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
   const [task, setTask] = useState<DemanderTaskTableEntry>({
     task_id: -1,
     create_at: 0,
@@ -40,14 +57,24 @@ const TasktaskScreen = () => {
     labeler_number: 0,
     labeler_id: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     template: "TextClassification",
-    label_state: ["failed", "checking", "completed", "labeling", "checking", "checking", "checking", "checking", "checking"],
+    label_state: [
+      "failed",
+      "checking",
+      "completed",
+      "labeling",
+      "checking",
+      "checking",
+      "checking",
+      "checking",
+      "checking",
+    ],
     pass_check: false,
     labeler_credits: [95],
     distribute: "agent",
     distribute_type: "order",
     agent: "agent1",
-    type: "event"
-  })
+    type: "event",
+  });
   // useEffect(() => {
   //   if (!router.isReady) {
   //     return
@@ -73,10 +100,10 @@ const TasktaskScreen = () => {
     request("/api/demander/single_auto_check", "POST", {
       task_id: task_id,
       labeler_id: labeler_id,
-      accuracy: accuracy
+      accuracy: accuracy,
     })
       .then(() => {
-        message.success("自动审核请求发送成功")
+        message.success("自动审核请求发送成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -86,22 +113,28 @@ const TasktaskScreen = () => {
         }
       })
       .finally(() => {
-        setLoading(false)
-        setRefreshing(true)
-      })
-  }
+        setLoading(false);
+        setRefreshing(true);
+      });
+  };
 
   // 发布举报
-  const postReport = async (task_id: number, user_id: number, demander_post: boolean, description: string, image_description: string[]) => {
+  const postReport = async (
+    task_id: number,
+    user_id: number,
+    demander_post: boolean,
+    description: string,
+    image_description: string[]
+  ) => {
     request("/api/report", "POST", {
       task_id: task_id,
       user_id: user_id,
       demander_post: demander_post,
       description: description,
-      image_description: image_description
+      image_description: image_description,
     })
       .then(() => {
-        message.success("举报发送成功")
+        message.success("举报发送成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -112,9 +145,9 @@ const TasktaskScreen = () => {
       })
       .finally(() => {
         setLoading(false);
-        setRefreshing(true)
-      })
-  }
+        setRefreshing(true);
+      });
+  };
 
   const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
     action: "/api/file",
@@ -186,11 +219,14 @@ const TasktaskScreen = () => {
       width: "25%",
       render: (state) => {
         return (
-          <Tooltip title={state === "failed" ? "该标注者的标注被判定为不合格，点击此处可以举报" : ""}>
-            <Tag color={mapState2ColorChinese[state].color}
+          <Tooltip
+            title={state === "failed" ? "该标注者的标注被判定为不合格，点击此处可以举报" : ""}
+          >
+            <Tag
+              color={mapState2ColorChinese[state].color}
               onClick={() => {
                 if (state === "failed") {
-                  setReportModalOpen(true)
+                  setReportModalOpen(true);
                 }
               }}
             >
@@ -215,7 +251,7 @@ const TasktaskScreen = () => {
                 onClick={() => {
                   setLabelerId(record.labeler_id);
                   setIsSample(false);
-                  setIsLabelerList(false)
+                  setIsLabelerList(false);
                 }}
               >
                 全量审核
@@ -233,28 +269,26 @@ const TasktaskScreen = () => {
                     请选择抽样百分比（%）
                     <Slider
                       onChange={(value) => {
-                        setSlideValue(value)
+                        setSlideValue(value);
                       }}
                       value={slideValue}
-                      min={1} max={100}
+                      min={1}
+                      max={100}
                     />
                   </>
                 }
                 onConfirm={() => {
                   setLabelerId(record.labeler_id);
                   setIsSample(true);
-                  setIsLabelerList(false)
+                  setIsLabelerList(false);
                 }}
               >
-                <Button
-                  type="link"
-                  disabled={record.labeler_state != "checking"}
-                >
+                <Button type="link" disabled={record.labeler_state != "checking"}>
                   抽样审核
                 </Button>
               </Popconfirm>
             </Tooltip>
-            <Tooltip title="对该用户单独进行自动审核" >
+            <Tooltip title="对该用户单独进行自动审核">
               <Popconfirm
                 disabled={record.labeler_state != "checking"}
                 placement="bottom"
@@ -263,20 +297,25 @@ const TasktaskScreen = () => {
                 cancelText="取消"
                 description={
                   <>
-                    <p>该标注方的信用分为{record.labeler_credits}，{record.credits < 80 ? "用户信用分较低，不建议进行自动审核" : "可以自动审核"}，确定要自动审核吗?</p>
+                    <p>
+                      该标注方的信用分为{record.labeler_credits}，
+                      {record.credits < 80 ? "用户信用分较低，不建议进行自动审核" : "可以自动审核"}
+                      ，确定要自动审核吗?
+                    </p>
                     <p>若要自动审核，请先指定下面的正确率标准</p>
                     <Slider
                       onChange={(value) => {
-                        setSlideAccuracyValue(value)
+                        setSlideAccuracyValue(value);
                       }}
                       value={slideAccuracyValue}
-                      min={1} max={100}
+                      min={1}
+                      max={100}
                     />
                   </>
                 }
                 onConfirm={() => {
                   // setLoading(true)
-                  postSingleAutoChecking(task.task_id, record.labeler_id, slideAccuracyValue)
+                  postSingleAutoChecking(task.task_id, record.labeler_id, slideAccuracyValue);
                 }}
               >
                 <Button disabled={record.labeler_state != "checking"} type="link">
@@ -293,7 +332,7 @@ const TasktaskScreen = () => {
   return (
     <>
       <ProCard split="vertical">
-        <ProCard colSpan={'40%'}>
+        <ProCard colSpan={"40%"}>
           <Descriptions bordered column={4}>
             <Descriptions.Item label="标题" span={4}>
               {task.title}
@@ -327,8 +366,8 @@ const TasktaskScreen = () => {
             </Descriptions.Item>
           </Descriptions>
         </ProCard>
-        <ProCard colSpan={'60%'}>
-          {isLabelerList ?
+        <ProCard colSpan={"60%"}>
+          {isLabelerList ? (
             <>
               {/* <Divider><h3>标注者信息</h3></Divider> */}
               <Table
@@ -341,23 +380,34 @@ const TasktaskScreen = () => {
                 })}
                 pagination={{ pageSize: 5 }}
               />
-            </> :
+            </>
+          ) : (
             <>
-              <Divider><h3>审核</h3></Divider>
-              <CheckModel task_id={task.task_id} labeler_index={labelerId} is_sample={isSample} template={task.template} rate={slideValue}
+              <Divider>
+                <h3>审核</h3>
+              </Divider>
+              <CheckModel
+                task_id={task.task_id}
+                labeler_index={labelerId}
+                is_sample={isSample}
+                template={task.template}
+                rate={slideValue}
                 setIsLabelerList={setIsLabelerList}
               />
             </>
-          }
+          )}
         </ProCard>
       </ProCard>
 
-      <Modal open={reportModalOpen}
-        onCancel={() => { setReportModalOpen(false) }}
+      <Modal
+        open={reportModalOpen}
+        onCancel={() => {
+          setReportModalOpen(false);
+        }}
         footer={null}
         destroyOnClose
       >
-        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           举报
         </Typography>
         <Divider></Divider>
@@ -365,15 +415,20 @@ const TasktaskScreen = () => {
           name="basic"
           initialValues={{ remember: true }}
           onFinish={(values) => {
-            setLoading(true)
+            setLoading(true);
             const image_url = values.image_description.map((image: any) => image.response?.url);
-            postReport(task.task_id, labelerId, true, values.description, image_url)
+            postReport(task.task_id, labelerId, true, values.description, image_url);
           }}
           autoComplete="off"
         >
           <p>如果您认为该标注者有恶意刷题等行为，欢迎您对该标注者进行举报。</p>
-          <p><b>注:</b> 请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分</p>
-          <p>请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高</p>
+          <p>
+            <b>注:</b>{" "}
+            请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分
+          </p>
+          <p>
+            请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高
+          </p>
           <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
             <TextField
               name="description"
@@ -385,7 +440,9 @@ const TasktaskScreen = () => {
               multiline
             />
           </Form.Item>
-          <p>请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高</p>
+          <p>
+            请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高
+          </p>
           <Form.Item
             name="image_description"
             rules={[{ required: true, message: "请上传文件" }]}
@@ -395,7 +452,11 @@ const TasktaskScreen = () => {
               return e?.fileList;
             }}
           >
-            <Upload {...UploadPropsByType("image")} listType="picture-card" onPreview={handlePreview} >
+            <Upload
+              {...UploadPropsByType("image")}
+              listType="picture-card"
+              onPreview={handlePreview}
+            >
               <PlusOutlined style={{ fontSize: "24px" }} />
             </Upload>
           </Form.Item>
@@ -423,7 +484,7 @@ const TasktaskScreen = () => {
         </Form>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default TasktaskScreen
+export default TasktaskScreen;

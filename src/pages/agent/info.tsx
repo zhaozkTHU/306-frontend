@@ -5,4 +5,4 @@ const AgentInfo = () => {
     return <UserInfo role={"agent"}/>
 }
 
-export default AgentInfo
+export default AgentInfo;

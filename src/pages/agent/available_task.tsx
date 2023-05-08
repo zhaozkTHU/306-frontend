@@ -25,8 +25,8 @@ interface AgentTaskInfo {
 const AgentAvailableTask = () => {
   const [tasks, setTasks] = useState<AgentTaskInfo[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(true);
-  const [labelerLists, setLabelerLists] = useState<AgentLabeler[]>([])
-  const [distributeModalOpen, setDistributeModalOpen] = useState<boolean>(false)
+  const [labelerLists, setLabelerLists] = useState<AgentLabeler[]>([]);
+  const [distributeModalOpen, setDistributeModalOpen] = useState<boolean>(false);
 
   const [detail, setDetail] = useState<AgentTaskInfo>({
     task_id: 1,
@@ -40,14 +40,14 @@ const AgentAvailableTask = () => {
     demander_id: 3,
     type: "intent",
     template: "TextClassification",
-  })
-  const [loading, setLoading] = useState<boolean>(false)
-  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false)
+  });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
   const fetchList = async () => {
     request("/api/agent_acquire_labeler_list", "GET")
       .then((response) => {
-        setLabelerLists(response.data.data)
+        setLabelerLists(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -63,7 +63,7 @@ const AgentAvailableTask = () => {
   useEffect(() => {
     request("/api/agent_distribute", "GET")
       .then((response) => {
-        setTasks(response.data.data)
+        setTasks(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -71,7 +71,7 @@ const AgentAvailableTask = () => {
         } else {
           message.error("获取可分发任务失败，网络错误");
         }
-      })
+      });
     fetchList();
   }, [refreshing])
 
@@ -102,7 +102,7 @@ const AgentAvailableTask = () => {
       dataIndex: "title",
       key: "title",
       align: "center",
-      width: "30%"
+      width: "30%",
     },
     {
       title: "任务模板",
@@ -111,10 +111,8 @@ const AgentAvailableTask = () => {
       align: "center",
       width: "30%",
       render: (template) => {
-        return (
-          mapEntemplate2Zhtemplate[template]
-        )
-      }
+        return mapEntemplate2Zhtemplate[template];
+      },
     },
     {
       title: "操作",
@@ -124,27 +122,48 @@ const AgentAvailableTask = () => {
       render: (_, record) => {
         return (
           <>
-            <Button type="link" onClick={() => {
-              setDetail(record)
-              setDetailModalOpen(true)
-            }}>查看</Button>
-            <Button type="link" onClick={() => {
-              downLoadZip(record.batch_file)
-            }}>下载</Button>
-            <Button type="link" onClick={() => {
-              setDetail(record)
-              setDistributeModalOpen(true)
-            }}>分发</Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setDetail(record);
+                setDetailModalOpen(true);
+              }}
+            >
+              查看
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                downLoadZip(record.batch_file);
+              }}
+            >
+              下载
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setDetail(record);
+                setDistributeModalOpen(true);
+              }}
+            >
+              分发
+            </Button>
           </>
-        )
-      }
-    }
-  ]
+        );
+      },
+    },
+  ];
 
   return (
     <>
-      <Modal open={detailModalOpen} onCancel={() => { setDetailModalOpen(false) }} footer={null}>
-        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+      <Modal
+        open={detailModalOpen}
+        onCancel={() => {
+          setDetailModalOpen(false);
+        }}
+        footer={null}
+      >
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           任务详情
         </Typography>
         <Descriptions bordered column={4}>
@@ -175,8 +194,15 @@ const AgentAvailableTask = () => {
         </Descriptions>
       </Modal>
 
-      <Modal open={distributeModalOpen} footer={null} onCancel={() => { setDistributeModalOpen(false) }} destroyOnClose>
-        <Typography component="h1" variant="h5" style={{ textAlign: 'center' }}>
+      <Modal
+        open={distributeModalOpen}
+        footer={null}
+        onCancel={() => {
+          setDistributeModalOpen(false);
+        }}
+        destroyOnClose
+      >
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           分配任务
         </Typography>
         <Divider />
@@ -184,9 +210,9 @@ const AgentAvailableTask = () => {
           name="basic"
           initialValues={{ remember: true }}
           onFinish={(values) => {
-            setLoading(true)
-            distribute(detail.task_id, values.labeler)
-            setDistributeModalOpen(false)
+            setLoading(true);
+            distribute(detail.task_id, values.labeler);
+            setDistributeModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -228,7 +254,7 @@ const AgentAvailableTask = () => {
       </Modal>
       <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 8 }}/>
     </>
-  )
-}
+  );
+};
 
-export default AgentAvailableTask
+export default AgentAvailableTask;
