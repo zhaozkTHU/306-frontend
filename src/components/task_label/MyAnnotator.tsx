@@ -6,6 +6,7 @@ interface ImageAnnotationProps {
   src: string;
   onChange: (annotations: any[]) => void;
   tools: string;
+  initialAnnotations: Annotation[];
 }
 type Dot = { x: number; y: number };
 type Rectangle = { x: number; y: number; width: number; height: number };
@@ -15,7 +16,9 @@ function isRectangle(annotation: Annotation): annotation is Rectangle {
 }
 
 const ImageAnnotation = (props: ImageAnnotationProps) => {
-  const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [annotations, setAnnotations] = useState<Annotation[]>(
+    props.initialAnnotations ?? []
+  );
   const [currentAnnotation, setCurrentAnnotation] = useState<Annotation | null>(null);
   const [tools, setTools] = useState<string>(props.tools);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -91,28 +94,37 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     const canvas = canvasRef.current as HTMLCanvasElement;
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [props.tools, canvasRef]);
 
   const handleMouseDown = (event: MouseEvent) => {
+    if (!canvasRef.current) {
+      return;
+    }
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+
     if (props.tools === "dot") {
       const dot = {
         type: "dot",
-        x: event.clientX,
-        y: event.clientY,
+        x: x,
+        y: y,
       };
       setAnnotations([...annotations, dot]);
       props.onChange([...annotations, dot]);
     } else if (props.tools === "rectangle") {
       setCurrentAnnotation({
-        x: event.clientX,
-        y: event.clientY,
+        x: x,
+        y: y,
         width: 0,
         height: 0,
       });
@@ -120,18 +132,43 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   };
 
   const handleMouseMove = (event: MouseEvent) => {
+    if (!canvasRef.current) {
+      return;
+    }
+    
     if (props.tools === "rectangle" && currentAnnotation) {
+      const canvas = canvasRef.current as HTMLCanvasElement;
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.min(Math.max(event.clientX - rect.left, 0), canvas.width);
+      const y = Math.min(Math.max(event.clientY - rect.top, 0), canvas.height);
+
       const updatedAnnotation = {
         ...currentAnnotation,
-        width: event.clientX - currentAnnotation.x,
-        height: event.clientY - currentAnnotation.y,
+        width: x - currentAnnotation.x,
+        height: y - currentAnnotation.y,
       };
+
       setCurrentAnnotation(updatedAnnotation);
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (event: MouseEvent) => {
+    if (!canvasRef.current) {
+      return;
+    }
+  
     if (props.tools === "rectangle" && currentAnnotation) {
+      const canvas = canvasRef.current as HTMLCanvasElement;
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.min(Math.max(event.clientX - rect.left, 0), canvas.width);
+      const y = Math.min(Math.max(event.clientY - rect.top, 0), canvas.height);
+
+      const finalAnnotation = {
+        ...currentAnnotation,
+        width: x - currentAnnotation.x,
+        height: y - currentAnnotation.y,
+    };
+
       setAnnotations([...annotations, currentAnnotation]);
       props.onChange([...annotations, currentAnnotation]);
       setCurrentAnnotation(null);
