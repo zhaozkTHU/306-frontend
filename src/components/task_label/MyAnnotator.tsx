@@ -10,6 +10,9 @@ interface ImageAnnotationProps {
 type Dot = { x: number; y: number };
 type Rectangle = { x: number; y: number; width: number; height: number };
 type Annotation = Dot | Rectangle;
+function isRectangle(annotation: Annotation): annotation is Rectangle {
+  return (annotation as Rectangle).width !== undefined;
+}
 
 const ImageAnnotation = (props: ImageAnnotationProps) => {
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -33,6 +36,54 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     pointerEvents: "none",
   };
 
+  const drawAnnotations = () => {
+    if (!canvasRef.current) {
+      return;
+    }
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+  
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // Draw annotations
+    annotations.forEach((annotation) => {
+      if (props.tools === "dot" && !isRectangle(annotation)) {
+        ctx.beginPath();
+        ctx.arc(annotation.x, annotation.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+      } else if (props.tools === "rectangle" && isRectangle(annotation)) {
+        ctx.beginPath();
+        ctx.rect(annotation.x, annotation.y, annotation?.width ?? 0, annotation?.height ?? 0);
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    });
+  
+    // Draw the current annotation (if any)
+    if (currentAnnotation && props.tools === "rectangle" && isRectangle(currentAnnotation)) {
+      ctx.beginPath();
+      ctx.rect(
+        currentAnnotation.x,
+        currentAnnotation.y,
+        currentAnnotation?.width ?? 0,
+        currentAnnotation?.height ?? 0
+      );
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  };
+  useEffect(() => {
+    drawAnnotations();
+  }, [annotations, currentAnnotation, canvasRef]);
+
+  
   useEffect(() => {
     if (!canvasRef.current) {
       return;
@@ -109,9 +160,9 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     <div style={imageAnnotationContainerStyle}>
       <div style={toolbarStyle}>
         <Radio.Group
-          defaultValue="dot"
+          value={props.tools}
+          disabled={true}
           buttonStyle="solid"
-          onChange={(e) => setTools(e.target.value)}
         >
           <Radio.Button value="dot">Dot</Radio.Button>
           <Radio.Button value="rectangle">Rectangle</Radio.Button>

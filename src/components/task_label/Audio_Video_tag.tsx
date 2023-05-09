@@ -212,7 +212,8 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
-        soundUrl: problem.url,
+        template: taskInfo.template,
+        url: problem.url,
         description: problem.description,
         choice: problem.choice,
         data: chosenOptionsAll[problemIndex],

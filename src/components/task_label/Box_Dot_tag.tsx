@@ -235,6 +235,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
+        template: taskInfo.template,
         description: problem.description,
         url: problem.url,
         data: tagAnswersAll[problemIndex],
