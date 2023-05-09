@@ -89,6 +89,10 @@ export interface TaskInfo {
   labeler_number: number;
   demander_id?: number;
   batch: boolean;
+  type: "sentiment" | "part-of-speech" | "intent" | "event";
+  distribute: "system" | "agent";
+  distribute_type?: "order" | "smart";
+  agent_user?: string;
   task_data?:
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]

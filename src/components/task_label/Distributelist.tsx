@@ -31,6 +31,8 @@ const DistributeList: React.FC = () => {
             demander_id: tasks_json.demander_id,
             task_data: tasks_json.task_data,
             batch: false,
+            type: tasks_json.type,
+            distribute: tasks_json.distribute
           },
         ];
         setTasks(task);

@@ -254,7 +254,7 @@ const UserInfo = (props: UsersInfoProps) => {
           footer={null}
         >
           <h2 style={{ textAlign: "center" }}>邀请码</h2>
-          <Divider />
+          <Divider /> 
           <p>
             为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。
           </p>

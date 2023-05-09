@@ -36,7 +36,7 @@ const AdministratorAccount = () => {
   useEffect(() => {
     request("/api/administrator/user_info", "GET")
       .then((response) => {
-        setUserList(response.data.data);
+        setUserList(response.data.data)
       })
       .catch((error) => {
         if (error.response) {
@@ -155,12 +155,15 @@ const AdministratorAccount = () => {
         return (
           <>
             <Button
+             
               type="link"
+             
               onClick={() => {
-                setLoading(true);
-                block(record.username, true);
-              }}
+                  setLoading(true);;
+                  block(record.username, true);
+                }}
               disabled={record.is_blocked}
+            
             >
               封禁
             </Button>
