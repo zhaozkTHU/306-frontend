@@ -38,6 +38,8 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             task_id={task.task_id}
             task_data={task.task_data}
             batch={false}
+            type={task.type}
+            distribute={task.distribute}
           />
         </Modal>
       </>
@@ -60,6 +62,8 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             task_id={task.task_id}
             task_data={task.task_data}
             batch={false}
+            type={task.type}
+            distribute={task.distribute}
           />
         </Modal>
       </>
@@ -82,6 +86,8 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
             task_id={task.task_id}
             task_data={task.task_data}
             batch={false}
+            type={task.type}
+            distribute={task.distribute}
           />
         </Modal>
       </>
