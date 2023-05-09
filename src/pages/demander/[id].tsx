@@ -55,45 +55,35 @@ const TasktaskScreen = () => {
     reward: 0,
     time: 0,
     labeler_number: 0,
-    labeler_id: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    labeler_id: [],
     template: "TextClassification",
-    label_state: [
-      "failed",
-      "checking",
-      "completed",
-      "labeling",
-      "checking",
-      "checking",
-      "checking",
-      "checking",
-      "checking",
-    ],
+    label_state: [],
     pass_check: false,
-    labeler_credits: [95],
+    labeler_credits: [],
     distribute: "agent",
     distribute_type: "order",
-    agent: "agent1",
+    agent: "",
     type: "event",
   });
-  // useEffect(() => {
-  //   if (!router.isReady) {
-  //     return
-  //   }
-  //   request(`/api/task?id=${query.id}`, "GET")
-  //   .then((response) => {
-  //     setTask(response.data.task)
-  //   })
-  //   .catch((error) => {
-  //     if (error.response) {
-  //       message.error(`获取任务信息失败，${error.response.data.message}`);
-  //     } else {
-  //       message.error("获取任务信息失败，网络错误");
-  //     }
-  //   })
-  //   .finally(() => {
-  //     setRefreshing(false)
-  //   })
-  // }, [refreshing])
+  useEffect(() => {
+    if (!router.isReady) {
+      return
+    }
+    request(`/api/demander/task?id=${query.id}`, "GET")
+    .then((response) => {
+      setTask(response.data.task)
+    })
+    .catch((error) => {
+      if (error.response) {
+        message.error(`获取任务信息失败，${error.response.data.message}`);
+      } else {
+        message.error("获取任务信息失败，网络错误");
+      }
+    })
+    .finally(() => {
+      setRefreshing(false)
+    })
+  }, [refreshing])
 
   // 对某一标注者进行自动审核
   const postSingleAutoChecking = async (task_id: number, labeler_id: number, accuracy: number) => {
@@ -247,7 +237,7 @@ const TasktaskScreen = () => {
             <Tooltip title="处于待审核状态可以审核">
               <Button
                 type="link"
-                disabled={record.labeler_state != "checking"}
+                disabled={record.labeler_state !== "checking"}
                 onClick={() => {
                   setLabelerId(record.labeler_id);
                   setIsSample(false);
@@ -259,7 +249,7 @@ const TasktaskScreen = () => {
             </Tooltip>
             <Tooltip title="处于待审核状态可以审核">
               <Popconfirm
-                disabled={record.labeler_state != "checking"}
+                disabled={record.labeler_state !== "checking"}
                 placement="bottom"
                 title="抽样审核"
                 okText="确认"
@@ -283,14 +273,14 @@ const TasktaskScreen = () => {
                   setIsLabelerList(false);
                 }}
               >
-                <Button type="link" disabled={record.labeler_state != "checking"}>
+                <Button type="link" disabled={record.labeler_state !== "checking"}>
                   抽样审核
                 </Button>
               </Popconfirm>
             </Tooltip>
             <Tooltip title="对该用户单独进行自动审核">
               <Popconfirm
-                disabled={record.labeler_state != "checking"}
+                disabled={record.labeler_state !== "checking"}
                 placement="bottom"
                 title="自动审核"
                 okText="确认"

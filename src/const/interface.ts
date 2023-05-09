@@ -89,6 +89,10 @@ export interface TaskInfo {
   labeler_number: number;
   demander_id?: number;
   batch: boolean;
+  type: "sentiment" | "part-of-speech" | "intent" | "event";
+  distribute: "system" | "agent";
+  distribute_type?: "order" | "smart";
+  agent_user?: string;
   task_data?:
     | TextClassificationProblem[]
     | ImagesClassificationProblem[]
@@ -190,13 +194,14 @@ type StateColors = {
 
 export const mapState2ColorChinese: StateColors = {
   designated: { color: "rgb(160, 227, 109)", description: "已分发" },
-  labeling: { color: "rgb(33, 198, 198)", description: "标注中" },
+  labeling: { color: "rgb(33, 198, 198)", description: "待标注" },
   rejected: { color: "rgb(203, 8, 21)", description: "已拒绝" },
   checking: { color: "#c8c027", description: "待审核" },
   completed: { color: "rgb(33, 198, 39)", description: "已完成" },
   failed: { color: "rgb(252, 61, 14)", description: "不合格" },
   blocked: { color: "rgb(252, 61, 14)", description: "已封禁" },
   unblocked: { color: "rgb(33, 198, 39)", description: "正常" },
+  admin_checking: {color: "rgb(221, 202, 32)", description: "管理员审核"}
 };
 
 type EnEntemplateZhtemplate = {

@@ -39,6 +39,7 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import CurrencyYuanIcon from "@mui/icons-material/CurrencyYuan";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import RankList from "../RankList";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -254,7 +255,7 @@ const UserInfo = (props: UsersInfoProps) => {
           footer={null}
         >
           <h2 style={{ textAlign: "center" }}>邀请码</h2>
-          <Divider />
+          <Divider /> 
           <p>
             为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。
           </p>
@@ -271,7 +272,6 @@ const UserInfo = (props: UsersInfoProps) => {
           <ProCard colSpan={'50%'}>
             <Card hoverable style={{
               marginTop: props.role === "labeler" ? 0 : 50,
-              // boxShadow: "3px 3px 10px #00000038",
             }}>
               <Row style={{
                 textAlign: 'center'
@@ -327,7 +327,7 @@ const UserInfo = (props: UsersInfoProps) => {
                   <Tooltip title="需求方发布任务需要消耗点数，可提现">
                     <Progress
                       size="small"
-                      percent={info.points}
+                      percent={info.points/100}
                       type="circle"
                       format={() => `${info.points}分`}
                     />
@@ -774,7 +774,7 @@ const UserInfo = (props: UsersInfoProps) => {
               </TabPanel>
               <TabPanel value={value} index={1}>
                 <div>
-
+                  <RankList/>
                 </div>
               </TabPanel>
             </Box>

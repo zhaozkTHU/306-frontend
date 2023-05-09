@@ -240,7 +240,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       key: "title",
       align: "center",
       width: "25%",
-      render: (text) => <p>{text}</p>,
+      render: (text, record) => <Button type="link" onClick={() => {router.push(`/demander/${record.task_id}`)}}>{text}</Button>,
     },
     {
       title: "创建时间",
@@ -277,8 +277,8 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         return (
           <Space size={[0, 8]} wrap>
             {state.map((s: string, idx: number) => (
-              <Tag color={mapState2ColorChinese[s].color} key={idx}>
-                {mapState2ColorChinese[s].description}
+              <Tag color={mapState2ColorChinese[s]['color']} key={idx}>
+                {mapState2ColorChinese[s]['description']}
               </Tag>
             ))}
           </Space>

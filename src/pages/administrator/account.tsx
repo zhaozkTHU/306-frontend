@@ -21,7 +21,6 @@ const AdministratorAccount = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [userList, setUserList] = useState<UserDetail[]>([]);
-  const searchInput = useRef<InputRef>(null);
   const [detail, setDetail] = useState<UserDetail>({
     username: "",
     invitecode: "",
@@ -34,11 +33,10 @@ const AdministratorAccount = () => {
     is_vip: false,
   });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
-  const [searchText, setSearchText] = useState<string>("");
   useEffect(() => {
     request("/api/administrator/user_info", "GET")
       .then((response) => {
-        setUserList(response.data.data);
+        setUserList(response.data.data)
       })
       .catch((error) => {
         if (error.response) {
@@ -157,12 +155,15 @@ const AdministratorAccount = () => {
         return (
           <>
             <Button
+             
               type="link"
+             
               onClick={() => {
-                setLoading(true);
-                block(record.username, true);
-              }}
+                  setLoading(true);
+                  block(record.username, true);
+                }}
               disabled={record.is_blocked}
+            
             >
               封禁
             </Button>
