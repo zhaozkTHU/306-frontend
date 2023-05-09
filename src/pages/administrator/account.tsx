@@ -159,7 +159,7 @@ const AdministratorAccount = () => {
               type="link"
              
               onClick={() => {
-                  setLoading(true);;
+                  setLoading(true);
                   block(record.username, true);
                 }}
               disabled={record.is_blocked}
