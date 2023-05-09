@@ -31,6 +31,8 @@ const AdministratorCheckTask = () => {
     demander_id: -1,
     task_data: [],
     batch: false,
+    type: "event",
+    distribute: "system",
   });
   useEffect(() => {
     if (!router.isReady) {
