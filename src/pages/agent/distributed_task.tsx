@@ -4,10 +4,34 @@ import { useEffect, useState } from "react";
 import { downLoadZip, request } from "@/utils/network";
 import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
 
+interface task {
+  title: string,
+  create_at: number,
+  deadline: number,
+  reward: number,
+  labeler_number: number,
+  template: string,
+  demander_id: number,
+  labeler_id: number[],
+  labeler_state: string[],
+  state: string
+}
+
 const AgentDistributedTask = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
-  const [taskList, setTaskList] = useState<any[]>([])
-  const [detail, setDetail] = useState<any>();
+  const [taskList, setTaskList] = useState<task[]>([]);
+  const [detail, setDetail] = useState<task>({
+    title: "",
+    create_at: 0,
+    deadline: 0,
+    reward: 0,
+    labeler_number: 0,
+    template: "TextClassification",
+    demander_id: 0,
+    labeler_id: [],
+    labeler_state: [],
+    state: "labeling"
+  });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false)
   useEffect(() => {
     request("/api/agent/distributed", "GET")
@@ -63,7 +87,7 @@ const AgentDistributedTask = () => {
       render: (_, record) => (
         <>
           <Button onClick={() => { downLoadZip(record.batch_file) }} type="link">下载</Button>
-          <Button type="link" onClick={() => {setDetail(record)}}>查看</Button>
+          <Button type="link" onClick={() => { setDetail(record); setDetailModalOpen(true)}}>查看</Button>
         </>
       )
     }
@@ -84,9 +108,9 @@ const AgentDistributedTask = () => {
   ]
   return (
     <>
-      <Modal open={detailModalOpen} onCancel={() => {setDetailModalOpen(false)}} footer={null}>
-        <h3 style={{textAlign: "center"}}>任务详情</h3>
-        <Divider/>
+      <Modal open={detailModalOpen} onCancel={() => { setDetailModalOpen(false) }} footer={null}>
+        <h3 style={{ textAlign: "center" }}>任务详情</h3>
+        <Divider />
         <Descriptions bordered column={4}>
           <Descriptions.Item label="标题" span={4}>
             {detail.title}
@@ -113,11 +137,11 @@ const AgentDistributedTask = () => {
         <Table columns={LabelerTableColumn} dataSource={detail.labeler_id.map((id: number, idx: number) => {
           return {
             labeler_id: id,
-            state: detail.label_state[idx]
+            state: detail.labeler_state[idx]
           }
-        })}/>
+        })} pagination={{ pageSize: 2 }}/>
       </Modal>
-      <Table columns={TaskListColumns} loading={refreshing} dataSource={[{ title: "测试", template: "TextClassification", state: "labeling" }]} />
+      <Table columns={TaskListColumns} loading={refreshing} dataSource={[detail]} />
     </>
   )
 };
