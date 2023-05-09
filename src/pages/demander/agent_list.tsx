@@ -24,22 +24,22 @@ interface Agent {
 const DemanderAgentList = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [detail, setDetail] = useState<Agent>({
-    batch_file: "",
-    create_at: 0,
-    deadline: 0,
-    demander_id: 0,
-    labeler_id: [],
-    labeler_number: 0,
-    labeler_state: [],
-    reward: 0,
-    state: "",
-    task_id: 0,
-    template: "",
-    time: 0,
-    title: "",
-    type: ""
-  })
+  // const [detail, setDetail] = useState<Agent>({
+  //   batch_file: "",
+  //   create_at: 0,
+  //   deadline: 0,
+  //   demander_id: 0,
+  //   labeler_id: [],
+  //   labeler_number: 0,
+  //   labeler_state: [],
+  //   reward: 0,
+  //   state: "",
+  //   task_id: 0,
+  //   template: "",
+  //   time: 0,
+  //   title: "",
+  //   type: ""
+  // })
   useEffect(() => {
     request("/api/get_agent", "GET")
       .then((reponse) => {

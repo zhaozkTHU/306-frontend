@@ -15,7 +15,7 @@ const CameraButton: React.FC<CameraButtonProps> = (props) => {
     const canvas = canvasRef.current;
     if(canvas) {
       canvas.width = 1080;
-      canvas.height = 720;
+      canvas.height = 810;
     }
     const context = canvas?.getContext("2d");
     if (videoRef.current && context) {

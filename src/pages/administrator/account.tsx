@@ -21,7 +21,6 @@ const AdministratorAccount = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [userList, setUserList] = useState<UserDetail[]>([]);
-  const searchInput = useRef<InputRef>(null);
   const [detail, setDetail] = useState<UserDetail>({
     username: "",
     invitecode: "",
@@ -34,7 +33,6 @@ const AdministratorAccount = () => {
     is_vip: false,
   });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
-  const [searchText, setSearchText] = useState<string>("");
   useEffect(() => {
     request("/api/administrator/user_info", "GET")
       .then((response) => {
