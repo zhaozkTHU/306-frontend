@@ -50,8 +50,8 @@ network.interceptors.request.use(
 );
 
 export const downLoadZip = async (url: string) => {
-  request("/api/file", "GET", {
-    params: { url: url },
+  request(`/api/file?url=${url}`, "GET", {
+    // params: { url: url },
     responseType: "blob",
   })
     .then((response) => {

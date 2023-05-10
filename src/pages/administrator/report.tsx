@@ -41,7 +41,7 @@ const AdministratorReport = () => {
   useEffect(() => {
     request("/api/administrator/report", "GET")
       .then((reponse) => {
-        setReportList(reponse.data.report_list);
+        setReportList(reponse.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -268,11 +268,10 @@ const AdministratorReport = () => {
         <Divider />
         <p>举报者身份: {mapRole2En[detail.reporter_role]}</p>
         <p>被举报者身份: {mapRole2En[detail.reported_role]}</p>
-        <p>举报者描述:</p>
-        <p>{detail.description}</p>
+        <p>举报者描述: {detail.description}</p>
         <p>图片证据:</p>
         <Row>
-          {detail.image_description.map((idx, url) =>
+          {detail.image_description.map((url, idx) =>
             <Col key={idx}>
               <ImageFormatter key={idx}>
                 <MyImage

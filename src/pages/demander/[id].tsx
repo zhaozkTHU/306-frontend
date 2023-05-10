@@ -69,9 +69,9 @@ const TasktaskScreen = () => {
     if (!router.isReady) {
       return
     }
-    request(`/api/demander/task?id=${query.id}`, "GET")
+    request(`/api/demander/task?task_id=${query.id}`, "GET")
     .then((response) => {
-      setTask(response.data.task)
+      setTask(response.data.data)
     })
     .catch((error) => {
       if (error.response) {
@@ -112,14 +112,12 @@ const TasktaskScreen = () => {
   const postReport = async (
     task_id: number,
     user_id: number,
-    demander_post: boolean,
     description: string,
     image_description: string[]
   ) => {
     request("/api/report", "POST", {
       task_id: task_id,
       user_id: user_id,
-      demander_post: demander_post,
       description: description,
       image_description: image_description,
     })
@@ -336,7 +334,7 @@ const TasktaskScreen = () => {
             <Descriptions.Item label="模板" span={4}>
               {mapEntemplate2Zhtemplate[task.template]}
             </Descriptions.Item>
-            <Descriptions.Item label="状态" span={4}>
+            {/* <Descriptions.Item label="状态" span={4}>
               <Space size={[0, 8]} wrap>
                 {task.state.map((s: string, idx: number) => (
                   <Tag color={mapState2ColorChinese[s].color} key={idx}>
@@ -344,7 +342,7 @@ const TasktaskScreen = () => {
                   </Tag>
                 ))}
               </Space>
-            </Descriptions.Item>
+            </Descriptions.Item> */}
             <Descriptions.Item label="要求标注方人数" span={4}>
               {task.labeler_number}
             </Descriptions.Item>
@@ -407,7 +405,7 @@ const TasktaskScreen = () => {
           onFinish={(values) => {
             setLoading(true);
             const image_url = values.image_description.map((image: any) => image.response?.url);
-            postReport(task.task_id, labelerId, true, values.description, image_url);
+            postReport(task.task_id, labelerId, values.description, image_url);
           }}
           autoComplete="off"
         >

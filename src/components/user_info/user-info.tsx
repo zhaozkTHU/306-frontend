@@ -85,12 +85,12 @@ interface UsersInfoProps {
 
 const UserInfo = (props: UsersInfoProps) => {
   const [info, setInfo] = useState<UsersInfo>({
-    username: "",
-    invitecode: "",
+    username: "名字五个字",
+    invitecode: "邀请码二十个字",
     level: "bronze",
     exp: 0,
     points: 0,
-    email: "",
+    email: "邮箱五个字",
     credits: 0,
     prefer: null,
     is_bound: false,

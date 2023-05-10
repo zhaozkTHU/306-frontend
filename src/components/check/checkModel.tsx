@@ -33,7 +33,7 @@ const CheckModel = (props: CheckModelProps) => {
   useEffect(() => {
     request(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, "GET")
       .then((response) => {
-        const newProblems: any[] = JSON.parse(response.data.label_data);
+        const newProblems: any[] = JSON.parse(JSON.parse(response.data.label_data));
         const totalNumber = newProblems.length;
         setCheckedNumber(Math.ceil((totalNumber * props.rate) / 100));
         setResult(newProblems);
@@ -83,7 +83,7 @@ const CheckModel = (props: CheckModelProps) => {
   return (
     <Spin spinning={refreshing}>
       <Row>
-        <Col span={8}>需审核题目总量: {checkedNumber}</Col>
+        <Col span={8}>需审核题目总量: {result.length}</Col>
         <Col span={8}>通过题目数量: {passedNumber}</Col>
         <Col span={8}>当前通过率: {(passedNumber / checkedNumber).toFixed(2)}</Col>
       </Row>
