@@ -121,7 +121,8 @@ const TaskInfoForm: React.FC<{
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
     let task_data: typeof value.task_data = [];
     if (batch) {
-      task_data = (value.task_data as unknown as UploadFile[])[0]?.response?.url;
+      // task_data = (value.task_data as unknown as UploadFile[])[0]?.response?.url;
+      value.batch_file = (value.batch_file as unknown as UploadFile[])[0]?.response?.url;
     } else if (value.template === "TextClassification") {
       task_data = value.task_data;
     } else if (value.template === "ImagesClassification") {

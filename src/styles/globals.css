@@ -16,6 +16,9 @@ a {
   box-sizing: border-box;
 }
 
+.highlightrow {
+  font-weight: bold;
+}
 
 .loginLeft {
   text-align: center;
