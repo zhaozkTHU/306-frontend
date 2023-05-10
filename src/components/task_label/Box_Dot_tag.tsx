@@ -16,30 +16,31 @@ import {
 } from "@/const/interface";
 import MyAnnotator from "@/components/task_label/MyAnnotator";
 
-const MyImageUrl = (src: string) => {
-  const [imageUrl, setImageUrl] = useState<string>("");
+// const MyImageUrl = (src: string) => {
+//   const [imageUrl, setImageUrl] = useState<string>("");
 
-  useEffect(() => {
-    axios
-      .get("/api/file", {
-        responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
-        params: { url: src },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        const blob = new Blob([response.data], { type: "image/jpeg" });
-        const url = URL.createObjectURL(blob);
-        setImageUrl(url);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [src]);
+//   useEffect(() => {
+//     axios
+//       .get("/api/file", {
+//         responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
+//         params: { url: src },
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem("token")}`,
+//         },
+//       })
+//       .then((response) => {
+//         const blob = new Blob([response.data], { type: "image/jpeg" });
+//         const url = URL.createObjectURL(blob);
+//         setImageUrl(url);
+//       })
+//       .catch((error) => {
+//         console.error(error);
+//       });
+//   }, [src]);
 
-  return imageUrl;
-};
+//   return imageUrl;
+// };
+
 const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
     // keep current pro id
@@ -235,6 +236,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
+        template: taskInfo.template,
         description: problem.description,
         url: problem.url,
         data: tagAnswersAll[problemIndex],
@@ -372,9 +374,10 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Divider />
         <div>{currentProblem.description}</div>
         <MyAnnotator
-          src={MyImageUrl("/api/image?url=" + currentProblem.url)}
+          src={"/api/image?url=" + currentProblem.url}
           onChange={handleTagChange}
           tools={taskInfo.template === "FaceTag" ? "dot" : "rectangle"}
+          initialAnnotations={tagAnswersAll[currentProblemIndex]}
         />
         <Divider />
         <div>

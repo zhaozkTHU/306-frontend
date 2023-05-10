@@ -213,6 +213,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
+        template: taskInfo.template,
         description: problem.description,
         options: problem.options,
         chosen: modifiedchosenOptionsAll[problemIndex].slice(0, problem.options.length),
