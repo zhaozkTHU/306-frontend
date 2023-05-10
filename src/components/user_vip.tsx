@@ -24,10 +24,11 @@ const MemberComponent = () => {
   const [buyExpModal, setBuyExpModal] = useState(false);
   const [buyTimeModal, setBuyTimeModal] = useState(false);
   const [exchangeValue, setExchangeValue] = useState(0);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     // Call your API when the component mounts
-    axios.get('/account_info')
+    axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
       })
@@ -36,8 +37,9 @@ const MemberComponent = () => {
       });
   }, []);
 
+  
   const buyExperience = () => {
-    axios.post('/exp', {points: exchangeValue})
+    axios.post('/api/exp', {points: exchangeValue}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
         setBuyExpModal(false);
@@ -49,7 +51,7 @@ const MemberComponent = () => {
   };
 
   const buyVipTime = (time: number) => {
-    axios.post('/membership', {vip_time: time})
+    axios.post('/api/membership', {vip_time: time}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setVipExpiry(response.data.ddl_time);
         setBuyTimeModal(false);
