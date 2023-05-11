@@ -46,10 +46,10 @@ function getItem(
 const demanderItems: MenuItem[] = [
   getItem("所有任务", "/demander/all_task", <OrderedListOutlined />),
   getItem("新建任务", "/demander/new_task", <PlusOutlined />),
-  getItem("待标注", "/demander/labeling", <MonitorOutlined />),
+  getItem("中介列表", "/demander/agent_list", <TeamOutlined />),
+  getItem("标注中", "/demander/labeling", <MonitorOutlined />),
   getItem("待审核", "/demander/checking", <QuestionCircleOutlined />),
   getItem("已完成", "/demander/completed", <CarryOutOutlined />),
-  getItem("中介列表", "/demander/agent_list", <TeamOutlined />),
   getItem("管理员审核", "/demander/adminchecking", <HighlightOutlined />),
   getItem("用户信息", "/demander/info", <UserOutlined />),
 ];
