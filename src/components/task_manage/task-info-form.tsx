@@ -100,6 +100,7 @@ const TaskInfoForm: React.FC<{
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+  const [agentList, setAgentList] = useState<string[]>([]);
   const [form] = Form.useForm<TaskInfo>();
   const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
@@ -113,6 +114,12 @@ const TaskInfoForm: React.FC<{
     form.setFieldValue("distribute_type", undefined);
     form.setFieldValue("agent_username", undefined);
   }, [distribute, form]);
+
+  useEffect(() => {
+    axios.get("/api/get_agent", {headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}})
+      .then((value) => setAgentList(value.data.data))
+      .catch((reason) => message.error(`获取中介失败 ${reason.message}`));
+  }, []);
 
   const onFinish = () => {
     setLoading(true);
@@ -289,7 +296,7 @@ const TaskInfoForm: React.FC<{
             name="agent_username"
             rules={[{ required: true, message: "请输入分发中介名" }]}
           >
-            <Input />
+            <Select options={agentList.map((name) => ({value: name, label: name}))} />
           </Form.Item>
         )}
         <Row>
