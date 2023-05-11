@@ -16,7 +16,7 @@ interface Report {
   reporter_role: string,
   reported_role: string,
   description: string,
-  image_description: string[]
+  image_desription: string[]
 }
 
 const AdministratorReport = () => {
@@ -32,7 +32,7 @@ const AdministratorReport = () => {
     task_id: -1,
     user_id: -1,
     description: "",
-    image_description: [],
+    image_desription: [],
     reporter_role: "demander",
     reported_role: "labeler",
   })
@@ -272,7 +272,7 @@ const AdministratorReport = () => {
         <p>举报者描述: {detail.description}</p>
         <p>图片证据:</p>
         <Row>
-          {detail.image_description.map((url, idx) =>
+          {detail.image_desription.map((url, idx) =>
             <Col key={idx}>
               <ImageFormatter key={idx}>
                 <MyImage
@@ -281,7 +281,7 @@ const AdministratorReport = () => {
                     objectFit: "contain",
                     objectPosition: "center center",
                   }}
-                  alt="图片加载失败"
+                  alt="图片加载中..."
                   height="100%"
                   width="100%"
                 />

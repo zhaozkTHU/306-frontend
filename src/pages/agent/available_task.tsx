@@ -134,7 +134,8 @@ const AgentAvailableTask = () => {
             <Button
               type="link"
               onClick={() => {
-                downLoadZip(record.batch_file);
+                setLoading(true)
+                downLoadZip(record.batch_file, setLoading);
               }}
             >
               下载
