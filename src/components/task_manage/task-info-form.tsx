@@ -100,7 +100,7 @@ const TaskInfoForm: React.FC<{
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
-  const [agentList, setAgentList] = useState<string[]>([]);
+  const [agentList, setAgentList] = useState<any[]>([]);
   const [form] = Form.useForm<TaskInfo>();
   const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
@@ -296,7 +296,7 @@ const TaskInfoForm: React.FC<{
             name="agent_username"
             rules={[{ required: true, message: "请输入分发中介名" }]}
           >
-            <Select options={agentList.map((name) => ({value: name, label: name}))} />
+            <Select options={agentList.map((agent) => ({value: agent.username, label: agent.username}))} />
           </Form.Item>
         )}
         <Row>
