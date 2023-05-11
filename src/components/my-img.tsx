@@ -30,12 +30,14 @@ const MyImage = (props: MyImageProps) => {
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (props.onImageLoad) {
-      const { naturalWidth, naturalHeight } = e.currentTarget;
+      const imgElement = e.target as HTMLImageElement; // Cast event target to HTMLImageElement
+      const { naturalWidth, naturalHeight } = imgElement;
       props.onImageLoad({ width: naturalWidth, height: naturalHeight });
+      console.log("image loaded","W: ",naturalWidth,"H: ",naturalHeight);
     }
   };
 
-  return <Image src={imageUrl} {...props} alt={props.alt} onLoad={handleImageLoad} />;
+  return <Image src={imageUrl} {...props} alt={props.alt} onLoad={handleImageLoad} preview={false}/>;
 };
 
 export default MyImage;

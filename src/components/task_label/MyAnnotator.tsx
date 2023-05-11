@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Button, Radio } from "antd";
+import React, { use, useEffect, useRef, useState } from "react";
+import { Button, Radio, Divider } from "antd";
 import MyImage from "../my-img";
 
 interface ImageAnnotationProps {
@@ -16,6 +16,10 @@ function isRectangle(annotation: Annotation): annotation is Rectangle {
 }
 
 const ImageAnnotation = (props: ImageAnnotationProps) => {
+  const isDrawingRef = useRef<boolean>(false);
+  const currentAnnotationRef = useRef<Annotation | null>(null);
+  const annotationsRef = useRef<Annotation[]>(props.initialAnnotations ?? []);
+
   const [annotations, setAnnotations] = useState<Annotation[]>(
     props.initialAnnotations ?? []
   );
@@ -36,7 +40,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     position: "absolute",
     top: 0,
     left: 0,
-    pointerEvents: "none",
+    zIndex: 1,
   };
 
   const drawAnnotations = () => {
@@ -69,13 +73,13 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     });
   
     // Draw the current annotation (if any)
-    if (currentAnnotation && props.tools === "rectangle" && isRectangle(currentAnnotation)) {
+    if (currentAnnotationRef.current && props.tools === "rectangle" && isRectangle(currentAnnotationRef.current)) {
       ctx.beginPath();
       ctx.rect(
-        currentAnnotation.x,
-        currentAnnotation.y,
-        currentAnnotation?.width ?? 0,
-        currentAnnotation?.height ?? 0
+        currentAnnotationRef.current.x,
+        currentAnnotationRef.current.y,
+        currentAnnotationRef.current?.width ?? 0,
+        currentAnnotationRef.current?.height ?? 0
       );
       ctx.strokeStyle = "red";
       ctx.lineWidth = 2;
@@ -83,12 +87,29 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     }
   };
   useEffect(() => {
+    currentAnnotationRef.current = currentAnnotation;
+  }, [currentAnnotation]);
+  useEffect(() => {
+    annotationsRef.current = annotations;
+  }, [annotations]);
+  useEffect(() => {
+    console.log("updated state");
+    console.log(currentAnnotation);
+    console.log(annotations);
+  }, [currentAnnotation, annotations]);
+  useEffect(() => {
+    console.log("updated ref");
+    console.log(currentAnnotationRef.current);
+    console.log(annotationsRef.current);
+  }, [currentAnnotationRef, annotationsRef]);
+  
+  useEffect(() => {
     drawAnnotations();
   }, [annotations, currentAnnotation, canvasRef]);
 
-  
   useEffect(() => {
     if (!canvasRef.current) {
+      console.log("no canvas")
       return;
     }
     const canvas = canvasRef.current as HTMLCanvasElement;
@@ -105,13 +126,19 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
 
   const handleMouseDown = (event: MouseEvent) => {
     if (!canvasRef.current) {
+      console.log("down no canvas")
       return;
     }
-    
+    console.log("down state")
+    console.log(currentAnnotation)
+    console.log(annotations)
+    console.log("down ref")
+    console.log(currentAnnotationRef.current)
+    console.log(annotationsRef.current)
+    console.log("is:", isDrawingRef.current)
     const rect = canvasRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-
 
     if (props.tools === "dot") {
       const dot = {
@@ -119,82 +146,183 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         x: x,
         y: y,
       };
-      setAnnotations([...annotations, dot]);
+
+      setAnnotations((prevAnnotations) => [...prevAnnotations, dot]);
       props.onChange([...annotations, dot]);
-    } else if (props.tools === "rectangle") {
+    } 
+    else if (props.tools === "rectangle") {
+      isDrawingRef.current = true;
+      currentAnnotationRef.current = {
+        x: x,
+        y: y,
+        width: 0,
+        height: 0,
+      };
       setCurrentAnnotation({
         x: x,
         y: y,
         width: 0,
         height: 0,
       });
+      console.log("aft down state")
+      console.log(currentAnnotation)
+      console.log(annotations)
+      console.log("aft down ref")
+      console.log(currentAnnotationRef.current)
+      console.log(annotationsRef.current)
+      console.log("is:", isDrawingRef.current)
     }
   };
 
   const handleMouseMove = (event: MouseEvent) => {
-    if (!canvasRef.current) {
+    if (!canvasRef.current || isDrawingRef.current === false) {
+      console.log("move no canvas")
       return;
     }
-    
-    if (props.tools === "rectangle" && currentAnnotation) {
+
+    if (isDrawingRef.current && props.tools === "rectangle" && currentAnnotationRef.current) {
       const canvas = canvasRef.current as HTMLCanvasElement;
       const rect = canvas.getBoundingClientRect();
       const x = Math.min(Math.max(event.clientX - rect.left, 0), canvas.width);
       const y = Math.min(Math.max(event.clientY - rect.top, 0), canvas.height);
-
+  
+      let width = x - currentAnnotationRef.current.x;
+      let height = y - currentAnnotationRef.current.y;
+      let adjustedX = currentAnnotationRef.current.x;
+      let adjustedY = currentAnnotationRef.current.y;
+  
+      if (width < 0) {
+        adjustedX += width;
+        width = -width;
+      }
+  
+      if (height < 0) {
+        adjustedY += height;
+        height = -height;
+      }
+  
       const updatedAnnotation = {
-        ...currentAnnotation,
-        width: x - currentAnnotation.x,
-        height: y - currentAnnotation.y,
+        x: adjustedX,
+        y: adjustedY,
+        width: width,
+        height: height,
       };
 
+      currentAnnotationRef.current = updatedAnnotation;
       setCurrentAnnotation(updatedAnnotation);
+      drawAnnotations();
     }
   };
+  
 
   const handleMouseUp = (event: MouseEvent) => {
     if (!canvasRef.current) {
+      console.log("up no canvas")
       return;
     }
-  
-    if (props.tools === "rectangle" && currentAnnotation) {
+    console.log("up state")
+    console.log(currentAnnotation)
+    console.log(annotations)
+    console.log("up ref")
+    console.log(currentAnnotationRef.current)
+    console.log(annotationsRef.current)
+    console.log("is:", isDrawingRef.current)
+
+    if (props.tools === "rectangle" && currentAnnotationRef.current) {
       const canvas = canvasRef.current as HTMLCanvasElement;
       const rect = canvas.getBoundingClientRect();
       const x = Math.min(Math.max(event.clientX - rect.left, 0), canvas.width);
       const y = Math.min(Math.max(event.clientY - rect.top, 0), canvas.height);
-
+      isDrawingRef.current = false;
+  
+      // Calculate width and height based on mouse position and starting coordinates
+      let width = x - currentAnnotationRef.current.x;
+      let height = y - currentAnnotationRef.current.y;
+      let adjustedX = currentAnnotationRef.current.x;
+      let adjustedY = currentAnnotationRef.current.y;
+      // If width is negative, adjust x and width
+      if (width < 0) {
+        adjustedX += width;
+        width = -width;
+      }
+      // If height is negative, adjust y and height
+      if (height < 0) {
+        adjustedY += height;
+        height = -height;
+      }
       const finalAnnotation = {
-        ...currentAnnotation,
-        width: x - currentAnnotation.x,
-        height: y - currentAnnotation.y,
-    };
-
-      setAnnotations([...annotations, currentAnnotation]);
-      props.onChange([...annotations, currentAnnotation]);
+        x: adjustedX,
+        y: adjustedY,
+        width: width,
+        height: height,
+      };
+      
+      annotationsRef.current = [...annotationsRef.current, finalAnnotation];
+      currentAnnotationRef.current = null;
+      setAnnotations((prevAnnotations) => {
+        const newAnnotations = [...prevAnnotations, finalAnnotation];
+        props.onChange(newAnnotations);
+        return newAnnotations;
+      });
       setCurrentAnnotation(null);
+      drawAnnotations();
+      isDrawingRef.current = false;
+      console.log("aft up state:")
+      console.log(currentAnnotation)
+      console.log(annotations)
+      console.log("aft up ref:")
+      console.log(currentAnnotationRef.current)
+      console.log(annotationsRef.current)
+      console.log("is:", isDrawingRef.current)
     }
+    isDrawingRef.current = false;
   };
+  
 
   const clearAnnotations = () => {
     setAnnotations([]);
+    setCurrentAnnotation(null);
+    annotationsRef.current = [];
+    isDrawingRef.current = false;
+    currentAnnotationRef.current = null;
     props.onChange([]);
+    drawAnnotations();
   };
 
   const undoLastAnnotation = () => {
     const newAnnotations = annotations.slice(0, -1);
+    annotationsRef.current = newAnnotations;
+    setCurrentAnnotation(null);
+    currentAnnotationRef.current = null;
+    isDrawingRef.current = false;
     setAnnotations(newAnnotations);
     props.onChange(newAnnotations);
+    drawAnnotations();
   };
 
   const handleImageLoad = (size: { width: number; height: number }) => {
     if (canvasRef.current) {
       canvasRef.current.width = size.width;
       canvasRef.current.height = size.height;
+      console.log("width: ", size.width, "height: ", size.height);
     }
   };
 
   return (
     <div style={imageAnnotationContainerStyle}>
+      <MyImage
+        url={`${props.src}`}
+        onImageLoad={handleImageLoad}
+        style={{
+          objectFit: "contain",
+          objectPosition: "center center",
+        }}
+        alt="图片加载失败"
+        height="100%"
+        width="100%"
+      />
+      <canvas ref={canvasRef} style={{...annotationOverlayStyle, border:"solid"}} />
+      <Divider />
       <div style={toolbarStyle}>
         <Radio.Group
           value={props.tools}
@@ -211,18 +339,6 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
           Undo
         </Button>
       </div>
-      <MyImage
-        url={`${props.src}`}
-        onImageLoad={handleImageLoad}
-        style={{
-          objectFit: "contain",
-          objectPosition: "center center",
-        }}
-        alt="图片加载失败"
-        height="100%"
-        width="100%"
-      />
-      <canvas ref={canvasRef} style={annotationOverlayStyle} />
     </div>
   );
 };
