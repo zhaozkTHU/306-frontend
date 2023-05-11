@@ -51,7 +51,7 @@ export interface DemanderTaskTableEntry {
   distribute: "system" | "agent";
   distribute_type: "order" | "smart";
   type: "sentiment" | "part-of-speech" | "intent" | "event";
-  agent: string;
+  agent_username: string;
 }
 
 interface DemanderTaskListProps {
@@ -95,7 +95,6 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const postReport = async (
     task_id: number,
     user_id: number,
-    demander_post: boolean,
     description: string,
     image_description: string[]
   ) => {
@@ -230,7 +229,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     distribute: "agent",
     distribute_type: "order",
     type: "event",
-    agent: "agent1",
+    agent_username: "agent1",
   });
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
@@ -480,8 +479,10 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       })
       .catch((err) => {
         console.log(err.reponse?.data);
-      });
-    setRefreshing(false);
+      })
+      .finally(() => {
+        setRefreshing(false);
+      })
   }, [router, refreshing]);
   return (
     <>
@@ -608,7 +609,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               const image_url = values.image_description.map(
                 (image: any) => image.response?.url
               );
-              postReport(detail.task_id, labelerId, true, values.description, image_url);
+              postReport(detail.task_id, labelerId, values.description, image_url);
             }}
             autoComplete="off"
           >
@@ -732,6 +733,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             return {
               labeler_id: id,
               labeler_state: detail.label_state[idx],
+              labeler_credits: detail.labeler_credits[idx]
             };
           })}
         />

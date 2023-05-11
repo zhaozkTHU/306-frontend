@@ -32,6 +32,7 @@ const AdministratorCheckTask = () => {
     batch: false,
     type: "event",
     distribute: "system",
+    agent_user: "",
   });
   useEffect(() => {
     if (!router.isReady) {
@@ -163,7 +164,8 @@ const AdministratorCheckTask = () => {
           </Button>
           <Tooltip title="点击此处下载题目文件">
             <Button type="link" onClick={() => {
-              downLoadZip(record.batch_file)
+              setLoading(true)
+              downLoadZip(record.batch_file, setLoading)
             }}>
               下载
             </Button>
@@ -252,20 +254,20 @@ const AdministratorCheckTask = () => {
         open={taskDetailModalOpen}
         onCancel={() => setTaskDetailModalOpen(false)}
         footer={null}
-        width={"80%"}
+        width={"60%"}
         centered
         destroyOnClose
       >
         <>
           <h3>基本信息</h3>
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label="标题" span={2}>
+          <Descriptions bordered column={4}>
+            <Descriptions.Item label="标题" span={4}>
               {taskDetail.title}
             </Descriptions.Item>
-            <Descriptions.Item label="创建时间" span={1}>
+            <Descriptions.Item label="创建时间" span={2}>
               {transTime(taskDetail.create_at)}
             </Descriptions.Item>
-            <Descriptions.Item label="截止时间" span={1}>
+            <Descriptions.Item label="截止时间" span={2}>
               {transTime(taskDetail.deadline)}
             </Descriptions.Item>
             <Descriptions.Item label="创建人ID" span={1}>
@@ -283,20 +285,13 @@ const AdministratorCheckTask = () => {
             <Descriptions.Item label="标注者人数" span={1}>
               {taskDetail.labeler_number}
             </Descriptions.Item>
+            <Descriptions.Item label="标注者人数" span={1}>
+              {taskDetail.labeler_number}
+            </Descriptions.Item>
+            <Descriptions.Item label="分发方式" span={4}>
+              {taskDetail.distribute==="agent"?`中介: ${taskDetail.agent_user}`:(taskDetail.distribute_type==="smart"?"系统-智能":"系统-顺序")}
+            </Descriptions.Item>
           </Descriptions>
-          {/* <h3>题目详情</h3>
-            <Collapse>
-              <Panel key={""} header={"点击此处查看题目详情"}>
-                {taskDetail.task_data?.map((problem, idx) => (
-                  <Problem
-                    problem={problem}
-                    index={idx}
-                    template={`${taskDetail.template}`}
-                    key={idx}
-                  />
-                ))}
-              </Panel>
-            </Collapse> */}
         </>
       </Modal>
       <Table columns={columns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 6 }} />
@@ -305,3 +300,12 @@ const AdministratorCheckTask = () => {
 };
 
 export default AdministratorCheckTask;
+
+/**
+ * 待管理员审核(admin_checking)：任务创建之后，管理员审核之前
+ * 分发中(distributing)：管理员审核之后，接受任务的标注方数量尚未达到需求方要求
+ * 标注中(labeling)：已经有任意数量的标注方接受任务，但存在没有完成标注的标注方
+ * 待审核(checking)：存在已完成标注但还没有审核的标注方
+ * 已完成(completed)：通过审核的标注方数量达到需求方的要求
+ * 已过期(overdue)：已过ddl
+ */

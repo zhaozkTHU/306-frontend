@@ -3,7 +3,7 @@ import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
 import { Button, Tag, message, Table, Modal, Divider, Descriptions, Input, Space, InputRef } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface UserDetail {
   username: string;

@@ -15,6 +15,7 @@ import {
   Popconfirm,
   Slider,
   Space,
+  Spin,
   Table,
   Tag,
   Tooltip,
@@ -62,16 +63,16 @@ const TasktaskScreen = () => {
     labeler_credits: [],
     distribute: "agent",
     distribute_type: "order",
-    agent: "",
+    agent_username: "",
     type: "event",
   });
   useEffect(() => {
     if (!router.isReady) {
       return
     }
-    request(`/api/demander/task?id=${query.id}`, "GET")
+    request(`/api/demander/task?task_id=${query.id}`, "GET")
     .then((response) => {
-      setTask(response.data.task)
+      setTask(response.data.data)
     })
     .catch((error) => {
       if (error.response) {
@@ -112,14 +113,12 @@ const TasktaskScreen = () => {
   const postReport = async (
     task_id: number,
     user_id: number,
-    demander_post: boolean,
     description: string,
     image_description: string[]
   ) => {
     request("/api/report", "POST", {
       task_id: task_id,
       user_id: user_id,
-      demander_post: demander_post,
       description: description,
       image_description: image_description,
     })
@@ -320,7 +319,7 @@ const TasktaskScreen = () => {
   ];
   const query = router.query;
   return (
-    <>
+    <Spin spinning={refreshing||loading}>
       <ProCard split="vertical">
         <ProCard colSpan={"40%"}>
           <Descriptions bordered column={4}>
@@ -336,15 +335,6 @@ const TasktaskScreen = () => {
             <Descriptions.Item label="模板" span={4}>
               {mapEntemplate2Zhtemplate[task.template]}
             </Descriptions.Item>
-            <Descriptions.Item label="状态" span={4}>
-              <Space size={[0, 8]} wrap>
-                {task.state.map((s: string, idx: number) => (
-                  <Tag color={mapState2ColorChinese[s].color} key={idx}>
-                    {mapState2ColorChinese[s].description}
-                  </Tag>
-                ))}
-              </Space>
-            </Descriptions.Item>
             <Descriptions.Item label="要求标注方人数" span={4}>
               {task.labeler_number}
             </Descriptions.Item>
@@ -354,9 +344,12 @@ const TasktaskScreen = () => {
             <Descriptions.Item label="单题限时" span={1}>
               {task.time}秒
             </Descriptions.Item>
+            <Descriptions.Item label="分发方式" span={4}>
+              {task.distribute==="agent"?`中介: ${task.agent_username}`:(task.distribute_type==="smart"?"系统-智能":"系统-顺序")}
+            </Descriptions.Item>
           </Descriptions>
         </ProCard>
-        <ProCard colSpan={"60%"}>
+        <ProCard colSpan={"0%"}>
           {isLabelerList ? (
             <>
               {/* <Divider><h3>标注者信息</h3></Divider> */}
@@ -407,7 +400,8 @@ const TasktaskScreen = () => {
           onFinish={(values) => {
             setLoading(true);
             const image_url = values.image_description.map((image: any) => image.response?.url);
-            postReport(task.task_id, labelerId, true, values.description, image_url);
+            postReport(task.task_id, labelerId, values.description, image_url);
+            setReportModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -473,7 +467,7 @@ const TasktaskScreen = () => {
           </Modal>
         </Form>
       </Modal>
-    </>
+    </Spin>
   );
 };
 
