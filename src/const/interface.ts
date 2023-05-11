@@ -189,20 +189,34 @@ type StateColor = {
 };
 
 type StateColors = {
-  [state: string]: StateColor;
+  [state: string|number]: StateColor;
 };
 
 export const mapState2ColorChinese: StateColors = {
-  designated: { color: "rgb(160, 227, 109)", description: "已分发" },
-  labeling: { color: "rgb(33, 198, 198)", description: "待标注" },
-  rejected: { color: "rgb(203, 8, 21)", description: "已拒绝" },
-  checking: { color: "#c8c027", description: "待审核" },
-  completed: { color: "rgb(33, 198, 39)", description: "已完成" },
-  failed: { color: "rgb(252, 61, 14)", description: "不合格" },
+
+
+  0: { color: "rgb(160, 227, 109)", description: "已分发" },
+  1: { color: "rgb(203, 8, 21)", description: "已拒绝" },
+  2: { color: "rgb(33, 198, 198)", description: "标注中" },
+  3: { color: "#c8c027", description: "待审核" },
+  4: { color: "rgb(33, 198, 39)", description: "已完成" },
+  5: { color: "rgb(252, 61, 14)", description: "不合格" },
+
+
   blocked: { color: "rgb(252, 61, 14)", description: "已封禁" },
   unblocked: { color: "rgb(33, 198, 39)", description: "正常" },
-  admin_checking: {color: "rgb(221, 202, 32)", description: "管理员审核"}
+
+
+  admin_checking: {color: "rgb(221, 202, 32)", description: "待管理员审核"},
+  distributing: { color: "rgb(160, 227, 109)", description: "分发中" },
+  labeling: { color: "rgb(33, 198, 198)", description: "标注中" },
+  checking: { color: "#c8c027", description: "待审核" },
+  completed: { color: "rgb(33, 198, 39)", description: "已完成" },
+  overdue: { color: "rgb(252, 61, 14)", description: "已过期" },
+
 };
+
+
 
 type EnEntemplateZhtemplate = {
   [state: string]: string;

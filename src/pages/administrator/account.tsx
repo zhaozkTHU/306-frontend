@@ -225,7 +225,7 @@ const AdministratorAccount = () => {
         columns={userListColumns}
         dataSource={userList}
         loading={refreshing || loading}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 6 }}
       />
     </>
   );

@@ -315,10 +315,10 @@ const UserInfo = (props: UsersInfoProps) => {
               <Row>
                 <Col span={8}>
                   经验:
-                  <Tooltip title={`当前经验：${info.exp}/${mapLevel2Exp[info.level]}`}>
+                  <Tooltip title={`当前经验：${info.exp}，下一级需要：${mapLevel2Exp[info.level]}`}>
                     <Progress
                       size="small"
-                      percent={info.exp / mapLevel2Exp[info.level]}
+                      percent={info.exp / mapLevel2Exp[info.level]*100}
                       type="circle"
                       format={() => `${info.exp}`}
                     />
@@ -337,14 +337,15 @@ const UserInfo = (props: UsersInfoProps) => {
                 </Col>
                 <Col>
                   信用分:
-                  <Tooltip title="维持较高的信用分有利于你更快的获取服务">
+                  <Tooltip title={info.credits>90?"维持较高的信用分有利于你更快的获取服务":
+                (info.credits<75?"当前信用分较低，可能会影响您获取服务":"当前信用分存在风险，请文明操作，及时回复")}>
                     <Progress
                       size="small"
                       percent={info.credits}
                       type="circle"
                       format={(percent) => `${percent}分`}
                       strokeColor={
-                        info.credits < 70
+                        info.credits < 75
                           ? "red"
                           : info.credits > 90
                           ? "rgb(33, 198, 39)"

@@ -51,19 +51,19 @@ const TasktaskScreen = () => {
     task_id: -1,
     create_at: 0,
     deadline: 0,
-    title: "",
+    title: "标题五个字",
     state: [],
     reward: 0,
     time: 0,
     labeler_number: 0,
     labeler_id: [],
     template: "TextClassification",
-    label_state: [],
+    labeler_state: [],
     pass_check: false,
     labeler_credits: [],
     distribute: "agent",
     distribute_type: "order",
-    agent_username: "",
+    agent_username: "中介名称五个字",
     type: "event",
   });
   useEffect(() => {
@@ -124,6 +124,7 @@ const TasktaskScreen = () => {
     })
       .then(() => {
         message.success("举报发送成功");
+        setReportModalOpen(false);
       })
       .catch((error) => {
         if (error.response) {
@@ -206,15 +207,16 @@ const TasktaskScreen = () => {
       key: "labeler_state",
       align: "center",
       width: "25%",
-      render: (state) => {
+      render: (state, record) => {
         return (
           <Tooltip
-            title={state === "failed" ? "该标注者的标注被判定为不合格，点击此处可以举报" : ""}
+            title={state === 5 ? "该标注者的标注被判定为不合格，点击此处可以举报" : ""}
           >
             <Tag
               color={mapState2ColorChinese[state].color}
               onClick={() => {
-                if (state === "failed") {
+                if (state === 5) {
+                  setLabelerId(record.labeler_id)
                   setReportModalOpen(true);
                 }
               }}
@@ -236,7 +238,7 @@ const TasktaskScreen = () => {
             <Tooltip title="处于待审核状态可以审核">
               <Button
                 type="link"
-                disabled={record.labeler_state !== "checking"}
+                disabled={record.labeler_state !== 3}
                 onClick={() => {
                   setLabelerId(record.labeler_id);
                   setIsSample(false);
@@ -248,7 +250,7 @@ const TasktaskScreen = () => {
             </Tooltip>
             <Tooltip title="处于待审核状态可以审核">
               <Popconfirm
-                disabled={record.labeler_state !== "checking"}
+                disabled={record.labeler_state !== 3}
                 placement="bottom"
                 title="抽样审核"
                 okText="确认"
@@ -272,14 +274,14 @@ const TasktaskScreen = () => {
                   setIsLabelerList(false);
                 }}
               >
-                <Button type="link" disabled={record.labeler_state !== "checking"}>
+                <Button type="link" disabled={record.labeler_state !==3 }>
                   抽样审核
                 </Button>
               </Popconfirm>
             </Tooltip>
             <Tooltip title="对该用户单独进行自动审核">
               <Popconfirm
-                disabled={record.labeler_state !== "checking"}
+                disabled={record.labeler_state !== 3}
                 placement="bottom"
                 title="自动审核"
                 okText="确认"
@@ -307,7 +309,7 @@ const TasktaskScreen = () => {
                   postSingleAutoChecking(task.task_id, record.labeler_id, slideAccuracyValue);
                 }}
               >
-                <Button disabled={record.labeler_state != "checking"} type="link">
+                <Button disabled={record.labeler_state !== 3} type="link">
                   自动审核
                 </Button>
               </Popconfirm>
@@ -341,7 +343,7 @@ const TasktaskScreen = () => {
             <Descriptions.Item label="单题奖励" span={4}>
               {task.reward}
             </Descriptions.Item>
-            <Descriptions.Item label="单题限时" span={1}>
+            <Descriptions.Item label="单题限时" span={4}>
               {task.time}秒
             </Descriptions.Item>
             <Descriptions.Item label="分发方式" span={4}>
@@ -349,16 +351,16 @@ const TasktaskScreen = () => {
             </Descriptions.Item>
           </Descriptions>
         </ProCard>
-        <ProCard colSpan={"0%"}>
+        <ProCard>
           {isLabelerList ? (
             <>
-              {/* <Divider><h3>标注者信息</h3></Divider> */}
               <Table
                 columns={LabelerTableColumns}
                 dataSource={task.labeler_id.map((id, idx) => {
                   return {
                     labeler_id: id,
-                    labeler_state: task.label_state[idx],
+                    labeler_state: task.labeler_state[idx],
+                    labeler_credits: task.labeler_state[idx]
                   };
                 })}
                 pagination={{ pageSize: 5 }}
@@ -376,6 +378,7 @@ const TasktaskScreen = () => {
                 template={task.template}
                 rate={slideValue}
                 setIsLabelerList={setIsLabelerList}
+                setRefreshing={setRefreshing}
               />
             </>
           )}
@@ -401,7 +404,7 @@ const TasktaskScreen = () => {
             setLoading(true);
             const image_url = values.image_description.map((image: any) => image.response?.url);
             postReport(task.task_id, labelerId, values.description, image_url);
-            setReportModalOpen(false);
+            // setReportModalOpen(false);
           }}
           autoComplete="off"
         >

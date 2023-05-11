@@ -29,12 +29,15 @@ interface LabelerTask {
 const { Search } = Input;
 
 const LabelerTaskList = (props: LabelerTaskListProps) => {
-  const [pageNumber, setPageNumber] = useState<number|null>(null);
+  const [pageNumber, setPageNumber] = useState<number | null>(null);
   const [taskLists, setTaskLists] = useState<LabelerTask[]>([]);
   const [problemsModalOpen, setProblemsModalOpen] = useState<boolean>(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+  const [problemIndex, setProblemIndex] = useState<number>(0);
+  const [problem, setProblem] = useState<any>();
+
   const [detail, setDetail] = useState<LabelerTask>({
     title: "",
     template: "TextClassification",
@@ -46,7 +49,6 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
-  const CarouselRef = useRef<any>(null);
 
   useEffect(() => {
     request(`/api/${props.state}`, "GET")
@@ -185,7 +187,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             setReportModalOpen(true)
           }}>举报</Button>
           <Button type="link" onClick={() => {
-            setDetail({...record, task_data: record.task_data})
+            setDetail(record)
             setProblemsModalOpen(true)
           }}>查看</Button>
         </>
@@ -200,59 +202,57 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
           题目详情
         </Typography>
         <Divider></Divider>
-        <Carousel dots={false} ref={CarouselRef}>
-          <div>
-            {detail.task_data.map((problem: any, idx: number) => (
-              <>
-                <Problem problem={problem} index={idx} total={detail.task_data.length}/>
-                <Divider />
-                <Grid container>
-                  <Grid item xs>
-                <Tooltip title={idx === 0 ? "已经是第一题了" : undefined}>
-                  <Button
-                    disabled={idx === 0}
-                    onClick={() => {
-                      CarouselRef.current?.goTo(idx + 1, true);
-                    }}
-                  >
-                    上一题
-                  </Button>
-                </Tooltip>
-                <Divider type="vertical" />
-                <Tooltip title={idx === detail.task_data.length - 1 ? "已经是最后一题了" : undefined}>
-                  <Button
-                    disabled = {idx === detail.task_data.length - 1}
-                    onClick={() => {
-                      CarouselRef.current?.goTo(idx - 1, true);
-                    }}
-                  >
-                    下一题
-                  </Button>
-                </Tooltip>
-                <Divider type="vertical"/>
-                </Grid>
-                <Grid>
-                <InputNumber size="small" placeholder={`跳转至`}
-                  value={pageNumber}
-                  onChange={(e) => {
-                    setPageNumber(e)
+
+        <>
+          <Problem problem={detail.task_data[problemIndex]} index={problemIndex} total={detail.task_data.length} />
+          <Divider />
+          <Grid container>
+            <Grid item xs>
+              <Tooltip title={problemIndex === 0 ? "已经是第一题了" : undefined}>
+                <Button
+                  disabled={problemIndex === 0}
+                  onClick={() => {
+                    // CarouselRef.current?.goTo(idx + 1, true);
+                    setProblemIndex((i) => (i - 1))
                   }}
-                />
-                <Button type="link" onClick={() => {
-                  if(pageNumber!==null) {
-                    if(pageNumber<=detail.task_data.length&&pageNumber>=1) {
-                      CarouselRef.current?.goTo(pageNumber - 1, true);
-                    } else {
-                      message.warning(`请输入正确的题目序号1~${detail.task_data.length}`)
-                    }
+                >
+                  上一题
+                </Button>
+              </Tooltip>
+              <Divider type="vertical" />
+              <Tooltip title={problemIndex === detail.task_data.length - 1 ? "已经是最后一题了" : undefined}>
+                <Button
+                  disabled={problemIndex === detail.task_data.length - 1}
+                  onClick={() => {
+                    setProblemIndex((i) => (i + 1))
+                  }}
+                >
+                  下一题
+                </Button>
+              </Tooltip>
+              <Divider type="vertical" />
+            </Grid>
+            <Grid>
+              <InputNumber size="small" placeholder={`跳转至`}
+                value={pageNumber}
+                onChange={(e) => {
+                  setPageNumber(e)
+                }}
+              />
+              <Button type="link" onClick={() => {
+                if (pageNumber !== null) {
+                  if (pageNumber <= detail.task_data.length && pageNumber >= 1) {
+                    setProblemIndex(pageNumber - 1);
+                  } else {
+                    message.warning(`请输入正确的题目序号1~${detail.task_data.length}`)
                   }
-                }}>跳转至</Button>
-                </Grid>
-                </Grid>
-              </>
-            ))}
-          </div>
-        </Carousel>
+                }
+              }}>跳转至</Button>
+            </Grid>
+          </Grid>
+        </>
+        {/* </div>
+        </Carousel> */}
       </Modal>
       <Modal open={reportModalOpen} onCancel={() => { setReportModalOpen(false) }} footer={null} destroyOnClose>
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>

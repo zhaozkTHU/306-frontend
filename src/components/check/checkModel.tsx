@@ -13,6 +13,7 @@ interface CheckModelProps {
   template: string;
   rate: number;
   setIsLabelerList: Dispatch<SetStateAction<boolean>>;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -25,6 +26,7 @@ const CheckModel = (props: CheckModelProps) => {
   const [result, setResult] = useState<any[]>([]);
   const [checkedNumber, setCheckedNumber] = useState<number>(0);
   const router = useRouter();
+  const [problemIndex, setProblemIndex] = useState<number>(0);
   const CarouselRef = useRef<any>(null);
   /**
    * Request for the labeled data
@@ -33,7 +35,7 @@ const CheckModel = (props: CheckModelProps) => {
   useEffect(() => {
     request(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, "GET")
       .then((response) => {
-        const newProblems: any[] = JSON.parse(JSON.parse(response.data.label_data));
+        const newProblems: any[] = response.data.label_data;
         const totalNumber = newProblems.length;
         setCheckedNumber(Math.ceil((totalNumber * props.rate) / 100));
         setResult(newProblems);
@@ -73,7 +75,7 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-        // props.setRefreshing(true);
+        props.setRefreshing(true);
       });
   };
   /**
@@ -91,60 +93,112 @@ const CheckModel = (props: CheckModelProps) => {
       {refreshing ? (
         <p>Loading...</p>
       ) : (
-        <Carousel dots={false} ref={CarouselRef}>
-          {result.map((items, index) => (
-            <div key={index}>
-              <Problem
-                problem={items}
-                index={index}
-                total={result.length}
-              />
-              <Divider />
-              <Grid container>
-                <Grid item xs>
-                  <Radio.Group
-                    defaultValue="fail"
-                    onChange={(e: RadioChangeEvent) => {
-                      if (e.target.value === "pass") {
-                        setPassedNumber((b) => b + 1);
-                      } else if (e.target.value === "fail") {
-                        setPassedNumber((b) => b - 1);
-                      }
-                    }}
-                  >
-                    <Radio value="pass">合格</Radio>
-                    <Radio value="fail">不合格</Radio>
-                  </Radio.Group>
-                </Grid>
-                <Grid>
-                  <Tooltip title={index === 0 ? "已经是第一题了" : undefined}>
-                    <Button
-                      disabled={index === 0}
-                      onClick={() => {
-                        CarouselRef.current?.goTo(index - 1, true);
-                      }}
-                    >
-                      上一题
-                    </Button>
-                  </Tooltip>
-                  <Divider type="vertical"/>
-                  <Tooltip title={index === result.length - 1 ? "已经是最后一题了" : undefined}>
-                    <Button
-                      disabled={index === result.length - 1}
-                      onClick={() => {
-                        CarouselRef.current?.goTo(index + 1, true);
-                      }}
-                    >
-                      下一题
-                    </Button>
-                  </Tooltip>
-                </Grid>
-              </Grid>
-              <Divider />
-            </div>
-          ))}
-        </Carousel>
-      )}
+        <div>
+          <Problem
+            problem={result[problemIndex]}
+            index={problemIndex}
+            total={result.length}
+          />
+          <Divider />
+          <Grid container>
+            <Grid item xs>
+              <Radio.Group
+                defaultValue="fail"
+                onChange={(e: RadioChangeEvent) => {
+                  if (e.target.value === "pass") {
+                    setPassedNumber((b) => b + 1);
+                  } else if (e.target.value === "fail") {
+                    setPassedNumber((b) => b - 1);
+                  }
+                }}
+              >
+                <Radio value="pass">合格</Radio>
+                <Radio value="fail">不合格</Radio>
+              </Radio.Group>
+            </Grid>
+            <Grid>
+              <Tooltip title={problemIndex === 0 ? "已经是第一题了" : undefined}>
+                <Button
+                  disabled={problemIndex === 0}
+                  onClick={() => {
+                    setProblemIndex((i) => (i-1))
+                  }}
+                >
+                  上一题
+                </Button>
+              </Tooltip>
+              <Divider type="vertical" />
+              <Tooltip title={problemIndex === result.length - 1 ? "已经是最后一题了" : undefined}>
+                <Button
+                  disabled={problemIndex === result.length - 1}
+                  onClick={() => {
+                    // CarouselRef.current?.goTo(problemIndex + 1, true);
+                    setProblemIndex((i) => (i+1))
+                  }}
+                >
+                  下一题
+                </Button>
+              </Tooltip>
+            </Grid>
+          </Grid>
+          <Divider />
+        </div>
+        // <div>
+        // <Carousel dots={false} ref={CarouselRef}>
+        // result.map((items, index) => (
+        //   <div key={index}>
+        //     <Problem
+        //       problem={items}
+        //       index={index}
+        //       total={result.length}
+        //     />
+        //     <Divider />
+        //     <Grid container>
+        //       <Grid item xs>
+        //         <Radio.Group
+        //           defaultValue="fail"
+        //           onChange={(e: RadioChangeEvent) => {
+        //             if (e.target.value === "pass") {
+        //               setPassedNumber((b) => b + 1);
+        //             } else if (e.target.value === "fail") {
+        //               setPassedNumber((b) => b - 1);
+        //             }
+        //           }}
+        //         >
+        //           <Radio value="pass">合格</Radio>
+        //           <Radio value="fail">不合格</Radio>
+        //         </Radio.Group>
+        //       </Grid>
+        //       <Grid>
+        //         <Tooltip title={index === 0 ? "已经是第一题了" : undefined}>
+        //           <Button
+        //             disabled={index === 0}
+        //             onClick={() => {
+        //               CarouselRef.current?.goTo(index - 1, true);
+        //             }}
+        //           >
+        //             上一题
+        //           </Button>
+        //         </Tooltip>
+        //         <Divider type="vertical"/>
+        //         <Tooltip title={index === result.length - 1 ? "已经是最后一题了" : undefined}>
+        //           <Button
+        //             disabled={index === result.length - 1}
+        //             onClick={() => {
+        //               CarouselRef.current?.goTo(index + 1, true);
+        //             }}
+        //           >
+        //             下一题
+        //           </Button>
+        //         </Tooltip>
+        //       </Grid>
+        //     </Grid>
+        //     <Divider />
+        //   </div>
+      )
+        // </Carousel>
+        // </div>
+      }
       <Grid container>
         <Grid item xs>
           <Button
@@ -187,7 +241,7 @@ const CheckModel = (props: CheckModelProps) => {
           </Button>
         </Grid>
       </Grid>
-    </Spin>
+    </Spin >
   );
 };
 
