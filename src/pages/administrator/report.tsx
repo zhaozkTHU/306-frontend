@@ -194,6 +194,7 @@ const AdministratorReport = () => {
           onFinish={(values) => {
             setLoading(true);
             deal_report(reportId, pass, values.credits, values.description);
+            setDealReportModalOpen(false)
           }}
           autoComplete="off"
         >

@@ -51,7 +51,7 @@ export interface DemanderTaskTableEntry {
   distribute: "system" | "agent";
   distribute_type: "order" | "smart";
   type: "sentiment" | "part-of-speech" | "intent" | "event";
-  agent: string;
+  agent_username: string;
 }
 
 interface DemanderTaskListProps {
@@ -229,7 +229,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     distribute: "agent",
     distribute_type: "order",
     type: "event",
-    agent: "agent1",
+    agent_username: "agent1",
   });
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
@@ -479,8 +479,10 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       })
       .catch((err) => {
         console.log(err.reponse?.data);
-      });
-    setRefreshing(false);
+      })
+      .finally(() => {
+        setRefreshing(false);
+      })
   }, [router, refreshing]);
   return (
     <>

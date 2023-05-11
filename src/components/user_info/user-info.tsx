@@ -77,6 +77,7 @@ export interface UsersInfo {
   credits: number;
   prefer: string | null;
   is_bound: boolean;
+  is_vip: boolean;
 }
 
 interface UsersInfoProps {
@@ -94,6 +95,7 @@ const UserInfo = (props: UsersInfoProps) => {
     credits: 0,
     prefer: null,
     is_bound: false,
+    is_vip: false
   });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
   const [value, setValue] = React.useState(0);
