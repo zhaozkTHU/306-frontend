@@ -29,24 +29,27 @@ const columns: ColumnsType<RankListData["rank_lists"][0]> = [
 
 const RankList: React.FC = () => {
   const [rankListData, setRankListData] = useState<RankListData>({ rank_lists: [], my_rank: 0, my_points: 0 });
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     axios.get("/api/rank", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
       .then((value) => { setRankListData(value.data); console.log(value.data); })
       .catch((reason) => {
         console.log(reason);
         message.error("获取排行榜失败");
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   // 强调my_rank所在行
   return (
     <Table
+      loading={loading}
       columns={columns}
       dataSource={rankListData.rank_lists}
       rowKey="username"
       pagination={false}
       bordered
-      rowClassName={(_record, index) => index === rankListData.my_rank - 1 ? "rank-list-row" : ""}
+      rowClassName={(_record, index) => index === rankListData.my_rank - 1 ? "highlightrow" : ""}
     />
   );
 };

@@ -100,6 +100,7 @@ const TaskInfoForm: React.FC<{
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+  const [agentList, setAgentList] = useState<any[]>([]);
   const [form] = Form.useForm<TaskInfo>();
   const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
@@ -114,6 +115,12 @@ const TaskInfoForm: React.FC<{
     form.setFieldValue("agent_username", undefined);
   }, [distribute, form]);
 
+  useEffect(() => {
+    axios.get("/api/get_agent", {headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}})
+      .then((value) => setAgentList(value.data.data))
+      .catch((reason) => message.error(`获取中介失败 ${reason.message}`));
+  }, []);
+
   const onFinish = () => {
     setLoading(true);
     const value = form.getFieldsValue();
@@ -121,7 +128,8 @@ const TaskInfoForm: React.FC<{
     const deadline = (value.deadline as unknown as dayjs.Dayjs).valueOf();
     let task_data: typeof value.task_data = [];
     if (batch) {
-      task_data = (value.task_data as unknown as UploadFile[])[0]?.response?.url;
+      // task_data = (value.task_data as unknown as UploadFile[])[0]?.response?.url;
+      value.batch_file = (value.batch_file as unknown as UploadFile[])[0]?.response?.url;
     } else if (value.template === "TextClassification") {
       task_data = value.task_data;
     } else if (value.template === "ImagesClassification") {
@@ -288,7 +296,7 @@ const TaskInfoForm: React.FC<{
             name="agent_username"
             rules={[{ required: true, message: "请输入分发中介名" }]}
           >
-            <Input />
+            <Select options={agentList.map((agent) => ({value: agent.username, label: agent.username}))} />
           </Form.Item>
         )}
         <Row>
