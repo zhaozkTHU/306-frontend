@@ -361,9 +361,9 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         <Divider />
         <div>{currentProblem.description}</div>
         {taskInfo.template === "SoundTag" ? (
-          <MyAudio url={"/api/file?url=" + currentProblem.url} controls />
+          <MyAudio url={currentProblem.url} controls />
         ) : (
-          <MyVideo url={"/api/file?url=" + currentProblem.url} controls />
+          <MyVideo url={currentProblem.url} controls />
         )}
         <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
           {currentProblem.choice.map((option, index) => (

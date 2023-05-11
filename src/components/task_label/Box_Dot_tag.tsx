@@ -14,32 +14,7 @@ import {
   isImageFrameProblem,
   ImageFrameProblem,
 } from "@/const/interface";
-import MyAnnotator from "@/components/task_label/MyAnnotator";
-
-// const MyImageUrl = (src: string) => {
-//   const [imageUrl, setImageUrl] = useState<string>("");
-
-//   useEffect(() => {
-//     axios
-//       .get("/api/file", {
-//         responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
-//         params: { url: src },
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem("token")}`,
-//         },
-//       })
-//       .then((response) => {
-//         const blob = new Blob([response.data], { type: "image/jpeg" });
-//         const url = URL.createObjectURL(blob);
-//         setImageUrl(url);
-//       })
-//       .catch((error) => {
-//         console.error(error);
-//       });
-//   }, [src]);
-
-//   return imageUrl;
-// };
+import ImageAnnotation from "@/components/task_label/MyAnnotator";
 
 const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
@@ -373,8 +348,8 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem.description}</div>
-        <MyAnnotator
-          src={"/api/image?url=" + currentProblem.url}
+        <ImageAnnotation
+          src={currentProblem.url}
           onChange={handleTagChange}
           tools={taskInfo.template === "FaceTag" ? "dot" : "rectangle"}
           initialAnnotations={tagAnswersAll[currentProblemIndex]}
