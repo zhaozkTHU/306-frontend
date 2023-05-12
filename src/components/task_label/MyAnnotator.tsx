@@ -42,6 +42,10 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     left: 0,
     zIndex: 1,
   };
+  useEffect(() => { // clear the canvas when the URL changes(change problem)
+    // Clear the annotations and the canvas when the URL changes
+    clearAnnotations();
+  }, [props.src]);
 
   const drawAnnotations = () => {
     if (!canvasRef.current) {
