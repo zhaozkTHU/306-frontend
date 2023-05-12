@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, message, Modal, Steps, Divider, Space } from "antd";
+import { Button, message, Modal, Steps, Divider, Space, Spin } from "antd";
 import {
   SaveOutlined,
   UploadOutlined,
@@ -149,6 +149,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     const seconds = totalSeconds % 60;
     return `${hours}h ${minutes}m ${seconds}s`;
   };
+
   const handleTagChange = (
     updatedAnnotations: Array<
       { x: number; y: number; width: number; height: number } | { x: number; y: number }
@@ -177,7 +178,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
     const newSavedProblems = [...savedProblems];
     newSavedProblems[currentProblemIndex] = true;
     setSavedProblems(newSavedProblems);
-    localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
+    localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(newSavedProblems));
     localStorage.setItem(
       `tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`,
       JSON.stringify(tagAnswers)
@@ -261,18 +262,21 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
-      setCurrentProblemIndex((prevState: number) => prevState - 1);
-      const newTagAnswers = filteredTaskData[currentProblemIndex].data || [];
-      setTagAnswers(newTagAnswers);
-      const storedTagAnswers = localStorage.getItem(
-        `tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
-
-      const storedTimer = localStorage.getItem(
-        `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+      setCurrentProblemIndex((prevState: number) => {
+        const newIndex = prevState - 1;
+        const newTagAnswers = filteredTaskData[newIndex].data || [];
+        setTagAnswers(newTagAnswers);
+        const storedTagAnswers = localStorage.getItem(
+          `tagAnswers-${taskInfo.task_id}-${newIndex}`
+        );
+        setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
+        
+        const storedTimer = localStorage.getItem(
+          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
+        );
+        setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        return newIndex;
+      });
     } else {
       message.warning("This is the first problem!");
     }
@@ -297,23 +301,30 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
-      setCurrentProblemIndex((prevState: number) => prevState + 1);
-      const newTagAnswers = filteredTaskData[currentProblemIndex].data || [];
-      setTagAnswers(newTagAnswers);
-      const storedTagAnswers = localStorage.getItem(
-        `tagAnswers-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
-
-      const storedTimer = localStorage.getItem(
-        `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+      setCurrentProblemIndex((prevState: number) => {
+        const newIndex = prevState + 1;
+        const newTagAnswers = filteredTaskData[newIndex].data || [];
+        setTagAnswers(newTagAnswers);
+        const storedTagAnswers = localStorage.getItem(
+          `tagAnswers-${taskInfo.task_id}-${newIndex}`
+        );
+        setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
+        
+        const storedTimer = localStorage.getItem(
+          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
+        );
+        setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        return newIndex;
+      });
     } else {
       message.warning("This is the last problem!");
     }
   };
 
+  if (!currentProblem) {
+    console.log("Loading...");
+    return <Spin tip="Loading..."/>;
+  }
   if (taskInfo.template === "FaceTag" || taskInfo.template === "ImageFrame") {
     return (
       <div>
@@ -347,7 +358,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
           </div>
         </div>
         <Divider />
-        <div>{currentProblem.description}</div>
+        <div>{currentProblem && currentProblem.description}</div>
         <ImageAnnotation
           src={currentProblem.url}
           onChange={handleTagChange}

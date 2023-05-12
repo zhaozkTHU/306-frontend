@@ -16,7 +16,7 @@ interface Report {
   reporter_role: string,
   reported_role: string,
   description: string,
-  image_description: string[]
+  image_desription: string[]
 }
 
 const AdministratorReport = () => {
@@ -32,7 +32,7 @@ const AdministratorReport = () => {
     task_id: -1,
     user_id: -1,
     description: "",
-    image_description: [],
+    image_desription: [],
     reporter_role: "demander",
     reported_role: "labeler",
   })
@@ -41,7 +41,7 @@ const AdministratorReport = () => {
   useEffect(() => {
     request("/api/administrator/report", "GET")
       .then((reponse) => {
-        setReportList(reponse.data.report_list);
+        setReportList(reponse.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -194,6 +194,7 @@ const AdministratorReport = () => {
           onFinish={(values) => {
             setLoading(true);
             deal_report(reportId, pass, values.credits, values.description);
+            setDealReportModalOpen(false)
           }}
           autoComplete="off"
         >
@@ -268,11 +269,10 @@ const AdministratorReport = () => {
         <Divider />
         <p>举报者身份: {mapRole2En[detail.reporter_role]}</p>
         <p>被举报者身份: {mapRole2En[detail.reported_role]}</p>
-        <p>举报者描述:</p>
-        <p>{detail.description}</p>
+        <p>举报者描述: {detail.description}</p>
         <p>图片证据:</p>
         <Row>
-          {detail.image_description.map((idx, url) =>
+          {detail.image_desription.map((url, idx) =>
             <Col key={idx}>
               <ImageFormatter key={idx}>
                 <MyImage
@@ -281,7 +281,7 @@ const AdministratorReport = () => {
                     objectFit: "contain",
                     objectPosition: "center center",
                   }}
-                  alt="图片加载失败"
+                  alt="图片加载中..."
                   height="100%"
                   width="100%"
                 />

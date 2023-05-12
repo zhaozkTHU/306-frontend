@@ -28,6 +28,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         </Button>
         <Modal 
           title="Classification" open={open} onCancel={handleCancel} footer={null}
+          width = {"80%"}
           style={{ 
             top: 0, 
             left: 0,
@@ -60,6 +61,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         </Button>
         <Modal 
           title="Sound Video Tag" open={open} onCancel={handleCancel} footer={null}
+          width = {"80%"}
           style={{ 
             top: 0, 
             left: 0,
@@ -92,6 +94,7 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         </Button>
         <Modal 
           title="Image annontation" open={open} onCancel={handleCancel} footer={null}
+          width = {"80%"}
           style={{ 
             top: 0, 
             left: 0,

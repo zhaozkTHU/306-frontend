@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Radio, Input, message, Modal, Steps, Divider, Space } from "antd";
+import { Button, Radio, Input, message, Modal, Steps, Divider, Space, Spin } from "antd";
 import {
   SaveOutlined,
   UploadOutlined,
@@ -262,24 +262,27 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
-      setCurrentProblemIndex((prevState: number) => prevState - 1);
-      const newChosenOptionIndex = filteredTaskData[currentProblemIndex].data?.choiceIndex || -1;
-      const newInputValue = filteredTaskData[currentProblemIndex].data?.input || "";
-      setChosenOptionIndex(newChosenOptionIndex);
-      setInputValue(newInputValue);
-      const storedChosenOptionIndex = localStorage.getItem(
-        `chosenOptionIndex-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      const storedInputValue = localStorage.getItem(
-        `inputValue-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
-      setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
+      setCurrentProblemIndex((prevState: number) => {
+        const newIndex = prevState - 1;
+        const newChosenOptionIndex = filteredTaskData[newIndex].data?.choiceIndex || -1;
+        const newInputValue = filteredTaskData[newIndex].data?.input || "";
+        setChosenOptionIndex(newChosenOptionIndex);
+        setInputValue(newInputValue);
+        const storedChosenOptionIndex = localStorage.getItem(
+          `chosenOptionIndex-${taskInfo.task_id}-${newIndex}`
+        );
+        const storedInputValue = localStorage.getItem(
+          `inputValue-${taskInfo.task_id}-${newIndex}`
+        );
+        setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
+        setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
 
-      const storedTimer = localStorage.getItem(
-        `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        const storedTimer = localStorage.getItem(
+          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
+        );
+        setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        return newIndex;
+      });
     } else {
       message.warning("这是第一道题！");
     }
@@ -304,29 +307,37 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
-      setCurrentProblemIndex((prevState: number) => prevState + 1);
-      const newChosenOptionIndex = filteredTaskData[currentProblemIndex].data?.choiceIndex || -1;
-      const newInputValue = filteredTaskData[currentProblemIndex].data?.input || "";
-      setChosenOptionIndex(newChosenOptionIndex);
-      setInputValue(newInputValue);
-      const storedChosenOptionIndex = localStorage.getItem(
-        `chosenOptionIndex-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      const storedInputValue = localStorage.getItem(
-        `inputValue-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
-      setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
+      setCurrentProblemIndex((prevState: number) => {
+        const newIndex = prevState + 1;
+        const newChosenOptionIndex = filteredTaskData[newIndex].data?.choiceIndex || -1;
+        const newInputValue = filteredTaskData[newIndex].data?.input || "";
+        setChosenOptionIndex(newChosenOptionIndex);
+        setInputValue(newInputValue);
 
-      const storedTimer = localStorage.getItem(
-        `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        const storedChosenOptionIndex = localStorage.getItem(
+          `chosenOptionIndex-${taskInfo.task_id}-${newIndex}`
+        );
+        const storedInputValue = localStorage.getItem(
+          `inputValue-${taskInfo.task_id}-${newIndex}`
+        );
+        setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
+        setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
+
+        const storedTimer = localStorage.getItem(
+          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
+        );
+        setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        return newIndex;
+      });
     } else {
       message.warning("这是最后一道题！");
     }
   };
 
+  if (!currentProblem) {
+    console.log("Loading...");
+    return <Spin tip="Loading..."/>;
+  }
   if (taskInfo.template === "SoundTag" || taskInfo.template === "VideoTag") {
     return (
       <div>
@@ -359,14 +370,14 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
           </div>
         </div>
         <Divider />
-        <div>{currentProblem.description}</div>
-        {taskInfo.template === "SoundTag" ? (
+        <div>{currentProblem && currentProblem.description}</div>
+        {currentProblem && ((taskInfo.template === "SoundTag") ? (
           <MyAudio url={currentProblem.url} controls />
         ) : (
           <MyVideo url={currentProblem.url} controls />
-        )}
+        ))}
         <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
-          {currentProblem.choice.map((option, index) => (
+          {currentProblem && currentProblem.choice.map((option, index) => (
             <Radio key={index} value={index}>
               {option.text}
               {option.needInput && (

@@ -19,6 +19,7 @@ interface task {
 
 const AgentDistributedTask = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [taskList, setTaskList] = useState<task[]>([]);
   const [detail, setDetail] = useState<task>({
     title: "",
@@ -86,7 +87,7 @@ const AgentDistributedTask = () => {
       align: "center",
       render: (_, record) => (
         <>
-          <Button onClick={() => { downLoadZip(record.batch_file) }} type="link">下载</Button>
+          <Button onClick={() => { downLoadZip(record.batch_file, setLoading) }} type="link">下载</Button>
           <Button type="link" onClick={() => { setDetail(record); setDetailModalOpen(true)}}>查看</Button>
         </>
       )
@@ -141,7 +142,7 @@ const AgentDistributedTask = () => {
           }
         })} pagination={{ pageSize: 2 }}/>
       </Modal>
-      <Table columns={TaskListColumns} loading={refreshing} dataSource={[detail]} />
+      <Table columns={TaskListColumns} loading={refreshing||loading} dataSource={[detail]} />
     </>
   )
 };

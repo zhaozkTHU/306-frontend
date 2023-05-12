@@ -185,7 +185,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             setReportModalOpen(true)
           }}>举报</Button>
           <Button type="link" onClick={() => {
-            setDetail({...record, task_data: JSON.parse(JSON.parse(record.task_data))})
+            setDetail({...record, task_data: record.task_data})
             setProblemsModalOpen(true)
           }}>查看</Button>
         </>
@@ -267,6 +267,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
               (image: any) => image.response?.url
             );
             postReport(detail.task_id, detail.demander_id, values.description, image_url);
+            setReportModalOpen(false)
           }}
           autoComplete="off"
         >

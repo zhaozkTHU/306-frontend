@@ -129,6 +129,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       console.log("down no canvas")
       return;
     }
+    if (canvasRef.current) { console.log("width: ", canvasRef.current.width, "height: ", canvasRef.current.height);}
     console.log("down state")
     console.log(currentAnnotation)
     console.log(annotations)
@@ -321,7 +322,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         height="100%"
         width="100%"
       />
-      <canvas ref={canvasRef} style={{...annotationOverlayStyle, border:"solid"}} />
+      <canvas ref={canvasRef} style={{...annotationOverlayStyle, /*border:"solid"*/}} />
       <Divider />
       <div style={toolbarStyle}>
         <Radio.Group
