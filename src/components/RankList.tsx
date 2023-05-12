@@ -42,15 +42,18 @@ const RankList: React.FC = () => {
 
   // 强调my_rank所在行
   return (
-    <Table
-      loading={loading}
-      columns={columns}
-      dataSource={rankListData.rank_lists}
-      rowKey="username"
-      pagination={false}
-      bordered
-      rowClassName={(_record, index) => index === rankListData.my_rank - 1 ? "highlightrow" : ""}
-    />
+    <>
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={rankListData.rank_lists}
+        rowKey="username"
+        pagination={false}
+        bordered
+        rowClassName={(_record, index) => index === rankListData.my_rank - 1 ? "highlightrow" : ""}
+      />
+      你的排名：{rankListData.my_rank}，积分：{rankListData.my_points}
+    </>
   );
 };
 
