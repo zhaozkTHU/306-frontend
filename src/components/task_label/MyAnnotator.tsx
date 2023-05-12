@@ -148,8 +148,12 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         y: y,
       };
 
-      setAnnotations((prevAnnotations) => [...prevAnnotations, dot]);
-      props.onChange([...annotations, dot]);
+      setAnnotations((prevAnnotations) => {
+        const newAnnotations = [...prevAnnotations, dot];
+        props.onChange(newAnnotations);
+        return newAnnotations;
+      });
+      
     } 
     else if (props.tools === "rectangle") {
       isDrawingRef.current = true;
