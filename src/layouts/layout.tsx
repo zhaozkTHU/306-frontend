@@ -24,6 +24,7 @@ import { MenuItem } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
+import MemberComponent from "@/components/user_vip";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -201,7 +202,11 @@ const MyLayout = (props: MyLayoutProps) => {
                 }}
               />
             </Col>
-            <Col span={12}></Col>
+            <Col span={8}>
+            </Col>
+            <Col span={2}>
+                <MemberComponent />
+            </Col>
             <Col span={2}>
               <Button
                 type="text"

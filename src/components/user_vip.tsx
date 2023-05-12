@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag } from 'antd';
+import { Button, Modal, Progress, message, InputNumber, Tag, Space } from 'antd';
+import { SketchOutlined} from "@ant-design/icons";
 import axios from 'axios';
 import { mapLevel2Exp, mapLevel2Zh } from "@/const/interface"; // Importing your mappings
 
@@ -13,8 +14,8 @@ interface Info {
 const MemberComponent = () => {
   const [accountInfo, setAccountInfo] = useState<Info>(()=>{
     return {
-      username: '',
-      level: '',
+      username: '名字五个字',
+      level: 'bronze',
       exp: 0,
       points: 0,
     };
@@ -28,6 +29,10 @@ const MemberComponent = () => {
 
   useEffect(() => {
     // Call your API when the component mounts
+    fetchAccountInfo();
+  }, []);
+
+  const fetchAccountInfo = () => {
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
@@ -35,9 +40,7 @@ const MemberComponent = () => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
-
-  
+  };
   const buyExperience = () => {
     axios.post('/api/exp', {points: exchangeValue}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
@@ -67,18 +70,30 @@ const MemberComponent = () => {
   };
 
   return (
-    <div onClick={() => setShowModal(true)}>
-      <Tag color={mapLevel2Zh[accountInfo.level].color}>{mapLevel2Zh[accountInfo.level].name}</Tag>
-      <span>VIP Expiry: {vipExpiry && new Date(vipExpiry * 1000).toLocaleString()}</span>
+    <div>
+      <Button
+        type="text"
+        icon={<SketchOutlined />}
+        onClick={() => setShowModal(true)}
+        style={{
+          fontSize: "20px",
+          width: 80,
+          height: 80,
+          color: "white",
+        }}
+      />
+      {/* <span>VIP Expiry: {vipExpiry && new Date(vipExpiry * 1000).toLocaleString()}</span> */}
 
       {showModal && (
-        <Modal onCancel={() => setShowModal(false)} footer={null}>
+        <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
           <h2>{accountInfo && accountInfo.username}</h2>
           <Tag color={mapLevel2Zh[accountInfo.level].color}>Level: {mapLevel2Zh[accountInfo.level].name}</Tag>
           <p>Points: {accountInfo && accountInfo.points}</p>
           <p>Experience: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
-          <Button disabled={accountInfo && accountInfo.points <= 0} onClick={() => setBuyExpModal(true)}>Buy Experience</Button>
-          <Button disabled={accountInfo && accountInfo.level === "Diamond"} onClick={() => setBuyTimeModal(true)}>Buy VIP Time</Button>
+          <Space >
+            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyExpModal(true)}>Buy Experience</Button>
+            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyTimeModal(true)}>Buy VIP Time</Button>
+          </Space>
         </Modal>
       )}
 
