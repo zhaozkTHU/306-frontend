@@ -20,9 +20,10 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   const currentAnnotationRef = useRef<Annotation | null>(null);
   const annotationsRef = useRef<Annotation[]>(props.initialAnnotations ?? []);
 
-  const [annotations, setAnnotations] = useState<Annotation[]>(
-    props.initialAnnotations ?? []
-  );
+  const [annotations, setAnnotations] = useState<Annotation[]>(()=>{
+    const newAnnotations = props.initialAnnotations ?? [];
+    return newAnnotations;
+  });
   const [currentAnnotation, setCurrentAnnotation] = useState<Annotation | null>(null);
   const [tools, setTools] = useState<string>(props.tools);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,7 +47,11 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     // Clear the annotations and the canvas when the URL changes
     clearAnnotations();
   }, [props.src]);
-
+  useEffect(() => {
+    console.log("init", props.initialAnnotations);
+    setAnnotations(props.initialAnnotations ?? []);
+    drawAnnotations();
+  }, []);
   const drawAnnotations = () => {
     if (!canvasRef.current) {
       return;
