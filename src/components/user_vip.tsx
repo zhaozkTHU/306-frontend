@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag, Space } from 'antd';
-import { SketchOutlined} from "@ant-design/icons";
+import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin } from 'antd';
+import { 
+  SketchOutlined,
+  CrownOutlined,
+} from "@ant-design/icons";
 import axios from 'axios';
 import { mapLevel2Exp, mapLevel2Zh } from "@/const/interface"; // Importing your mappings
 
@@ -20,6 +23,7 @@ const MemberComponent = () => {
       points: 0,
     };
   });
+  const [Loading, setLoading] = useState(true);
   const [vipExpiry, setVipExpiry] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [buyExpModal, setBuyExpModal] = useState(false);
@@ -36,6 +40,7 @@ const MemberComponent = () => {
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
@@ -69,20 +74,24 @@ const MemberComponent = () => {
     return (accountInfo.exp / mapLevel2Exp[level]) * 100;
   };
 
+  if(Loading){
+    return <>return <Spin tip="Loading..."/>;</>
+  }
   return (
     <div>
-      <Button
-        type="text"
-        icon={<SketchOutlined />}
-        onClick={() => setShowModal(true)}
-        style={{
-          fontSize: "20px",
-          width: 80,
-          height: 80,
-          color: "white",
-        }}
-      />
-      {/* <span>VIP Expiry: {vipExpiry && new Date(vipExpiry * 1000).toLocaleString()}</span> */}
+      <Tooltip title={vipExpiry ? new Date(vipExpiry * 1000).toLocaleString() : "loading"}>
+        <Button
+          type="text"
+          icon={(accountInfo.level === 'diamond') ? <SketchOutlined /> : <CrownOutlined />}
+          onClick={() => setShowModal(true)}
+          style={{
+            fontSize: "20px",
+            width: 80,
+            height: 80,
+            color: "white",
+          }}
+        />
+      </Tooltip>
 
       {showModal && (
         <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
