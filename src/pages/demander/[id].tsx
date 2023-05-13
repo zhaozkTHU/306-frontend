@@ -1,20 +1,17 @@
 import CheckModel from "@/components/check/checkModel";
 import { DemanderTaskTableEntry } from "@/components/task_list/demander-task-list";
 import { add } from "@/components/task_manage/deleteList";
-import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
+import { mapState2ColorChinese } from "@/const/interface";
 import { request } from "@/utils/network";
-import { transTime } from "@/utils/valid";
-import { ProCard } from "@ant-design/pro-components";
+
 import {
   Button,
-  Descriptions,
   Divider,
   Form,
   Image,
   Modal,
   Popconfirm,
   Slider,
-  Space,
   Spin,
   Table,
   Tag,
@@ -210,16 +207,10 @@ const TasktaskScreen = () => {
       render: (state, record) => {
         return (
           <Tooltip
-            title={state === 5 ? "该标注者的标注被判定为不合格，点击此处可以举报" : ""}
+            title={mapState2ColorChinese[state].show}
           >
             <Tag
               color={mapState2ColorChinese[state].color}
-              onClick={() => {
-                if (state === 5) {
-                  setLabelerId(record.labeler_id)
-                  setReportModalOpen(true);
-                }
-              }}
             >
               {mapState2ColorChinese[state].description}
             </Tag>
@@ -228,7 +219,7 @@ const TasktaskScreen = () => {
       },
     },
     {
-      title: "审核操作",
+      title: "审核与举报",
       dataIndex: "labeler_detail",
       key: "labeler_detail",
       align: "center",
@@ -314,6 +305,15 @@ const TasktaskScreen = () => {
                 </Button>
               </Popconfirm>
             </Tooltip>
+            <Tooltip title="你可以对不合格的标注方进行举报">
+            <Button type="link"
+              disabled={record.state!==5}
+              onClick={() => {
+                setLabelerId(record.labeler_id)
+                setReportModalOpen(true);
+              }}
+            >举报</Button>
+            </Tooltip>
           </>
         );
       },
@@ -321,37 +321,17 @@ const TasktaskScreen = () => {
   ];
   const query = router.query;
   return (
+    <div style={{
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    }}>
     <Spin spinning={refreshing||loading}>
-      <ProCard split="vertical">
-        <ProCard colSpan={"40%"}>
-          <Descriptions bordered column={4}>
-            <Descriptions.Item label="标题" span={4}>
-              {task.title}
-            </Descriptions.Item>
-            <Descriptions.Item label="创建时间" span={4}>
-              {transTime(task.create_at)}
-            </Descriptions.Item>
-            <Descriptions.Item label="截止时间" span={4}>
-              {transTime(task.deadline)}
-            </Descriptions.Item>
-            <Descriptions.Item label="模板" span={4}>
-              {mapEntemplate2Zhtemplate[task.template]}
-            </Descriptions.Item>
-            <Descriptions.Item label="要求标注方人数" span={4}>
-              {task.labeler_number}
-            </Descriptions.Item>
-            <Descriptions.Item label="单题奖励" span={4}>
-              {task.reward}
-            </Descriptions.Item>
-            <Descriptions.Item label="单题限时" span={4}>
-              {task.time}秒
-            </Descriptions.Item>
-            <Descriptions.Item label="分发方式" span={4}>
-              {task.distribute==="agent"?`中介: ${task.agent_username}`:(task.distribute_type==="smart"?"系统-智能":"系统-顺序")}
-            </Descriptions.Item>
-          </Descriptions>
-        </ProCard>
-        <ProCard>
+      {/* <ProCard split="vertical">
+        <ProCard colSpan={"0%"}></ProCard>
+        <ProCard> */}
           {isLabelerList ? (
             <>
               <Table
@@ -360,7 +340,7 @@ const TasktaskScreen = () => {
                   return {
                     labeler_id: id,
                     labeler_state: task.labeler_state[idx],
-                    labeler_credits: task.labeler_state[idx]
+                    labeler_credits: task.labeler_credits[idx]
                   };
                 })}
                 pagination={{ pageSize: 5 }}
@@ -368,9 +348,6 @@ const TasktaskScreen = () => {
             </>
           ) : (
             <>
-              <Divider>
-                <h3>审核</h3>
-              </Divider>
               <CheckModel
                 task_id={task.task_id}
                 labeler_index={labelerId}
@@ -382,9 +359,6 @@ const TasktaskScreen = () => {
               />
             </>
           )}
-        </ProCard>
-      </ProCard>
-
       <Modal
         open={reportModalOpen}
         onCancel={() => {
@@ -404,7 +378,7 @@ const TasktaskScreen = () => {
             setLoading(true);
             const image_url = values.image_description.map((image: any) => image.response?.url);
             postReport(task.task_id, labelerId, values.description, image_url);
-            // setReportModalOpen(false);
+            setReportModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -471,6 +445,7 @@ const TasktaskScreen = () => {
         </Form>
       </Modal>
     </Spin>
+    </div>
   );
 };
 

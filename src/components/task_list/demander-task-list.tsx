@@ -125,7 +125,11 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       key: "title",
       align: "center",
       width: "25%",
-      render: (text, record) => <Button type="link" onClick={() => {router.push(`/demander/${record.task_id}`)}}>{text}</Button>,
+      render: (text, record) => (
+        <Tooltip title="点击此处查看标注者详情">
+          <Button type="link" onClick={() => { router.push(`/demander/${record.task_id}`) }}>{text}</Button>
+        </Tooltip>
+      ),
     },
     {
       title: "创建时间",
@@ -145,6 +149,14 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       filterSearch: true,
       filters: [
         {
+          text: "待管理员审核",
+          value: "admin_checking",
+        },
+        {
+          text: "分发中",
+          value: "distributing",
+        },
+        {
           text: "标注中",
           value: "labeling",
         },
@@ -156,17 +168,23 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           text: "已完成",
           value: "completed",
         },
+        {
+          text: "已过期",
+          value: "overdue",
+        },
       ],
       onFilter: (values, record) => record.state.indexOf(values) !== -1,
       render: (state) => {
         return (
-          <Space size={[0, 8]} wrap>
+          <>
             {state.map((s: string, idx: number) => (
-              <Tag color={mapState2ColorChinese[s]['color']} key={idx}>
-                {mapState2ColorChinese[s]['description']}
-              </Tag>
+              <Tooltip title={mapState2ColorChinese[s]['show']} key={idx}>
+                <Tag color={mapState2ColorChinese[s]['color']} >
+                  {mapState2ColorChinese[s]['description']}
+                </Tag>
+              </Tooltip>
             ))}
-          </Space>
+          </>
         );
       },
     },
@@ -179,38 +197,44 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       render: (_, record) => {
         return (
           <>
-            <Button
-              type="link"
-              onClick={() => {
-                setIsDetailModalOpen(true);
-                setDetail(record);
-              }}
-            >
-              查看
-            </Button>
-            <Popconfirm
-              title="导出"
-              okText="是"
-              cancelText="否"
-              description="是否归并数据后导出?"
-              onConfirm={() => {
-                DataExportCallback(record.task_id, true);
-              }}
-              onCancel={() => {
-                DataExportCallback(record.task_id, false);
-              }}
-            >
-              <Button type="link">导出</Button>
-            </Popconfirm>
-            <Button
-              type="link"
-              onClick={() => {
-                setLoading(true);
-                delete_task(record.task_id);
-              }}
-            >
-              删除
-            </Button>
+            <Tooltip title="点击此处查看任务基本信息">
+              <Button
+                type="link"
+                onClick={() => {
+                  setIsDetailModalOpen(true);
+                  setDetail(record);
+                }}
+              >
+                查看
+              </Button>
+            </Tooltip>
+            <Tooltip title="点击此处导出标注数据">
+              <Popconfirm
+                title="导出"
+                okText="是"
+                cancelText="否"
+                description="是否归并数据后导出?"
+                onConfirm={() => {
+                  DataExportCallback(record.task_id, true);
+                }}
+                onCancel={() => {
+                  DataExportCallback(record.task_id, false);
+                }}
+              >
+                <Button type="link">导出</Button>
+              </Popconfirm>
+            </Tooltip>
+            <Tooltip title="点击此处删除任务，请谨慎">
+              <Button
+                type="link"
+                onClick={() => {
+                  setLoading(true);
+                  delete_task(record.task_id);
+                }}
+              >
+                删除
+              </Button>
+            </Tooltip>
             <Tooltip title="点击此处进行自动审核">
               <Button
                 type="link"

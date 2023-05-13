@@ -20,7 +20,7 @@ const AdministratorCheckTask = () => {
   const [denyModalOpen, setDenyModalOpen] = useState<boolean>(false);
   const [taskDetail, setTaskDetail] = useState<TaskInfo>({
     task_id: -1,
-    title: "",
+    title: "标题五个字",
     create_at: 0,
     deadline: 0,
     template: "TextClassification",
@@ -32,7 +32,7 @@ const AdministratorCheckTask = () => {
     batch: false,
     type: "event",
     distribute: "system",
-    agent_user: "",
+    agent_username: "中介名称五个字",
   });
   useEffect(() => {
     if (!router.isReady) {
@@ -90,15 +90,17 @@ const AdministratorCheckTask = () => {
       key: "title",
       align: "center",
       render: (text, record) => (
-        <Button
-          type="link"
-          onClick={() => {
-            setTaskDetail(record);
-            setTaskDetailModalOpen(true);
-          }}
-        >
-          {text}
-        </Button>
+        <Tooltip title="点击此处查看任务详情">
+          <Button
+            type="link"
+            onClick={() => {
+              setTaskDetail(record);
+              setTaskDetailModalOpen(true);
+            }}
+          >
+            {text}
+          </Button>
+        </Tooltip>
       ),
     },
     {
@@ -192,6 +194,7 @@ const AdministratorCheckTask = () => {
           onFinish={(values) => {
             setLoading(true);
             postCheckTask(taskId, false, values.credits, values.message);
+            setDenyModalOpen(false)
           }}
           autoComplete="off"
         >
@@ -289,7 +292,7 @@ const AdministratorCheckTask = () => {
               {taskDetail.labeler_number}
             </Descriptions.Item>
             <Descriptions.Item label="分发方式" span={4}>
-              {taskDetail.distribute==="agent"?`中介: ${taskDetail.agent_user}`:(taskDetail.distribute_type==="smart"?"系统-智能":"系统-顺序")}
+              {taskDetail.distribute === "agent" ? `中介: ${taskDetail.agent_username}` : (taskDetail.distribute_type === "smart" ? "系统-智能" : "系统-顺序")}
             </Descriptions.Item>
           </Descriptions>
         </>

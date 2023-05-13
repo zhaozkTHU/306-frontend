@@ -24,7 +24,16 @@ const Problem = (props: ProbelmProps) => {
       <h3>
         第{props.index + 1}/{props.total}题: {props.problem.description}
       </h3>
-      <Checkbox.Group options={props.problem.options} value={selected} disabled={true} />
+      {props.problem.chosen.map((option: boolean, idx: number) => (
+        <>
+        <Checkbox key={idx} checked={option} disabled={true}>
+          {props.problem.options[idx]}
+        </Checkbox>
+        <br/>
+        <br/>
+        </>
+      ))}
+      {/* <Checkbox.Group options={props.problem.options} value={selected} disabled={true} /> */}
     </>
   )
   } else if (props.problem.template == "ImagesClassification") {

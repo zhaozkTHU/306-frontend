@@ -1,10 +1,10 @@
 import { mapEntemplate2Zhtemplate } from "@/const/interface";
 import store from "@/store";
 import { request } from "@/utils/network";
-import { Button, Carousel, Divider, Form, Image, Input, InputNumber, Modal, Row, Table, Tooltip, Upload, UploadFile, UploadProps, message } from "antd";
+import { Button, Divider, Form, Image, Input, InputNumber, Modal, Table, Tooltip, Upload, UploadFile, UploadProps, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { add } from "../task_manage/deleteList";
 import { RcFile } from "antd/es/upload";
 import Typography from "@mui/material/Typography";
@@ -36,7 +36,6 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [problemIndex, setProblemIndex] = useState<number>(0);
-  const [problem, setProblem] = useState<any>();
 
   const [detail, setDetail] = useState<LabelerTask>({
     title: "",
@@ -197,7 +196,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
 
   return (
     <>
-      <Modal open={problemsModalOpen} onCancel={() => { setProblemsModalOpen(false) }} footer={null} destroyOnClose>
+      <Modal open={problemsModalOpen} onCancel={() => { setProblemsModalOpen(false); setProblemIndex(0); }} footer={null} destroyOnClose>
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           题目详情
         </Typography>
@@ -251,8 +250,6 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             </Grid>
           </Grid>
         </>
-        {/* </div>
-        </Carousel> */}
       </Modal>
       <Modal open={reportModalOpen} onCancel={() => { setReportModalOpen(false) }} footer={null} destroyOnClose>
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
