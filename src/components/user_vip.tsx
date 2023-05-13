@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin } from 'antd';
+import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select } from 'antd';
 import { 
   SketchOutlined,
   CrownOutlined,
@@ -29,7 +29,9 @@ const MemberComponent = () => {
   const [buyExpModal, setBuyExpModal] = useState(false);
   const [buyTimeModal, setBuyTimeModal] = useState(false);
   const [exchangeValue, setExchangeValue] = useState(0);
+  const [vipTime, setVipTime] = useState<number>(0);
   const token = localStorage.getItem("token");
+  const { Option } = Select;
 
   useEffect(() => {
     // Call your API when the component mounts
@@ -58,8 +60,12 @@ const MemberComponent = () => {
       });
   };
 
-  const buyVipTime = (time: number) => {
-    axios.post('/api/membership', {vip_time: time}, { headers: { Authorization: `Bearer ${token}` } })
+  const buyVipTime = () => {
+    if(vipTime <= 0 || !(vipTime === 15 || vipTime === 30 || vipTime === 60)) {
+      message.error('Please select a legal time period');
+      return;
+    }
+    axios.post('/api/membership', {vip_time: vipTime}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setVipExpiry(response.data.ddl_time);
         setBuyTimeModal(false);
@@ -79,7 +85,7 @@ const MemberComponent = () => {
   }
   return (
     <div>
-      <Tooltip title={vipExpiry ? new Date(vipExpiry * 1000).toLocaleString() : "loading"}>
+      <Tooltip title={vipExpiry ? new Date(vipExpiry * 1000).toLocaleString() : <Spin size="small" tip="Loading..."/>}>
         <Button
           type="text"
           icon={(accountInfo.level === 'diamond') ? <SketchOutlined /> : <CrownOutlined />}
@@ -107,16 +113,27 @@ const MemberComponent = () => {
       )}
 
       {buyExpModal && (
-        <Modal onCancel={() => setBuyExpModal(false)} onOk={buyExperience}>
+        <Modal onCancel={() => setBuyExpModal(false)} onOk={buyExperience} open={buyExpModal} title="购买经验">
           <InputNumber min={1} max={accountInfo && accountInfo.points} onChange={value => setExchangeValue(value || 0)} />
         </Modal>
       )}
 
       {buyTimeModal && (
-        <Modal onCancel={() => setBuyTimeModal(false)}>
-          <Button disabled={accountInfo && accountInfo.points < 5} onClick={() => buyVipTime(15)}>Buy 15s VIP Time</Button>
-          <Button disabled={accountInfo && accountInfo.points < 9} onClick={() => buyVipTime(30)}>Buy 30s VIP Time</Button>
-          <Button disabled={accountInfo && accountInfo.points < 15} onClick={() => buyVipTime(60)}>Buy 60s VIP Time</Button>
+        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal} title="购买流量包">
+          <Select 
+            onChange={(value: number) => setVipTime(value)}
+            placeholder="Select VIP Time"
+          >
+            <Option value={15} disabled={accountInfo && accountInfo.points < 5}>
+              Buy 15s VIP Time
+            </Option>
+            <Option value={30} disabled={accountInfo && accountInfo.points < 9}>
+              Buy 30s VIP Time
+            </Option>
+            <Option value={60} disabled={accountInfo && accountInfo.points < 15}>
+              Buy 60s VIP Time
+            </Option>
+          </Select>
         </Modal>
       )}
     </div>
