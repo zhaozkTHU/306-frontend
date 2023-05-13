@@ -165,10 +165,13 @@ const AdministratorCheckTask = () => {
             不通过
           </Button>
           <Tooltip title="点击此处下载题目文件">
-            <Button type="link" onClick={() => {
-              setLoading(true)
-              downLoadZip(record.batch_file, setLoading)
-            }}>
+            <Button
+              type="link"
+              onClick={() => {
+                setLoading(true);
+                downLoadZip(record.batch_file, setLoading);
+              }}
+            >
               下载
             </Button>
           </Tooltip>
@@ -297,7 +300,12 @@ const AdministratorCheckTask = () => {
           </Descriptions>
         </>
       </Modal>
-      <Table columns={columns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 6 }} />
+      <Table
+        columns={columns}
+        dataSource={tasks}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 6 }}
+      />
     </>
   );
 };

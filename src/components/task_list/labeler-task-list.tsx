@@ -1,7 +1,23 @@
 import { mapEntemplate2Zhtemplate } from "@/const/interface";
 import store from "@/store";
 import { request } from "@/utils/network";
-import { Button, Divider, Form, Image, Input, InputNumber, Modal, Table, Tooltip, Upload, UploadFile, UploadProps, message } from "antd";
+import {
+  Button,
+  Carousel,
+  Divider,
+  Form,
+  Image,
+  Input,
+  InputNumber,
+  Modal,
+  Row,
+  Table,
+  Tooltip,
+  Upload,
+  UploadFile,
+  UploadProps,
+  message,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -14,16 +30,16 @@ import Problem from "../demander_problem/problem";
 import Grid from "@mui/material/Grid";
 
 interface LabelerTaskListProps {
-  state: string
+  state: string;
 }
 
 interface LabelerTask {
-  demander_id: number,
-  task_id: number,
-  title: string,
-  template: string,
-  reward: number,
-  task_data: any[]
+  demander_id: number;
+  task_id: number;
+  title: string;
+  template: string;
+  reward: number;
+  task_data: any[];
 }
 
 const { Search } = Input;
@@ -44,7 +60,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
     task_data: [],
     task_id: 0,
     demander_id: 0,
-  })
+  });
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
@@ -52,7 +68,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
   useEffect(() => {
     request(`/api/${props.state}`, "GET")
       .then((response) => {
-        setTaskLists(response.data.data)
+        setTaskLists(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -62,10 +78,9 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
         }
       })
       .finally(() => {
-        setRefreshing(false)
-      })
-  }, [refreshing])
-
+        setRefreshing(false);
+      });
+  }, [refreshing]);
 
   const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
     action: "/api/file",
@@ -153,9 +168,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       key: "title",
       align: "center",
       width: "25%",
-      render: (username, record) => (
-        <Button type="link">{username}</Button>
-      )
+      render: (username, record) => <Button type="link">{username}</Button>,
     },
     {
       title: "任务模板",
@@ -163,9 +176,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       key: "template",
       align: "center",
       width: "25%",
-      render: (template) => (
-        mapEntemplate2Zhtemplate[template]
-      )
+      render: (template) => mapEntemplate2Zhtemplate[template],
     },
     {
       title: "单题奖励",
@@ -190,8 +201,8 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             setProblemsModalOpen(true)
           }}>查看</Button>
         </>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -251,7 +262,14 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
           </Grid>
         </>
       </Modal>
-      <Modal open={reportModalOpen} onCancel={() => { setReportModalOpen(false) }} footer={null} destroyOnClose>
+      <Modal
+        open={reportModalOpen}
+        onCancel={() => {
+          setReportModalOpen(false);
+        }}
+        footer={null}
+        destroyOnClose
+      >
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           举报
         </Typography>
@@ -260,11 +278,9 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
           name="basic"
           initialValues={{ remember: true }}
           onFinish={(values) => {
-            const image_url = values.image_description.map(
-              (image: any) => image.response?.url
-            );
+            const image_url = values.image_description.map((image: any) => image.response?.url);
             postReport(detail.task_id, detail.demander_id, values.description, image_url);
-            setReportModalOpen(false)
+            setReportModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -331,7 +347,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       </Modal>
       <Table columns={columns} loading={refreshing || loading} dataSource={taskLists} />
     </>
-  )
-}
+  );
+};
 
-export default LabelerTaskList
+export default LabelerTaskList;

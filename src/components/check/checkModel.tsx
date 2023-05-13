@@ -34,7 +34,10 @@ const CheckModel = (props: CheckModelProps) => {
    *
    */
   useEffect(() => {
-    request(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, "GET")
+    request(
+      `/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`,
+      "GET"
+    )
       .then((response) => {
         const newProblems: any[] = response.data.label_data;
         const totalNumber = newProblems.length;

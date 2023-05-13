@@ -65,23 +65,23 @@ const TasktaskScreen = () => {
   });
   useEffect(() => {
     if (!router.isReady) {
-      return
+      return;
     }
     request(`/api/demander/task?task_id=${query.id}`, "GET")
-    .then((response) => {
-      setTask(response.data.data)
-    })
-    .catch((error) => {
-      if (error.response) {
-        message.error(`获取任务信息失败，${error.response.data.message}`);
-      } else {
-        message.error("获取任务信息失败，网络错误");
-      }
-    })
-    .finally(() => {
-      setRefreshing(false)
-    })
-  }, [refreshing])
+      .then((response) => {
+        setTask(response.data.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`获取任务信息失败，${error.response.data.message}`);
+        } else {
+          message.error("获取任务信息失败，网络错误");
+        }
+      })
+      .finally(() => {
+        setRefreshing(false);
+      });
+  }, [refreshing]);
 
   // 对某一标注者进行自动审核
   const postSingleAutoChecking = async (task_id: number, labeler_id: number, accuracy: number) => {

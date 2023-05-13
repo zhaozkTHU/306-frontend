@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal, Steps, Divider, Space } from "antd";
+import { Button, Checkbox, message, Modal, Steps, Divider, Space, Spin } from "antd";
 import {
   SaveOutlined,
   UploadOutlined,
@@ -263,18 +263,19 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
-      setCurrentProblemIndex((prevState: number) => prevState - 1);
-      const newChosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
-      setChosenOptions(newChosenOptions);
-      const storedChosenOptions = localStorage.getItem(
-        `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+      setCurrentProblemIndex((prevState: number) => {
+        const newIndex = prevState - 1;
+        const newChosenOptions = filteredTaskData[newIndex].chosen || [];
+        setChosenOptions(newChosenOptions);
+        const storedChosenOptions = localStorage.getItem(
+          `chosenOptions-${taskInfo.task_id}-${newIndex}`
+        );
+        setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
-      const storedTimer = localStorage.getItem(
-        `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
+        setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        return newIndex;
+      });
     } else {
       message.warning("This is the first problem!");
     }
@@ -299,23 +300,28 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       const lastSaveKey = `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`;
       localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
-      setCurrentProblemIndex((prevState: number) => prevState + 1);
-      const newchosenOptions = filteredTaskData[currentProblemIndex].chosen || [];
-      setChosenOptions(newchosenOptions);
-      const storedChosenOptions = localStorage.getItem(
-        `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+      setCurrentProblemIndex((prevState: number) => {
+        const newIndex = prevState + 1;
+        const newchosenOptions = filteredTaskData[newIndex].chosen || [];
+        setChosenOptions(newchosenOptions);
+        const storedChosenOptions = localStorage.getItem(
+          `chosenOptions-${taskInfo.task_id}-${newIndex}`
+        );
+        setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
-      const storedTimer = localStorage.getItem(
-        `lastSaveTime-${taskInfo.task_id}-${currentProblemIndex}`
-      );
-      setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
+        setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
+        return newIndex;
+      });
     } else {
       message.warning("This is the last problem!");
     }
   };
 
+  if (!currentProblem) {
+    console.log("Loading...");
+    return <Spin tip="Loading..." />;
+  }
   if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
     return (
       <div>
@@ -348,20 +354,17 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
           </div>
         </div>
         <Divider />
-        <div>{currentProblem.description}</div>
-        {currentProblem.options.map((option, index) => (
-          <Checkbox
-            key={index}
-            checked={chosenOptions[index]}
-            onChange={handleCheckboxChange(index)}
-          >
-            {taskInfo.template === "ImagesClassification" ? (
-              <MyImage url={option} />
-            ) : (
-              option
-            )}
-          </Checkbox>
-        ))}
+        <div>{currentProblem && currentProblem.description}</div>
+        {currentProblem &&
+          currentProblem.options.map((option, index) => (
+            <Checkbox
+              key={index}
+              checked={chosenOptions[index]}
+              onChange={handleCheckboxChange(index)}
+            >
+              {taskInfo.template === "ImagesClassification" ? <MyImage url={option} /> : option}
+            </Checkbox>
+          ))}
         <Divider />
         <div>
           <Space>

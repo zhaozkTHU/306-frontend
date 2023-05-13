@@ -32,7 +32,7 @@ import {
   TextReviewDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
-import { UploadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, InboxOutlined, VerticalAlignBottomOutlined } from "@ant-design/icons";
 import type { RcFile } from "antd/es/upload";
 import { Modal } from "antd/lib";
 import axios from "axios";
@@ -101,6 +101,7 @@ const TaskInfoForm: React.FC<{
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [agentList, setAgentList] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [form] = Form.useForm<TaskInfo>();
   const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
@@ -116,10 +117,32 @@ const TaskInfoForm: React.FC<{
   }, [distribute, form]);
 
   useEffect(() => {
-    axios.get("/api/get_agent", {headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}})
+    axios
+      .get("/api/get_agent", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
       .then((value) => setAgentList(value.data.data))
       .catch((reason) => message.error(`获取中介失败 ${reason.message}`));
   }, []);
+
+  useEffect(() => {
+    if (props.taskInfo) {
+      form.setFieldsValue({
+        ...props.taskInfo,
+        deadline: dayjs(props.taskInfo.deadline) as any,
+        batch_file: props.taskInfo.batch_file
+          ? ([
+              {
+                uid: 1,
+                name: props.taskInfo.batch_file,
+                status: "done",
+                url: props.taskInfo.batch_file,
+              },
+            ] as any)
+          : undefined,
+      });
+    }
+  }, [props.taskInfo, form]);
 
   const onFinish = () => {
     setLoading(true);
@@ -157,6 +180,7 @@ const TaskInfoForm: React.FC<{
     });
     dispatch(clear());
     setLoading(false);
+    form.resetFields();
   };
 
   const handlePreview = async (file: UploadFile) => {
@@ -199,7 +223,7 @@ const TaskInfoForm: React.FC<{
         onFinish={onFinish}
       >
         <Row>
-          <Col span={6}>
+          <Col span={12}>
             <Form.Item
               label="任务标题"
               name="title"
@@ -208,6 +232,8 @@ const TaskInfoForm: React.FC<{
               <Input />
             </Form.Item>
           </Col>
+        </Row>
+        <Row>
           <Col span={6}>
             <Form.Item
               label="任务模板"
@@ -224,21 +250,23 @@ const TaskInfoForm: React.FC<{
               />
             </Form.Item>
           </Col>
+          <Col span={6}>
+            <Form.Item
+              label="任务内容分类标签"
+              name="type"
+              rules={[{ required: true, message: "请选择任务内容分类标签" }]}
+            >
+              <Select
+                options={[
+                  { value: "sentiment", label: "情感分类、分析" },
+                  { value: "part-of-speech", label: "词性分类" },
+                  { value: "intent", label: "意图揣测" },
+                  { value: "event", label: "事件概括" },
+                ]}
+              />
+            </Form.Item>
+          </Col>
         </Row>
-        <Form.Item
-          label="任务内容分类标签"
-          name="type"
-          rules={[{ required: true, message: "请选择任务内容分类标签" }]}
-        >
-          <Select
-            options={[
-              { value: "sentiment", label: "情感分类、分析" },
-              { value: "part-of-speech", label: "词性分类" },
-              { value: "intent", label: "意图揣测" },
-              { value: "event", label: "事件概括" },
-            ]}
-          />
-        </Form.Item>
         <Row>
           <Col span={4}>
             <Form.Item
@@ -296,7 +324,9 @@ const TaskInfoForm: React.FC<{
             name="agent_username"
             rules={[{ required: true, message: "请输入分发中介名" }]}
           >
-            <Select options={agentList.map((agent) => ({value: agent.username, label: agent.username}))} />
+            <Select
+              options={agentList.map((agent) => ({ value: agent.username, label: agent.username }))}
+            />
           </Form.Item>
         )}
         <Row>
@@ -319,10 +349,10 @@ const TaskInfoForm: React.FC<{
               <Form.Item
                 label="是否使用批量上传"
                 name="batch"
-                initialValue={false}
+                initialValue={true}
                 rules={[{ required: true, message: "" }]}
               >
-                <Switch />
+                <Switch defaultChecked disabled />
               </Form.Item>
             </Col>
           </Space>
@@ -392,41 +422,88 @@ const TaskInfoForm: React.FC<{
         )}
         {batch && (
           <>
-            <Alert
-              message={
-                <>
-                  请
-                  <Button
-                    type="link"
-                    onClick={() => downloadTemplate(template, form.getFieldValue("templates"))}
-                  >
-                    下载
-                  </Button>
-                  模板并按规范提交
-                </>
-              }
-              type="info"
-              showIcon
-            />
+            <Row>
+              <Col span={12}>
+                <Alert
+                  message={
+                    <>
+                      请
+                      <Button
+                        type="link"
+                        onClick={() => downloadTemplate(template, form.getFieldValue("templates"))}
+                      >
+                        下载
+                      </Button>
+                      模板并按规范提交
+                    </>
+                  }
+                  type="info"
+                  showIcon
+                />
+              </Col>
+            </Row>
             <br />
-            <Form.Item
-              label="上传压缩包"
-              name="batch_file"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => e?.fileList}
-              rules={[{ required: true, message: "请上传压缩包" }]}
-            >
-              <Upload
-                action="/api/file"
-                headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
-                maxCount={1}
-              >
-                <Button icon={<UploadOutlined />}>上传压缩包</Button>
-              </Upload>
-            </Form.Item>
+            <Row>
+              <Col span={12}>
+                <Form.Item
+                  label="上传压缩包"
+                  name="batch_file"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => e?.fileList}
+                  rules={[{ required: true, message: "请上传压缩包" }]}
+                >
+                  <Upload.Dragger
+                    action="/api/file"
+                    headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
+                    maxCount={1}
+                    beforeUpload={() => {
+                      setUploading(true);
+                      return true;
+                    }}
+                    onChange={(info) => {
+                      if (info.file.status === "done") {
+                        setUploading(false);
+                        message.success("上传成功");
+                      } else if (info.file.status === "error") {
+                        setUploading(false);
+                        message.error("上传失败");
+                      }
+                    }}
+                    onDownload={async (file) => {
+                      const downloadFile = (
+                        await axios.get("/api/file", {
+                          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                          params: { url: file.url || file.response.url },
+                        })
+                      ).data;
+                      const url = window.URL.createObjectURL(new Blob([downloadFile]));
+                      const link = document.createElement("a");
+                      link.style.display = "none";
+                      link.href = url;
+                      link.setAttribute("download", file.name);
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    showUploadList={{
+                      showDownloadIcon: true,
+                      downloadIcon: <VerticalAlignBottomOutlined />,
+                      showRemoveIcon: true,
+                      removeIcon: <DeleteOutlined />,
+                    }}
+                  >
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">点击或拖拽上传</p>
+                  </Upload.Dragger>
+                </Form.Item>
+              </Col>
+            </Row>
           </>
         )}
         <Button
+          disabled={uploading}
           type="primary"
           loading={loading}
           onClick={() => {

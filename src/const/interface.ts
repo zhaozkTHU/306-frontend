@@ -117,14 +117,10 @@ export function isFaceTagProblem(data: any): data is FaceTagProblem {
       (Array.isArray(data.data) &&
         data.data.every(
           (point: any) =>
-            Array.isArray(point) &&
-            point.length === 2 &&
-            typeof point[0] === "number" &&
-            typeof point[1] === "number"
+            typeof point === "object" && typeof point.x === "number" && typeof point.y === "number"
         )))
   );
 }
-
 export function isImageFrameProblem(data: any): data is ImageFrameProblem {
   return (
     typeof data.description === "string" &&
@@ -133,16 +129,11 @@ export function isImageFrameProblem(data: any): data is ImageFrameProblem {
       (Array.isArray(data.data) &&
         data.data.every((rect: any) => {
           return (
-            typeof rect.leftdown === "object" &&
-            Array.isArray(rect.leftdown) &&
-            rect.leftdown.length === 2 &&
-            typeof rect.leftdown[0] === "number" &&
-            typeof rect.leftdown[1] === "number" &&
-            typeof rect.rightup === "object" &&
-            Array.isArray(rect.rightup) &&
-            rect.rightup.length === 2 &&
-            typeof rect.rightup[0] === "number" &&
-            typeof rect.rightup[1] === "number"
+            typeof rect === "object" &&
+            typeof rect.x === "number" &&
+            typeof rect.y === "number" &&
+            typeof rect.width === "number" &&
+            typeof rect.height === "number"
           );
         })))
   );

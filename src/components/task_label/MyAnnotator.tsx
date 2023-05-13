@@ -20,9 +20,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   const currentAnnotationRef = useRef<Annotation | null>(null);
   const annotationsRef = useRef<Annotation[]>(props.initialAnnotations ?? []);
 
-  const [annotations, setAnnotations] = useState<Annotation[]>(
-    props.initialAnnotations ?? []
-  );
+  const [annotations, setAnnotations] = useState<Annotation[]>(props.initialAnnotations ?? []);
   const [currentAnnotation, setCurrentAnnotation] = useState<Annotation | null>(null);
   const [tools, setTools] = useState<string>(props.tools);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,6 +40,10 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     left: 0,
     zIndex: 1,
   };
+  useEffect(() => { // clear the canvas when the URL changes(change problem)
+    // Clear the annotations and the canvas when the URL changes
+    clearAnnotations();
+  }, [props.src]);
 
   const drawAnnotations = () => {
     if (!canvasRef.current) {
@@ -52,10 +54,10 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     if (!ctx) {
       return;
     }
-  
+
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
     // Draw annotations
     annotations.forEach((annotation) => {
       if (props.tools === "dot" && !isRectangle(annotation)) {
@@ -71,9 +73,13 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         ctx.stroke();
       }
     });
-  
+
     // Draw the current annotation (if any)
-    if (currentAnnotationRef.current && props.tools === "rectangle" && isRectangle(currentAnnotationRef.current)) {
+    if (
+      currentAnnotationRef.current &&
+      props.tools === "rectangle" &&
+      isRectangle(currentAnnotationRef.current)
+    ) {
       ctx.beginPath();
       ctx.rect(
         currentAnnotationRef.current.x,
@@ -102,14 +108,14 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     console.log(currentAnnotationRef.current);
     console.log(annotationsRef.current);
   }, [currentAnnotationRef, annotationsRef]);
-  
+
   useEffect(() => {
     drawAnnotations();
   }, [annotations, currentAnnotation, canvasRef]);
 
   useEffect(() => {
     if (!canvasRef.current) {
-      console.log("no canvas")
+      console.log("no canvas");
       return;
     }
     const canvas = canvasRef.current as HTMLCanvasElement;
@@ -126,16 +132,19 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
 
   const handleMouseDown = (event: MouseEvent) => {
     if (!canvasRef.current) {
-      console.log("down no canvas")
+      console.log("down no canvas");
       return;
     }
-    console.log("down state")
-    console.log(currentAnnotation)
-    console.log(annotations)
-    console.log("down ref")
-    console.log(currentAnnotationRef.current)
-    console.log(annotationsRef.current)
-    console.log("is:", isDrawingRef.current)
+    if (canvasRef.current) {
+      console.log("width: ", canvasRef.current.width, "height: ", canvasRef.current.height);
+    }
+    console.log("down state");
+    console.log(currentAnnotation);
+    console.log(annotations);
+    console.log("down ref");
+    console.log(currentAnnotationRef.current);
+    console.log(annotationsRef.current);
+    console.log("is:", isDrawingRef.current);
     const rect = canvasRef.current.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -147,8 +156,12 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         y: y,
       };
 
-      setAnnotations((prevAnnotations) => [...prevAnnotations, dot]);
-      props.onChange([...annotations, dot]);
+      setAnnotations((prevAnnotations) => {
+        const newAnnotations = [...prevAnnotations, dot];
+        props.onChange(newAnnotations);
+        return newAnnotations;
+      });
+      
     } 
     else if (props.tools === "rectangle") {
       isDrawingRef.current = true;
@@ -164,19 +177,19 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         width: 0,
         height: 0,
       });
-      console.log("aft down state")
-      console.log(currentAnnotation)
-      console.log(annotations)
-      console.log("aft down ref")
-      console.log(currentAnnotationRef.current)
-      console.log(annotationsRef.current)
-      console.log("is:", isDrawingRef.current)
+      console.log("aft down state");
+      console.log(currentAnnotation);
+      console.log(annotations);
+      console.log("aft down ref");
+      console.log(currentAnnotationRef.current);
+      console.log(annotationsRef.current);
+      console.log("is:", isDrawingRef.current);
     }
   };
 
   const handleMouseMove = (event: MouseEvent) => {
     if (!canvasRef.current || isDrawingRef.current === false) {
-      console.log("move no canvas")
+      console.log("move no canvas");
       return;
     }
 
@@ -185,22 +198,22 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       const rect = canvas.getBoundingClientRect();
       const x = Math.min(Math.max(event.clientX - rect.left, 0), canvas.width);
       const y = Math.min(Math.max(event.clientY - rect.top, 0), canvas.height);
-  
+
       let width = x - currentAnnotationRef.current.x;
       let height = y - currentAnnotationRef.current.y;
       let adjustedX = currentAnnotationRef.current.x;
       let adjustedY = currentAnnotationRef.current.y;
-  
+
       if (width < 0) {
         adjustedX += width;
         width = -width;
       }
-  
+
       if (height < 0) {
         adjustedY += height;
         height = -height;
       }
-  
+
       const updatedAnnotation = {
         x: adjustedX,
         y: adjustedY,
@@ -213,20 +226,19 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       drawAnnotations();
     }
   };
-  
 
   const handleMouseUp = (event: MouseEvent) => {
     if (!canvasRef.current) {
-      console.log("up no canvas")
+      console.log("up no canvas");
       return;
     }
-    console.log("up state")
-    console.log(currentAnnotation)
-    console.log(annotations)
-    console.log("up ref")
-    console.log(currentAnnotationRef.current)
-    console.log(annotationsRef.current)
-    console.log("is:", isDrawingRef.current)
+    console.log("up state");
+    console.log(currentAnnotation);
+    console.log(annotations);
+    console.log("up ref");
+    console.log(currentAnnotationRef.current);
+    console.log(annotationsRef.current);
+    console.log("is:", isDrawingRef.current);
 
     if (props.tools === "rectangle" && currentAnnotationRef.current) {
       const canvas = canvasRef.current as HTMLCanvasElement;
@@ -234,7 +246,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       const x = Math.min(Math.max(event.clientX - rect.left, 0), canvas.width);
       const y = Math.min(Math.max(event.clientY - rect.top, 0), canvas.height);
       isDrawingRef.current = false;
-  
+
       // Calculate width and height based on mouse position and starting coordinates
       let width = x - currentAnnotationRef.current.x;
       let height = y - currentAnnotationRef.current.y;
@@ -256,7 +268,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         width: width,
         height: height,
       };
-      
+
       annotationsRef.current = [...annotationsRef.current, finalAnnotation];
       currentAnnotationRef.current = null;
       setAnnotations((prevAnnotations) => {
@@ -267,17 +279,16 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       setCurrentAnnotation(null);
       drawAnnotations();
       isDrawingRef.current = false;
-      console.log("aft up state:")
-      console.log(currentAnnotation)
-      console.log(annotations)
-      console.log("aft up ref:")
-      console.log(currentAnnotationRef.current)
-      console.log(annotationsRef.current)
-      console.log("is:", isDrawingRef.current)
+      console.log("aft up state:");
+      console.log(currentAnnotation);
+      console.log(annotations);
+      console.log("aft up ref:");
+      console.log(currentAnnotationRef.current);
+      console.log(annotationsRef.current);
+      console.log("is:", isDrawingRef.current);
     }
     isDrawingRef.current = false;
   };
-  
 
   const clearAnnotations = () => {
     setAnnotations([]);
@@ -321,14 +332,10 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         height="100%"
         width="100%"
       />
-      <canvas ref={canvasRef} style={{...annotationOverlayStyle, border:"solid"}} />
+      <canvas ref={canvasRef} style={{ ...annotationOverlayStyle /*border:"solid"*/ }} />
       <Divider />
       <div style={toolbarStyle}>
-        <Radio.Group
-          value={props.tools}
-          disabled={true}
-          buttonStyle="solid"
-        >
+        <Radio.Group value={props.tools} disabled={true} buttonStyle="solid">
           <Radio.Button value="dot">Dot</Radio.Button>
           <Radio.Button value="rectangle">Rectangle</Radio.Button>
         </Radio.Group>

@@ -289,7 +289,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-      })
+      });
   }, [router, refreshing]);
   return (
     <>

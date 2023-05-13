@@ -35,7 +35,7 @@ const AdministratorReport = () => {
     image_description: [],
     reporter_role: "demander",
     reported_role: "labeler",
-  })
+  });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -130,8 +130,8 @@ const AdministratorReport = () => {
       ],
       onFilter: (values, record) => record.role === values,
       render: (role) => {
-        return mapRole2En[role]
-      }
+        return mapRole2En[role];
+      },
     },
     {
       title: "被举报者ID",
@@ -194,7 +194,7 @@ const AdministratorReport = () => {
           onFinish={(values) => {
             setLoading(true);
             deal_report(reportId, pass, values.credits, values.description);
-            setDealReportModalOpen(false)
+            setDealReportModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -287,10 +287,15 @@ const AdministratorReport = () => {
                 />
               </ImageFormatter>
             </Col>
-          )}
+          ))}
         </Row>
       </Modal>
-      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} pagination={{ pageSize: 6 }}/>
+      <Table
+        columns={ReportTableColumns}
+        dataSource={reportList}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 6 }}
+      />
     </>
   );
 };

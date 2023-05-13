@@ -58,8 +58,8 @@ const AgentAvailableTask = () => {
       })
       .finally(() => {
         setRefreshing(false);
-      })
-  }
+      });
+  };
   useEffect(() => {
     request("/api/agent_distribute", "GET")
       .then((response) => {
@@ -73,7 +73,7 @@ const AgentAvailableTask = () => {
         }
       });
     fetchList();
-  }, [refreshing])
+  }, [refreshing]);
 
   const distribute = async (task_id: number, labeler: string[]) => {
     request("/api/agent_distribute", "POST", {
@@ -81,7 +81,7 @@ const AgentAvailableTask = () => {
       labeler: labeler,
     })
       .then(() => {
-        message.success("派发成功")
+        message.success("派发成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -93,8 +93,8 @@ const AgentAvailableTask = () => {
       .finally(() => {
         setLoading(false);
         setRefreshing(true);
-      })
-  }
+      });
+  };
 
   const TasksTableColumns: ColumnsType<any> = [
     {
@@ -237,13 +237,13 @@ const AgentAvailableTask = () => {
               showSearch
               mode="multiple"
               allowClear
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               placeholder="请选择要分配的标注方，支持搜索"
               options={labelerLists.map((labeler) => {
                 return {
                   label: labeler.username,
-                  value: labeler.username
-                }
+                  value: labeler.username,
+                };
               })}
             />
           </Form.Item>

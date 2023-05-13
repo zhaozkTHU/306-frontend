@@ -2,7 +2,7 @@ import { mapLevel2Zh } from "@/const/interface";
 import { request } from "@/utils/network";
 import { message, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 interface Agent {
   batch_file: string;
@@ -43,7 +43,7 @@ const DemanderAgentList = () => {
   useEffect(() => {
     request("/api/get_agent", "GET")
       .then((reponse) => {
-        setAgents(reponse.data.data)
+        setAgents(reponse.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -53,9 +53,9 @@ const DemanderAgentList = () => {
         }
       })
       .finally(() => {
-        setRefreshing(false)
-      })
-  }, [refreshing])
+        setRefreshing(false);
+      });
+  }, [refreshing]);
 
   const AgentTableColumns: ColumnsType<any> = [
     {
@@ -92,10 +92,8 @@ const DemanderAgentList = () => {
       ],
       onFilter: (values, record) => record.level === values,
       render: (level) => (
-        <Tag color={mapLevel2Zh[level]["color"]}>
-          {mapLevel2Zh[level]["name"]}
-        </Tag>
-      )
+        <Tag color={mapLevel2Zh[level]["color"]}>{mapLevel2Zh[level]["name"]}</Tag>
+      ),
     },
     {
       title: "信用分",
@@ -108,8 +106,13 @@ const DemanderAgentList = () => {
   ];
 
   return (
-    <Table columns={AgentTableColumns} loading={refreshing} dataSource={agents} pagination={{ pageSize: 6 }}/>
-  )
-}
+    <Table
+      columns={AgentTableColumns}
+      loading={refreshing}
+      dataSource={agents}
+      pagination={{ pageSize: 6 }}
+    />
+  );
+};
 
-export default DemanderAgentList
+export default DemanderAgentList;
