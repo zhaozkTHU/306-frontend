@@ -9,14 +9,14 @@ import { Grid, TextField } from "@mui/material";
 import { mapRole2En } from "@/const/interface";
 
 interface Report {
-  report_id: number;
-  reporter_id: number;
-  task_id: number;
-  user_id: number;
-  reporter_role: string;
-  reported_role: string;
-  description: string;
-  image_desription: string[];
+  report_id: number,
+  reporter_id: number,
+  task_id: number,
+  user_id: number,
+  reporter_role: string,
+  reported_role: string,
+  description: string,
+  image_description: string[]
 }
 
 const AdministratorReport = () => {
@@ -32,7 +32,7 @@ const AdministratorReport = () => {
     task_id: -1,
     user_id: -1,
     description: "",
-    image_desription: [],
+    image_description: [],
     reporter_role: "demander",
     reported_role: "labeler",
   });
@@ -272,7 +272,7 @@ const AdministratorReport = () => {
         <p>举报者描述: {detail.description}</p>
         <p>图片证据:</p>
         <Row>
-          {detail.image_desription.map((url, idx) => (
+          {detail.image_description.map((url, idx) =>
             <Col key={idx}>
               <ImageFormatter key={idx}>
                 <MyImage
@@ -287,7 +287,7 @@ const AdministratorReport = () => {
                 />
               </ImageFormatter>
             </Col>
-          ))}
+          )}
         </Row>
       </Modal>
       <Table

@@ -46,7 +46,7 @@ const CanvasImage = (props: CanvasImageProps) => {
   return (
     <>
       <canvas width={90} ref={canvasRef} style={{ display: "none" }} />
-      <ImageFormatter>
+      {/* <ImageFormatter> */}
         <Image
           src={imageUrl}
           // alt="图片加载中，长时间无反应请刷新"
@@ -56,10 +56,10 @@ const CanvasImage = (props: CanvasImageProps) => {
             objectFit: "contain",
             objectPosition: "center center",
           }}
-          placeholder={<>ndiuehndiu</>}
+          alt="图片加载中"
           loading="lazy"
         />
-      </ImageFormatter>
+      {/* </ImageFormatter> */}
     </>
   );
 };
