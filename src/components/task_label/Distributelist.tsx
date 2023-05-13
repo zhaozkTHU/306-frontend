@@ -32,7 +32,7 @@ const DistributeList: React.FC = () => {
             task_data: tasks_json.task_data,
             batch: false,
             type: tasks_json.type,
-            distribute: tasks_json.distribute
+            distribute: tasks_json.distribute,
           },
         ];
         setTasks(task);

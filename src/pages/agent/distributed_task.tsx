@@ -1,20 +1,20 @@
 import { ColumnsType } from "antd/es/table";
-import { Button, Descriptions, Divider, Modal, Table, Tag, message } from "antd"
+import { Button, Descriptions, Divider, Modal, Table, Tag, message } from "antd";
 import { useEffect, useState } from "react";
 import { downLoadZip, request } from "@/utils/network";
 import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
 
 interface task {
-  title: string,
-  create_at: number,
-  deadline: number,
-  reward: number,
-  labeler_number: number,
-  template: string,
-  demander_id: number,
-  labeler_id: number[],
-  labeler_state: string[],
-  state: string
+  title: string;
+  create_at: number;
+  deadline: number;
+  reward: number;
+  labeler_number: number;
+  template: string;
+  demander_id: number;
+  labeler_id: number[];
+  labeler_state: string[];
+  state: string;
 }
 
 const AgentDistributedTask = () => {
@@ -31,13 +31,13 @@ const AgentDistributedTask = () => {
     demander_id: 0,
     labeler_id: [],
     labeler_state: [],
-    state: "labeling"
+    state: "labeling",
   });
-  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false)
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
   useEffect(() => {
     request("/api/agent/distributed", "GET")
       .then((response) => {
-        setTaskList(response.data.data)
+        setTaskList(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -47,9 +47,9 @@ const AgentDistributedTask = () => {
         }
       })
       .finally(() => {
-        setRefreshing(false)
-      })
-  }, [refreshing])
+        setRefreshing(false);
+      });
+  }, [refreshing]);
   const TaskListColumns: ColumnsType<any> = [
     {
       title: "任务标题",
@@ -64,9 +64,7 @@ const AgentDistributedTask = () => {
       key: "template",
       align: "center",
       width: "25%",
-      render: (template) => (
-        mapEntemplate2Zhtemplate[template]
-      )
+      render: (template) => mapEntemplate2Zhtemplate[template],
     },
     {
       title: "任务状态",
@@ -75,10 +73,10 @@ const AgentDistributedTask = () => {
       align: "center",
       width: "25%",
       render: (state) => (
-        <Tag color={mapState2ColorChinese[state]['color']}>
-          {mapState2ColorChinese[state]['description']}
+        <Tag color={mapState2ColorChinese[state]["color"]}>
+          {mapState2ColorChinese[state]["description"]}
         </Tag>
-      )
+      ),
     },
     {
       title: "操作",
@@ -87,12 +85,27 @@ const AgentDistributedTask = () => {
       align: "center",
       render: (_, record) => (
         <>
-          <Button onClick={() => { downLoadZip(record.batch_file, setLoading) }} type="link">下载</Button>
-          <Button type="link" onClick={() => { setDetail(record); setDetailModalOpen(true)}}>查看</Button>
+          <Button
+            onClick={() => {
+              downLoadZip(record.batch_file, setLoading);
+            }}
+            type="link"
+          >
+            下载
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setDetail(record);
+              setDetailModalOpen(true);
+            }}
+          >
+            查看
+          </Button>
         </>
-      )
-    }
-  ]
+      ),
+    },
+  ];
   const LabelerTableColumn: ColumnsType<any> = [
     {
       title: "标注者ID",
@@ -104,12 +117,18 @@ const AgentDistributedTask = () => {
       title: "状态",
       dataIndex: "state",
       key: "state",
-      align: "center"
-    }
-  ]
+      align: "center",
+    },
+  ];
   return (
     <>
-      <Modal open={detailModalOpen} onCancel={() => { setDetailModalOpen(false) }} footer={null}>
+      <Modal
+        open={detailModalOpen}
+        onCancel={() => {
+          setDetailModalOpen(false);
+        }}
+        footer={null}
+      >
         <h3 style={{ textAlign: "center" }}>任务详情</h3>
         <Divider />
         <Descriptions bordered column={4}>
@@ -135,16 +154,20 @@ const AgentDistributedTask = () => {
             {mapEntemplate2Zhtemplate[detail.template]}
           </Descriptions.Item>
         </Descriptions>
-        <Table columns={LabelerTableColumn} dataSource={detail.labeler_id.map((id: number, idx: number) => {
-          return {
-            labeler_id: id,
-            state: detail.labeler_state[idx]
-          }
-        })} pagination={{ pageSize: 2 }}/>
+        <Table
+          columns={LabelerTableColumn}
+          dataSource={detail.labeler_id.map((id: number, idx: number) => {
+            return {
+              labeler_id: id,
+              state: detail.labeler_state[idx],
+            };
+          })}
+          pagination={{ pageSize: 2 }}
+        />
       </Modal>
-      <Table columns={TaskListColumns} loading={refreshing||loading} dataSource={[detail]} />
+      <Table columns={TaskListColumns} loading={refreshing || loading} dataSource={[detail]} />
     </>
-  )
+  );
 };
 
 export default AgentDistributedTask;

@@ -266,14 +266,10 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         const newIndex = prevState - 1;
         const newTagAnswers = filteredTaskData[newIndex].data || [];
         setTagAnswers(newTagAnswers);
-        const storedTagAnswers = localStorage.getItem(
-          `tagAnswers-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedTagAnswers = localStorage.getItem(`tagAnswers-${taskInfo.task_id}-${newIndex}`);
         setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
-        
-        const storedTimer = localStorage.getItem(
-          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
-        );
+
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
         return newIndex;
       });
@@ -305,14 +301,10 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
         const newIndex = prevState + 1;
         const newTagAnswers = filteredTaskData[newIndex].data || [];
         setTagAnswers(newTagAnswers);
-        const storedTagAnswers = localStorage.getItem(
-          `tagAnswers-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedTagAnswers = localStorage.getItem(`tagAnswers-${taskInfo.task_id}-${newIndex}`);
         setTagAnswers(storedTagAnswers ? JSON.parse(storedTagAnswers) : []);
-        
-        const storedTimer = localStorage.getItem(
-          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
-        );
+
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
         return newIndex;
       });
@@ -323,7 +315,7 @@ const AnnotationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   if (!currentProblem) {
     console.log("Loading...");
-    return <Spin tip="Loading..."/>;
+    return <Spin tip="Loading..." />;
   }
   if (taskInfo.template === "FaceTag" || taskInfo.template === "ImageFrame") {
     return (

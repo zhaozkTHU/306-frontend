@@ -117,9 +117,7 @@ export function isFaceTagProblem(data: any): data is FaceTagProblem {
       (Array.isArray(data.data) &&
         data.data.every(
           (point: any) =>
-            typeof point === "object" &&
-            typeof point.x === "number" &&
-            typeof point.y === "number"
+            typeof point === "object" && typeof point.x === "number" && typeof point.y === "number"
         )))
   );
 }
@@ -194,7 +192,7 @@ export const mapState2ColorChinese: StateColors = {
   failed: { color: "rgb(252, 61, 14)", description: "不合格" },
   blocked: { color: "rgb(252, 61, 14)", description: "已封禁" },
   unblocked: { color: "rgb(33, 198, 39)", description: "正常" },
-  admin_checking: {color: "rgb(221, 202, 32)", description: "管理员审核"}
+  admin_checking: { color: "rgb(221, 202, 32)", description: "管理员审核" },
 };
 
 type EnEntemplateZhtemplate = {

@@ -272,12 +272,10 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         );
         setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
-        const storedTimer = localStorage.getItem(
-          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
-          return newIndex;
-        });
+        return newIndex;
+      });
     } else {
       message.warning("This is the first problem!");
     }
@@ -311,13 +309,10 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         );
         setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
-        const storedTimer = localStorage.getItem(
-          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
-          return newIndex;
-        }
-      );     
+        return newIndex;
+      });
     } else {
       message.warning("This is the last problem!");
     }
@@ -325,7 +320,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   if (!currentProblem) {
     console.log("Loading...");
-    return <Spin tip="Loading..."/>;
+    return <Spin tip="Loading..." />;
   }
   if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
     return (
@@ -360,19 +355,16 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem && currentProblem.description}</div>
-        {currentProblem && currentProblem.options.map((option, index) => (
-          <Checkbox
-            key={index}
-            checked={chosenOptions[index]}
-            onChange={handleCheckboxChange(index)}
-          >
-            {taskInfo.template === "ImagesClassification" ? (
-              <MyImage url={option} />
-            ) : (
-              option
-            )}
-          </Checkbox>
-        ))}
+        {currentProblem &&
+          currentProblem.options.map((option, index) => (
+            <Checkbox
+              key={index}
+              checked={chosenOptions[index]}
+              onChange={handleCheckboxChange(index)}
+            >
+              {taskInfo.template === "ImagesClassification" ? <MyImage url={option} /> : option}
+            </Checkbox>
+          ))}
         <Divider />
         <div>
           <Space>

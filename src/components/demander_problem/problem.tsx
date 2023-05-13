@@ -29,10 +29,7 @@ const Problem = (props: ProbelmProps) => {
         <Row wrap={true}>
           {props.problem.options.map((option: string, index: number) => (
             <Col key={index}>
-              <Checkbox
-                defaultChecked={props.problem.chosen[index]}
-                disabled={true}
-              >
+              <Checkbox defaultChecked={props.problem.chosen[index]} disabled={true}>
                 <ImageFormatter>
                   <MyImage
                     url={`${option}`}
@@ -52,30 +49,17 @@ const Problem = (props: ProbelmProps) => {
       </Image.PreviewGroup>
     );
   } else if (props.problem.template == "FaceTag") {
-    problemContent = (
-      <CanvasImage
-        data={props.problem.data}
-        src={props.problem.url}
-        type="point"
-      />
-    );
+    problemContent = <CanvasImage data={props.problem.data} src={props.problem.url} type="point" />;
   } else if (props.problem.template == "ImageFrame") {
     problemContent = (
-      <CanvasImage
-        data={props.problem.data}
-        src={props.problem.url}
-        type="rectangle"
-      />
+      <CanvasImage data={props.problem.data} src={props.problem.url} type="rectangle" />
     );
   } else if (props.problem.template == "SoundTag") {
     problemContent = (
       <>
         <MyAudio url={props.problem.url} />
         <Divider />
-        <Radio.Group
-          value={props.problem.data.choiceIndex}
-          disabled={true}
-        >
+        <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
           {props.problem.choice.map((ch: any, idx: number) => (
             <Radio value={idx} key={idx}>
               <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
@@ -101,10 +85,7 @@ const Problem = (props: ProbelmProps) => {
           }}
         />
         <Divider />
-        <Radio.Group
-          value={props.problem.data.choiceIndex}
-          disabled={true}
-        >
+        <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
           {props.problem.choice.map((ch: any, idx: number) => (
             <Radio value={idx} key={idx}>
               <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
@@ -178,9 +159,7 @@ const Problem = (props: ProbelmProps) => {
       </>
     );
   } else {
-    problemContent = (
-      <>Error Task Template</>
-    )
+    problemContent = <>Error Task Template</>;
   }
   return (
     <>

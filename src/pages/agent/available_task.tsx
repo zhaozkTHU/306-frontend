@@ -58,8 +58,8 @@ const AgentAvailableTask = () => {
       })
       .finally(() => {
         setRefreshing(false);
-      })
-  }
+      });
+  };
   useEffect(() => {
     request("/api/agent_distribute", "GET")
       .then((response) => {
@@ -73,7 +73,7 @@ const AgentAvailableTask = () => {
         }
       });
     fetchList();
-  }, [refreshing])
+  }, [refreshing]);
 
   const distribute = async (task_id: number, labeler: string[]) => {
     request("/api/agent_distribute", "POST", {
@@ -81,7 +81,7 @@ const AgentAvailableTask = () => {
       labeler: labeler,
     })
       .then(() => {
-        message.success("派发成功")
+        message.success("派发成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -93,8 +93,8 @@ const AgentAvailableTask = () => {
       .finally(() => {
         setLoading(false);
         setRefreshing(true);
-      })
-  }
+      });
+  };
 
   const TasksTableColumns: ColumnsType<any> = [
     {
@@ -134,7 +134,7 @@ const AgentAvailableTask = () => {
             <Button
               type="link"
               onClick={() => {
-                setLoading(true)
+                setLoading(true);
                 downLoadZip(record.batch_file, setLoading);
               }}
             >
@@ -219,24 +219,19 @@ const AgentAvailableTask = () => {
           autoComplete="off"
         >
           <p>作为中介，您可以将该委托给您的任务分发给标注方，请在下面选择您要分发的标注方的名字</p>
-          <Form.Item
-            name="labeler"
-            rules={[
-              { required: true, message: "不能为空" },
-            ]}
-          >
+          <Form.Item name="labeler" rules={[{ required: true, message: "不能为空" }]}>
             <Select
               size="large"
               showSearch
               mode="multiple"
               allowClear
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               placeholder="请选择要分配的标注方，支持搜索"
               options={labelerLists.map((labeler) => {
                 return {
                   label: labeler.username,
-                  value: labeler.username
-                }
+                  value: labeler.username,
+                };
               })}
             />
           </Form.Item>
@@ -254,7 +249,12 @@ const AgentAvailableTask = () => {
           </Button>
         </Form>
       </Modal>
-      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 8 }}/>
+      <Table
+        columns={TasksTableColumns}
+        dataSource={tasks}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 8 }}
+      />
     </>
   );
 };

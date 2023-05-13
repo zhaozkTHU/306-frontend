@@ -1,7 +1,18 @@
 import { mapLevel2Zh, mapRole2En } from "@/const/interface";
 import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
-import { Button, Tag, message, Table, Modal, Divider, Descriptions, Input, Space, InputRef } from "antd";
+import {
+  Button,
+  Tag,
+  message,
+  Table,
+  Modal,
+  Divider,
+  Descriptions,
+  Input,
+  Space,
+  InputRef,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 
@@ -36,7 +47,7 @@ const AdministratorAccount = () => {
   useEffect(() => {
     request("/api/administrator/user_info", "GET")
       .then((response) => {
-        setUserList(response.data.data)
+        setUserList(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -155,15 +166,12 @@ const AdministratorAccount = () => {
         return (
           <>
             <Button
-             
               type="link"
-             
               onClick={() => {
-                  setLoading(true);
-                  block(record.username, true);
-                }}
+                setLoading(true);
+                block(record.username, true);
+              }}
               disabled={record.is_blocked}
-            
             >
               封禁
             </Button>

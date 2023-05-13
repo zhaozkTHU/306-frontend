@@ -68,23 +68,23 @@ const TasktaskScreen = () => {
   });
   useEffect(() => {
     if (!router.isReady) {
-      return
+      return;
     }
     request(`/api/demander/task?task_id=${query.id}`, "GET")
-    .then((response) => {
-      setTask(response.data.data)
-    })
-    .catch((error) => {
-      if (error.response) {
-        message.error(`获取任务信息失败，${error.response.data.message}`);
-      } else {
-        message.error("获取任务信息失败，网络错误");
-      }
-    })
-    .finally(() => {
-      setRefreshing(false)
-    })
-  }, [refreshing])
+      .then((response) => {
+        setTask(response.data.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`获取任务信息失败，${error.response.data.message}`);
+        } else {
+          message.error("获取任务信息失败，网络错误");
+        }
+      })
+      .finally(() => {
+        setRefreshing(false);
+      });
+  }, [refreshing]);
 
   // 对某一标注者进行自动审核
   const postSingleAutoChecking = async (task_id: number, labeler_id: number, accuracy: number) => {
@@ -319,7 +319,7 @@ const TasktaskScreen = () => {
   ];
   const query = router.query;
   return (
-    <Spin spinning={refreshing||loading}>
+    <Spin spinning={refreshing || loading}>
       <ProCard split="vertical">
         <ProCard colSpan={"40%"}>
           <Descriptions bordered column={4}>
@@ -345,7 +345,11 @@ const TasktaskScreen = () => {
               {task.time}秒
             </Descriptions.Item>
             <Descriptions.Item label="分发方式" span={4}>
-              {task.distribute==="agent"?`中介: ${task.agent_username}`:(task.distribute_type==="smart"?"系统-智能":"系统-顺序")}
+              {task.distribute === "agent"
+                ? `中介: ${task.agent_username}`
+                : task.distribute_type === "smart"
+                ? "系统-智能"
+                : "系统-顺序"}
             </Descriptions.Item>
           </Descriptions>
         </ProCard>

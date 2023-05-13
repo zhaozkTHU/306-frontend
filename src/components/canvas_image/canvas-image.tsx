@@ -56,7 +56,7 @@ const CanvasImage = (props: CanvasImageProps) => {
             objectFit: "contain",
             objectPosition: "center center",
           }}
-          placeholder = {<>ndiuehndiu</>}
+          placeholder={<>ndiuehndiu</>}
           loading="lazy"
         />
       </ImageFormatter>

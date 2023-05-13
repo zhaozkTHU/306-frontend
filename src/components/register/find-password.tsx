@@ -134,12 +134,12 @@ const FindPassword = (props: FindPasswordProps) => {
             placeholder="电子邮箱"
             allowClear
             onSearch={(value) => {
-              if(value) {
+              if (value) {
                 setRefreshing(true);
                 props.setrefreshing(true);
                 getVeriCode(value);
               } else {
-                message.warning("邮箱不得为空")
+                message.warning("邮箱不得为空");
               }
             }}
             enterButton={

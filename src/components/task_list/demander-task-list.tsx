@@ -239,7 +239,16 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       key: "title",
       align: "center",
       width: "25%",
-      render: (text, record) => <Button type="link" onClick={() => {router.push(`/demander/${record.task_id}`)}}>{text}</Button>,
+      render: (text, record) => (
+        <Button
+          type="link"
+          onClick={() => {
+            router.push(`/demander/${record.task_id}`);
+          }}
+        >
+          {text}
+        </Button>
+      ),
     },
     {
       title: "创建时间",
@@ -276,8 +285,8 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         return (
           <Space size={[0, 8]} wrap>
             {state.map((s: string, idx: number) => (
-              <Tag color={mapState2ColorChinese[s]['color']} key={idx}>
-                {mapState2ColorChinese[s]['description']}
+              <Tag color={mapState2ColorChinese[s]["color"]} key={idx}>
+                {mapState2ColorChinese[s]["description"]}
               </Tag>
             ))}
           </Space>
@@ -482,7 +491,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-      })
+      });
   }, [router, refreshing]);
   return (
     <>
@@ -606,9 +615,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             name="basic"
             initialValues={{ remember: true }}
             onFinish={(values) => {
-              const image_url = values.image_description.map(
-                (image: any) => image.response?.url
-              );
+              const image_url = values.image_description.map((image: any) => image.response?.url);
               postReport(detail.task_id, labelerId, values.description, image_url);
             }}
             autoComplete="off"
@@ -733,7 +740,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             return {
               labeler_id: id,
               labeler_state: detail.label_state[idx],
-              labeler_credits: detail.labeler_credits[idx]
+              labeler_credits: detail.labeler_credits[idx],
             };
           })}
         />

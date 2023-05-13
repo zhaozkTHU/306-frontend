@@ -50,12 +50,15 @@ network.interceptors.request.use(
 );
 
 export const downLoadZip = async (url: string, setRefreshing: any) => {
-  axios.get(`/api/file?url=${url}`, {
-    responseType: "blob",
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-  })
+  axios
+    .get(`/api/file?url=${url}`, {
+      responseType: "blob",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    })
     .then((response) => {
-      const url = window.URL.createObjectURL(new Blob([response.data], {type: "application/zip"}));
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], { type: "application/zip" })
+      );
       const link = document.createElement("a");
       link.style.display = "none";
       link.href = url;
@@ -69,7 +72,6 @@ export const downLoadZip = async (url: string, setRefreshing: any) => {
       message.error(`文件下载失败，${error.response.message}`);
     })
     .finally(() => {
-      setRefreshing(false)
-    })
-    ;
+      setRefreshing(false);
+    });
 };

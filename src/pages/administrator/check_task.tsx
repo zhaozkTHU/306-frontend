@@ -163,10 +163,13 @@ const AdministratorCheckTask = () => {
             不通过
           </Button>
           <Tooltip title="点击此处下载题目文件">
-            <Button type="link" onClick={() => {
-              setLoading(true)
-              downLoadZip(record.batch_file, setLoading)
-            }}>
+            <Button
+              type="link"
+              onClick={() => {
+                setLoading(true);
+                downLoadZip(record.batch_file, setLoading);
+              }}
+            >
               下载
             </Button>
           </Tooltip>
@@ -289,12 +292,21 @@ const AdministratorCheckTask = () => {
               {taskDetail.labeler_number}
             </Descriptions.Item>
             <Descriptions.Item label="分发方式" span={4}>
-              {taskDetail.distribute==="agent"?`中介: ${taskDetail.agent_user}`:(taskDetail.distribute_type==="smart"?"系统-智能":"系统-顺序")}
+              {taskDetail.distribute === "agent"
+                ? `中介: ${taskDetail.agent_user}`
+                : taskDetail.distribute_type === "smart"
+                ? "系统-智能"
+                : "系统-顺序"}
             </Descriptions.Item>
           </Descriptions>
         </>
       </Modal>
-      <Table columns={columns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 6 }} />
+      <Table
+        columns={columns}
+        dataSource={tasks}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 6 }}
+      />
     </>
   );
 };

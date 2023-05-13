@@ -31,7 +31,10 @@ const CheckModel = (props: CheckModelProps) => {
    *
    */
   useEffect(() => {
-    request(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, "GET")
+    request(
+      `/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`,
+      "GET"
+    )
       .then((response) => {
         const newProblems: any[] = JSON.parse(JSON.parse(response.data.label_data));
         const totalNumber = newProblems.length;
@@ -94,11 +97,7 @@ const CheckModel = (props: CheckModelProps) => {
         <Carousel dots={false} ref={CarouselRef}>
           {result.map((items, index) => (
             <div key={index}>
-              <Problem
-                problem={items}
-                index={index}
-                total={result.length}
-              />
+              <Problem problem={items} index={index} total={result.length} />
               <Divider />
               <Grid container>
                 <Grid item xs>
@@ -127,7 +126,7 @@ const CheckModel = (props: CheckModelProps) => {
                       上一题
                     </Button>
                   </Tooltip>
-                  <Divider type="vertical"/>
+                  <Divider type="vertical" />
                   <Tooltip title={index === result.length - 1 ? "已经是最后一题了" : undefined}>
                     <Button
                       disabled={index === result.length - 1}

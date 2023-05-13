@@ -32,7 +32,7 @@ import {
   TextReviewDataForm,
   VideoTagDataForm,
 } from "./task-data-form";
-import { UploadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, InboxOutlined, VerticalAlignBottomOutlined } from "@ant-design/icons";
 import type { RcFile } from "antd/es/upload";
 import { Modal } from "antd/lib";
 import axios from "axios";
@@ -117,10 +117,32 @@ const TaskInfoForm: React.FC<{
   }, [distribute, form]);
 
   useEffect(() => {
-    axios.get("/api/get_agent", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+    axios
+      .get("/api/get_agent", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
       .then((value) => setAgentList(value.data.data))
       .catch((reason) => message.error(`获取中介失败 ${reason.message}`));
   }, []);
+
+  useEffect(() => {
+    if (props.taskInfo) {
+      form.setFieldsValue({
+        ...props.taskInfo,
+        deadline: dayjs(props.taskInfo.deadline) as any,
+        batch_file: props.taskInfo.batch_file
+          ? ([
+              {
+                uid: 1,
+                name: props.taskInfo.batch_file,
+                status: "done",
+                url: props.taskInfo.batch_file,
+              },
+            ] as any)
+          : undefined,
+      });
+    }
+  }, [props.taskInfo, form]);
 
   const onFinish = () => {
     setLoading(true);
@@ -302,7 +324,9 @@ const TaskInfoForm: React.FC<{
             name="agent_username"
             rules={[{ required: true, message: "请输入分发中介名" }]}
           >
-            <Select options={agentList.map((agent) => ({ value: agent.username, label: agent.username }))} />
+            <Select
+              options={agentList.map((agent) => ({ value: agent.username, label: agent.username }))}
+            />
           </Form.Item>
         )}
         <Row>
@@ -398,48 +422,84 @@ const TaskInfoForm: React.FC<{
         )}
         {batch && (
           <>
-            <Alert
-              message={
-                <>
-                  请
-                  <Button
-                    type="link"
-                    onClick={() => downloadTemplate(template, form.getFieldValue("templates"))}
-                  >
-                    下载
-                  </Button>
-                  模板并按规范提交
-                </>
-              }
-              type="info"
-              showIcon
-            />
-            <br />
-            <Form.Item
-              label="上传压缩包"
-              name="batch_file"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => e?.fileList}
-              rules={[{ required: true, message: "请上传压缩包" }]}
-            >
-              <Upload
-                action="/api/file"
-                headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
-                maxCount={1}
-                beforeUpload={() => { setUploading(true); return true; }}
-                onChange={(info) => {
-                  if (info.file.status === "done") {
-                    setUploading(false);
-                    message.success("上传成功");
-                  } else if (info.file.status === "error") {
-                    setUploading(false);
-                    message.error("上传失败");
+            <Row>
+              <Col span={12}>
+                <Alert
+                  message={
+                    <>
+                      请
+                      <Button
+                        type="link"
+                        onClick={() => downloadTemplate(template, form.getFieldValue("templates"))}
+                      >
+                        下载
+                      </Button>
+                      模板并按规范提交
+                    </>
                   }
-                }}
-              >
-                <Button icon={<UploadOutlined />}>上传压缩包</Button>
-              </Upload>
-            </Form.Item>
+                  type="info"
+                  showIcon
+                />
+              </Col>
+            </Row>
+            <br />
+            <Row>
+              <Col span={12}>
+                <Form.Item
+                  label="上传压缩包"
+                  name="batch_file"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => e?.fileList}
+                  rules={[{ required: true, message: "请上传压缩包" }]}
+                >
+                  <Upload.Dragger
+                    action="/api/file"
+                    headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
+                    maxCount={1}
+                    beforeUpload={() => {
+                      setUploading(true);
+                      return true;
+                    }}
+                    onChange={(info) => {
+                      if (info.file.status === "done") {
+                        setUploading(false);
+                        message.success("上传成功");
+                      } else if (info.file.status === "error") {
+                        setUploading(false);
+                        message.error("上传失败");
+                      }
+                    }}
+                    onDownload={async (file) => {
+                      const downloadFile = (
+                        await axios.get("/api/file", {
+                          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                          params: { url: file.url || file.response.url },
+                        })
+                      ).data;
+                      const url = window.URL.createObjectURL(new Blob([downloadFile]));
+                      const link = document.createElement("a");
+                      link.style.display = "none";
+                      link.href = url;
+                      link.setAttribute("download", file.name);
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    showUploadList={{
+                      showDownloadIcon: true,
+                      downloadIcon: <VerticalAlignBottomOutlined />,
+                      showRemoveIcon: true,
+                      removeIcon: <DeleteOutlined />,
+                    }}
+                  >
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">点击或拖拽上传</p>
+                  </Upload.Dragger>
+                </Form.Item>
+              </Col>
+            </Row>
           </>
         )}
         <Button
