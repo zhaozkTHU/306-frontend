@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Table, Button, message } from "antd";
+import { Table, Button, message, Spin } from "antd";
 import { TaskInfo } from "@/const/interface";
 import axios from "axios";
 
@@ -93,6 +93,10 @@ const DistributeList: React.FC = () => {
       ),
     },
   ];
+
+  if (loading) {
+    return <Spin tip="Loading..." size="large" />;
+  }
 
   return (
     <>
