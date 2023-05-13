@@ -93,16 +93,16 @@ const CheckModel = (props: CheckModelProps) => {
    */
   return (
     <Spin spinning={refreshing}>
-      <ProCard split="vertical" style={{height: "80vh", overflow: "auto"}}>
+      <ProCard split="vertical" style={{height: "80vh"}}>
         <ProCard colSpan={"70%"}>
           <Divider>
-            <h3>审核</h3>
+            <h3>审核(下面的虚线内为题目区)</h3>
           </Divider>
           {refreshing ? (
             <p>Loading...</p>
           ) : (
             <>
-            <div style={{overflowY: "auto", height:"39vh"}}>
+            <div style={{overflowY: "auto", height:"36vh", border: checkResult[problemIndex]?"dotted rgb(33, 198, 39)":"dotted rgb(221, 180, 32)", padding:10}}>
               <Problem
                 problem={result[problemIndex]}
                 index={problemIndex}

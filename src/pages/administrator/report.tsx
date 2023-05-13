@@ -287,7 +287,7 @@ const AdministratorReport = () => {
                 />
               </ImageFormatter>
             </Col>
-          ))}
+          )}
         </Row>
       </Modal>
       <Table

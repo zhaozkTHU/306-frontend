@@ -20,10 +20,10 @@ const Problem = (props: ProbelmProps) => {
       }
     }
     return (
-    <>
-      <h3>
+    <div>
+      <h1 style={{fontSize: "26px"}}>
         第{props.index + 1}/{props.total}题: {props.problem.description}
-      </h3>
+      </h1>
       {props.problem.chosen.map((option: boolean, idx: number) => (
         <>
         <Checkbox key={idx} checked={option} disabled={true}>
@@ -34,11 +34,11 @@ const Problem = (props: ProbelmProps) => {
         </>
       ))}
       {/* <Checkbox.Group options={props.problem.options} value={selected} disabled={true} /> */}
-    </>
+    </div>
   )
   } else if (props.problem.template == "ImagesClassification") {
     return (<>
-      <h3>
+      <h3 style={{fontSize: "26px"}}>
         第{props.index + 1}/{props.total}题: {props.problem.description}
       </h3>
       <Image.PreviewGroup>
@@ -70,7 +70,7 @@ const Problem = (props: ProbelmProps) => {
   } else if (props.problem.template == "FaceTag") {
     return (
       <>
-        <h3>
+        <h3 style={{fontSize: "26px"}}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <CanvasImage
@@ -82,7 +82,7 @@ const Problem = (props: ProbelmProps) => {
     )
   } else if (props.problem.template == "ImageFrame") {
     return (<>
-      <h3>
+      <h3 style={{fontSize: "26px"}}>
         第{props.index + 1}/{props.total}题: {props.problem.description}
       </h3>
       <CanvasImage
@@ -93,7 +93,7 @@ const Problem = (props: ProbelmProps) => {
     </>)
   } else if (props.problem.template == "SoundTag") {
     return (<>
-      <h3>
+      <h3 style={{fontSize: "26px"}}>
         第{props.index + 1}/{props.total}题: {props.problem.description}
       </h3>
       <>
@@ -117,7 +117,7 @@ const Problem = (props: ProbelmProps) => {
   } else if (props.problem.template == "VideoTag") {
     return (
       <>
-        <h3>
+        <h3 style={{fontSize: "26px"}}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -150,7 +150,7 @@ const Problem = (props: ProbelmProps) => {
   } else if (props.problem.template == "TextReview") {
     return (
       <>
-        <h3>
+        <h3 style={{fontSize: "26px"}}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -165,7 +165,7 @@ const Problem = (props: ProbelmProps) => {
   } else if (props.problem.template == "ImageReview") {
     return (
       <>
-        <h3>
+        <h3 style={{fontSize: "26px"}}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -190,7 +190,7 @@ const Problem = (props: ProbelmProps) => {
     )
   } else if (props.problem.template == "VideoReview") {
     return (<>
-      <h3>
+      <h3 style={{fontSize: "26px"}}>
         第{props.index + 1}/{props.total}题: {props.problem.description}
       </h3>
       <>
@@ -211,7 +211,7 @@ const Problem = (props: ProbelmProps) => {
   } else if (props.problem.template == "AudioReview") {
     return (
       <>
-        <h3>
+        <h3 style={{fontSize: "26px"}}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
