@@ -26,15 +26,18 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal 
-          title="Classification" open={open} onCancel={handleCancel} footer={null}
-          width = {"80%"}
-          style={{ 
-            top: 0, 
+        <Modal
+          title="Classification"
+          open={open}
+          onCancel={handleCancel}
+          footer={null}
+          width={"80%"}
+          style={{
+            top: 0,
             left: 0,
-            width: '100%', 
-            height: '100%', 
-          }} 
+            width: "100%",
+            height: "100%",
+          }}
         >
           <OptionComponent
             title={task.title}
@@ -59,15 +62,18 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal 
-          title="Sound Video Tag" open={open} onCancel={handleCancel} footer={null}
-          width = {"80%"}
-          style={{ 
-            top: 0, 
+        <Modal
+          title="Sound Video Tag"
+          open={open}
+          onCancel={handleCancel}
+          footer={null}
+          width={"80%"}
+          style={{
+            top: 0,
             left: 0,
-            width: '100%', 
-            height: '100%', 
-          }} 
+            width: "100%",
+            height: "100%",
+          }}
         >
           <SVTagComponent
             title={task.title}
@@ -92,15 +98,18 @@ const TagBoard: React.FC<TagBoardProps> = (prop: TagBoardProps) => {
         <Button type="primary" onClick={showModal}>
           tagging
         </Button>
-        <Modal 
-          title="Image annontation" open={open} onCancel={handleCancel} footer={null}
-          width = {"80%"}
-          style={{ 
-            top: 0, 
+        <Modal
+          title="Image annontation"
+          open={open}
+          onCancel={handleCancel}
+          footer={null}
+          width={"80%"}
+          style={{
+            top: 0,
             left: 0,
-            width: '100%', 
-            height: '100%', 
-          }} 
+            width: "100%",
+            height: "100%",
+          }}
         >
           <AnnotationComponent
             title={task.title}

@@ -16,7 +16,7 @@ interface Report {
   reporter_role: string,
   reported_role: string,
   description: string,
-  image_desription: string[]
+  image_description: string[]
 }
 
 const AdministratorReport = () => {
@@ -32,10 +32,10 @@ const AdministratorReport = () => {
     task_id: -1,
     user_id: -1,
     description: "",
-    image_desription: [],
+    image_description: [],
     reporter_role: "demander",
     reported_role: "labeler",
-  })
+  });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -130,8 +130,8 @@ const AdministratorReport = () => {
       ],
       onFilter: (values, record) => record.role === values,
       render: (role) => {
-        return mapRole2En[role]
-      }
+        return mapRole2En[role];
+      },
     },
     {
       title: "被举报者ID",
@@ -194,7 +194,7 @@ const AdministratorReport = () => {
           onFinish={(values) => {
             setLoading(true);
             deal_report(reportId, pass, values.credits, values.description);
-            setDealReportModalOpen(false)
+            setDealReportModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -272,7 +272,7 @@ const AdministratorReport = () => {
         <p>举报者描述: {detail.description}</p>
         <p>图片证据:</p>
         <Row>
-          {detail.image_desription.map((url, idx) =>
+          {detail.image_description.map((url, idx) =>
             <Col key={idx}>
               <ImageFormatter key={idx}>
                 <MyImage
@@ -290,7 +290,12 @@ const AdministratorReport = () => {
           )}
         </Row>
       </Modal>
-      <Table columns={ReportTableColumns} dataSource={reportList} loading={refreshing || loading} pagination={{ pageSize: 6 }}/>
+      <Table
+        columns={ReportTableColumns}
+        dataSource={reportList}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 6 }}
+      />
     </>
   );
 };

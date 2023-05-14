@@ -16,9 +16,8 @@ import {
   MenuFoldOutlined,
   BellFilled,
 } from "@ant-design/icons";
-import { Col, MenuProps, Row } from "antd";
-import { Layout, Menu as AntMenu, theme, Result, Button, Avatar } from "antd";
-import Image from "next/image";
+import { Col, MenuProps, Row, Spin } from "antd";
+import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
 import Menu from "@mui/material/Menu";
 import { MenuItem } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
@@ -125,7 +124,8 @@ const MyLayout = (props: MyLayoutProps) => {
     );
   }
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Spin spinning={!router.isReady}>
+    <Layout style={{ maxHeight: "100vh" }}>
       {/* 
         Sider that take up the room so that the Content
         can collapse or not with Sider
@@ -137,7 +137,8 @@ const MyLayout = (props: MyLayoutProps) => {
           zIndex: 9,
         }}
         theme="light"
-        collapsedWidth="0"
+        // collapsedWidth="0"
+        width={"17%"}
       />
       <Sider
         collapsed={collapsed}
@@ -148,18 +149,20 @@ const MyLayout = (props: MyLayoutProps) => {
           boxShadow: "3px 3px 10px #00000038",
           zIndex: 10,
         }}
+        width={"17%"}
         theme="light"
-        collapsedWidth="0"
+        // collapsedWidth="0"
       >
         <div
           style={{
             height: 70,
             background: "rgba(255, 255, 255, 0.2)",
+            marginTop: "5px"
           }}
         >
-          <Image src={"/logo/logo.png"} width="200" alt={"logo加载失败"} height="80" />
+          <img src={"/logo/logo.png"} alt={"logo加载失败"} width={"100%"} height={"auto"}/>
         </div>
-        <div style={{ height: "10%" }} />
+        <div style={{ height: "5%" }} />
         <AntMenu
           style={{
             border: "none",
@@ -173,12 +176,16 @@ const MyLayout = (props: MyLayoutProps) => {
           }}
         />
       </Sider>
-      <Layout className="site-layout">
+      <Layout className="site-layout" style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh"
+      }}>
         <Header
           style={{
             padding: 0,
             background: "#3b5999",
-            height: "80px",
+            height: "12vh",
             width: "100%",
             position: "sticky",
             top: 0,
@@ -197,7 +204,7 @@ const MyLayout = (props: MyLayoutProps) => {
                 style={{
                   fontSize: "25px",
                   width: 80,
-                  height: 80,
+                  height: "12vh",
                   color: "white",
                 }}
               />
@@ -213,8 +220,8 @@ const MyLayout = (props: MyLayoutProps) => {
                 icon={<BellFilled />}
                 style={{
                   fontSize: "20px",
-                  width: 80,
-                  height: 80,
+                  // width: 80,
+                  height: "12vh",
                   color: "white",
                 }}
               />
@@ -227,7 +234,7 @@ const MyLayout = (props: MyLayoutProps) => {
                 }}
                 style={{
                   fontSize: "25px",
-                  width: 80,
+                  width: "12vh",
                   height: 80,
                 }}
                 size="large"
@@ -308,12 +315,14 @@ const MyLayout = (props: MyLayoutProps) => {
         <Content
           style={{
             backgroundColor: "#ffffff",
+            flex: 1
           }}
         >
           <div
             style={{
-              padding: "16px",
+              padding: "20px",
               borderRadius: "10px",
+              position: "relative"
             }}
           >
             {props.children}
@@ -329,6 +338,7 @@ const MyLayout = (props: MyLayoutProps) => {
         <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
+    </Spin>
   );
 };
 

@@ -15,7 +15,7 @@ interface Info {
 }
 
 const MemberComponent = () => {
-  const [accountInfo, setAccountInfo] = useState<Info>(()=>{
+  const [accountInfo, setAccountInfo] = useState<Info>(() => {
     return {
       username: '名字五个字',
       level: 'bronze',
@@ -70,11 +70,16 @@ const MemberComponent = () => {
       });
   };
   const buyExperience = () => {
-    axios.post('/api/exp', {points: exchangeValue}, { headers: { Authorization: `Bearer ${token}` } })
+    axios
+      .post(
+        "/api/exp",
+        { points: exchangeValue },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         setAccountInfo(response.data);
         setBuyExpModal(false);
-        message.success('Experience purchased successfully');
+        message.success("Experience purchased successfully");
       })
       .catch((error) => {
         console.error(error);
@@ -90,7 +95,7 @@ const MemberComponent = () => {
       .then((response) => {
         setVipExpiry(response.data.ddl_time);
         setBuyTimeModal(false);
-        message.success('VIP time purchased successfully');
+        message.success("VIP time purchased successfully");
       })
       .catch((error) => {
         console.error(error);
@@ -123,7 +128,9 @@ const MemberComponent = () => {
       {showModal && (
         <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
           <h2>{accountInfo && accountInfo.username}</h2>
-          <Tag color={mapLevel2Zh[accountInfo.level].color}>Level: {mapLevel2Zh[accountInfo.level].name}</Tag>
+          <Tag color={mapLevel2Zh[accountInfo.level].color}>
+            Level: {mapLevel2Zh[accountInfo.level].name}
+          </Tag>
           <p>Points: {accountInfo && accountInfo.points}</p>
           <p>Experience: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
           <Space >
@@ -162,5 +169,3 @@ const MemberComponent = () => {
 };
 
 export default MemberComponent;
-
-     

@@ -1,10 +1,26 @@
 import { mapEntemplate2Zhtemplate } from "@/const/interface";
 import store from "@/store";
 import { request } from "@/utils/network";
-import { Button, Carousel, Divider, Form, Image, Input, InputNumber, Modal, Row, Table, Tooltip, Upload, UploadFile, UploadProps, message } from "antd";
+import {
+  Button,
+  Carousel,
+  Divider,
+  Form,
+  Image,
+  Input,
+  InputNumber,
+  Modal,
+  Row,
+  Table,
+  Tooltip,
+  Upload,
+  UploadFile,
+  UploadProps,
+  message,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { add } from "../task_manage/deleteList";
 import { RcFile } from "antd/es/upload";
 import Typography from "@mui/material/Typography";
@@ -14,27 +30,29 @@ import Problem from "../demander_problem/problem";
 import Grid from "@mui/material/Grid";
 
 interface LabelerTaskListProps {
-  state: string
+  state: string;
 }
 
 interface LabelerTask {
-  demander_id: number,
-  task_id: number,
-  title: string,
-  template: string,
-  reward: number,
-  task_data: any[]
+  demander_id: number;
+  task_id: number;
+  title: string;
+  template: string;
+  reward: number;
+  task_data: any[];
 }
 
 const { Search } = Input;
 
 const LabelerTaskList = (props: LabelerTaskListProps) => {
-  const [pageNumber, setPageNumber] = useState<number|null>(null);
+  const [pageNumber, setPageNumber] = useState<number | null>(null);
   const [taskLists, setTaskLists] = useState<LabelerTask[]>([]);
   const [problemsModalOpen, setProblemsModalOpen] = useState<boolean>(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+  const [problemIndex, setProblemIndex] = useState<number>(0);
+
   const [detail, setDetail] = useState<LabelerTask>({
     title: "",
     template: "TextClassification",
@@ -42,16 +60,15 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
     task_data: [],
     task_id: 0,
     demander_id: 0,
-  })
+  });
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
-  const CarouselRef = useRef<any>(null);
 
   useEffect(() => {
     request(`/api/${props.state}`, "GET")
       .then((response) => {
-        setTaskLists(response.data.data)
+        setTaskLists(response.data.data);
       })
       .catch((error) => {
         if (error.response) {
@@ -61,10 +78,9 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
         }
       })
       .finally(() => {
-        setRefreshing(false)
-      })
-  }, [refreshing])
-
+        setRefreshing(false);
+      });
+  }, [refreshing]);
 
   const UploadPropsByType = (fileType: "image" | "video" | "audio"): UploadProps => ({
     action: "/api/file",
@@ -152,9 +168,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       key: "title",
       align: "center",
       width: "25%",
-      render: (username, record) => (
-        <Button type="link">{username}</Button>
-      )
+      render: (username, record) => <Button type="link">{username}</Button>,
     },
     {
       title: "任务模板",
@@ -162,9 +176,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       key: "template",
       align: "center",
       width: "25%",
-      render: (template) => (
-        mapEntemplate2Zhtemplate[template]
-      )
+      render: (template) => mapEntemplate2Zhtemplate[template],
     },
     {
       title: "单题奖励",
@@ -185,76 +197,79 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             setReportModalOpen(true)
           }}>举报</Button>
           <Button type="link" onClick={() => {
-            setDetail({...record, task_data: record.task_data})
+            setDetail(record)
             setProblemsModalOpen(true)
           }}>查看</Button>
         </>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <>
-      <Modal open={problemsModalOpen} onCancel={() => { setProblemsModalOpen(false) }} footer={null} destroyOnClose>
+      <Modal open={problemsModalOpen} onCancel={() => { setProblemsModalOpen(false); setProblemIndex(0); }} footer={null} destroyOnClose>
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           题目详情
         </Typography>
         <Divider></Divider>
-        <Carousel dots={false} ref={CarouselRef}>
-          <div>
-            {detail.task_data.map((problem: any, idx: number) => (
-              <>
-                <Problem problem={problem} index={idx} total={detail.task_data.length}/>
-                <Divider />
-                <Grid container>
-                  <Grid item xs>
-                <Tooltip title={idx === 0 ? "已经是第一题了" : undefined}>
-                  <Button
-                    disabled={idx === 0}
-                    onClick={() => {
-                      CarouselRef.current?.goTo(idx + 1, true);
-                    }}
-                  >
-                    上一题
-                  </Button>
-                </Tooltip>
-                <Divider type="vertical" />
-                <Tooltip title={idx === detail.task_data.length - 1 ? "已经是最后一题了" : undefined}>
-                  <Button
-                    disabled = {idx === detail.task_data.length - 1}
-                    onClick={() => {
-                      CarouselRef.current?.goTo(idx - 1, true);
-                    }}
-                  >
-                    下一题
-                  </Button>
-                </Tooltip>
-                <Divider type="vertical"/>
-                </Grid>
-                <Grid>
-                <InputNumber size="small" placeholder={`跳转至`}
-                  value={pageNumber}
-                  onChange={(e) => {
-                    setPageNumber(e)
+
+        <>
+          <Problem problem={detail.task_data[problemIndex]} index={problemIndex} total={detail.task_data.length} />
+          <Divider />
+          <Grid container>
+            <Grid item xs>
+              <Tooltip title={problemIndex === 0 ? "已经是第一题了" : undefined}>
+                <Button
+                  disabled={problemIndex === 0}
+                  onClick={() => {
+                    // CarouselRef.current?.goTo(idx + 1, true);
+                    setProblemIndex((i) => (i - 1))
                   }}
-                />
-                <Button type="link" onClick={() => {
-                  if(pageNumber!==null) {
-                    if(pageNumber<=detail.task_data.length&&pageNumber>=1) {
-                      CarouselRef.current?.goTo(pageNumber - 1, true);
-                    } else {
-                      message.warning(`请输入正确的题目序号1~${detail.task_data.length}`)
-                    }
+                >
+                  上一题
+                </Button>
+              </Tooltip>
+              <Divider type="vertical" />
+              <Tooltip title={problemIndex === detail.task_data.length - 1 ? "已经是最后一题了" : undefined}>
+                <Button
+                  disabled={problemIndex === detail.task_data.length - 1}
+                  onClick={() => {
+                    setProblemIndex((i) => (i + 1))
+                  }}
+                >
+                  下一题
+                </Button>
+              </Tooltip>
+              <Divider type="vertical" />
+            </Grid>
+            <Grid>
+              <InputNumber size="small" placeholder={`跳转至`}
+                value={pageNumber}
+                onChange={(e) => {
+                  setPageNumber(e)
+                }}
+              />
+              <Button type="link" onClick={() => {
+                if (pageNumber !== null) {
+                  if (pageNumber <= detail.task_data.length && pageNumber >= 1) {
+                    setProblemIndex(pageNumber - 1);
+                  } else {
+                    message.warning(`请输入正确的题目序号1~${detail.task_data.length}`)
                   }
-                }}>跳转至</Button>
-                </Grid>
-                </Grid>
-              </>
-            ))}
-          </div>
-        </Carousel>
+                }
+              }}>跳转至</Button>
+            </Grid>
+          </Grid>
+        </>
       </Modal>
-      <Modal open={reportModalOpen} onCancel={() => { setReportModalOpen(false) }} footer={null} destroyOnClose>
+      <Modal
+        open={reportModalOpen}
+        onCancel={() => {
+          setReportModalOpen(false);
+        }}
+        footer={null}
+        destroyOnClose
+      >
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           举报
         </Typography>
@@ -263,11 +278,9 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
           name="basic"
           initialValues={{ remember: true }}
           onFinish={(values) => {
-            const image_url = values.image_description.map(
-              (image: any) => image.response?.url
-            );
+            const image_url = values.image_description.map((image: any) => image.response?.url);
             postReport(detail.task_id, detail.demander_id, values.description, image_url);
-            setReportModalOpen(false)
+            setReportModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -334,7 +347,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       </Modal>
       <Table columns={columns} loading={refreshing || loading} dataSource={taskLists} />
     </>
-  )
-}
+  );
+};
 
-export default LabelerTaskList
+export default LabelerTaskList;

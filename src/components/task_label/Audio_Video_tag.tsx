@@ -271,15 +271,11 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         const storedChosenOptionIndex = localStorage.getItem(
           `chosenOptionIndex-${taskInfo.task_id}-${newIndex}`
         );
-        const storedInputValue = localStorage.getItem(
-          `inputValue-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedInputValue = localStorage.getItem(`inputValue-${taskInfo.task_id}-${newIndex}`);
         setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
         setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
 
-        const storedTimer = localStorage.getItem(
-          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
         return newIndex;
       });
@@ -317,15 +313,11 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         const storedChosenOptionIndex = localStorage.getItem(
           `chosenOptionIndex-${taskInfo.task_id}-${newIndex}`
         );
-        const storedInputValue = localStorage.getItem(
-          `inputValue-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedInputValue = localStorage.getItem(`inputValue-${taskInfo.task_id}-${newIndex}`);
         setChosenOptionIndex(storedChosenOptionIndex ? JSON.parse(storedChosenOptionIndex) : -1);
         setInputValue(storedInputValue ? JSON.parse(storedInputValue) : "");
 
-        const storedTimer = localStorage.getItem(
-          `lastSaveTime-${taskInfo.task_id}-${newIndex}`
-        );
+        const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
         return newIndex;
       });
@@ -336,7 +328,7 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   if (!currentProblem) {
     console.log("Loading...");
-    return <Spin tip="Loading..."/>;
+    return <Spin tip="Loading..." />;
   }
   if (taskInfo.template === "SoundTag" || taskInfo.template === "VideoTag") {
     return (
@@ -371,25 +363,27 @@ const SVTagComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem && currentProblem.description}</div>
-        {currentProblem && ((taskInfo.template === "SoundTag") ? (
-          <MyAudio url={currentProblem.url} controls />
-        ) : (
-          <MyVideo url={currentProblem.url} controls />
-        ))}
-        <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
-          {currentProblem && currentProblem.choice.map((option, index) => (
-            <Radio key={index} value={index}>
-              {option.text}
-              {option.needInput && (
-                <Input
-                  style={{ marginLeft: 8 }}
-                  value={chosenOptionIndex === index ? inputValue || "" : ""}
-                  onChange={handleInputChange}
-                  disabled={chosenOptionIndex !== index}
-                />
-              )}
-            </Radio>
+        {currentProblem &&
+          (taskInfo.template === "SoundTag" ? (
+            <MyAudio url={currentProblem.url} controls />
+          ) : (
+            <MyVideo url={currentProblem.url} controls />
           ))}
+        <Radio.Group onChange={handleSVChange} value={chosenOptionIndex}>
+          {currentProblem &&
+            currentProblem.choice.map((option, index) => (
+              <Radio key={index} value={index}>
+                {option.text}
+                {option.needInput && (
+                  <Input
+                    style={{ marginLeft: 8 }}
+                    value={chosenOptionIndex === index ? inputValue || "" : ""}
+                    onChange={handleInputChange}
+                    disabled={chosenOptionIndex !== index}
+                  />
+                )}
+              </Radio>
+            ))}
         </Radio.Group>
         <Divider />
         <div>

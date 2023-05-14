@@ -2,7 +2,7 @@ import { mapEntemplate2Zhtemplate, mapTag2Zh } from "@/const/interface";
 import { downLoadZip, request } from "@/utils/network";
 import { transTime } from "@/utils/valid";
 import Typography from "@mui/material/Typography";
-import { Button, Descriptions, Divider, Form, Modal, Select, Tag, message } from "antd";
+import { Button, Descriptions, Divider, Form, Modal, Select, Tag, Tooltip, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Table } from "antd/lib";
 import { useEffect, useState } from "react";
@@ -58,8 +58,8 @@ const AgentAvailableTask = () => {
       })
       .finally(() => {
         setRefreshing(false);
-      })
-  }
+      });
+  };
   useEffect(() => {
     request("/api/agent_distribute", "GET")
       .then((response) => {
@@ -73,7 +73,7 @@ const AgentAvailableTask = () => {
         }
       });
     fetchList();
-  }, [refreshing])
+  }, [refreshing]);
 
   const distribute = async (task_id: number, labeler: string[]) => {
     request("/api/agent_distribute", "POST", {
@@ -81,7 +81,7 @@ const AgentAvailableTask = () => {
       labeler: labeler,
     })
       .then(() => {
-        message.success("派发成功")
+        message.success("派发成功");
       })
       .catch((error) => {
         if (error.response) {
@@ -93,8 +93,8 @@ const AgentAvailableTask = () => {
       .finally(() => {
         setLoading(false);
         setRefreshing(true);
-      })
-  }
+      });
+  };
 
   const TasksTableColumns: ColumnsType<any> = [
     {
@@ -122,24 +122,29 @@ const AgentAvailableTask = () => {
       render: (_, record) => {
         return (
           <>
-            <Button
-              type="link"
-              onClick={() => {
-                setDetail(record);
-                setDetailModalOpen(true);
-              }}
-            >
-              查看
-            </Button>
-            <Button
-              type="link"
-              onClick={() => {
-                setLoading(true)
-                downLoadZip(record.batch_file, setLoading);
-              }}
-            >
-              下载
-            </Button>
+            <Tooltip title="点击此处查看任务详情">
+              <Button
+                type="link"
+                onClick={() => {
+                  setDetail(record);
+                  setDetailModalOpen(true);
+                }}
+              >
+                查看
+              </Button>
+            </Tooltip>
+            <Tooltip title="点击此处下载题目文件">
+              <Button
+                type="link"
+                onClick={() => {
+                  setLoading(true)
+                  downLoadZip(record.batch_file, setLoading);
+                }}
+              >
+                下载
+              </Button>
+            </Tooltip>
+            <Tooltip title="点击此处进行任务分发">
             <Button
               type="link"
               onClick={() => {
@@ -149,6 +154,7 @@ const AgentAvailableTask = () => {
             >
               分发
             </Button>
+            </Tooltip>
           </>
         );
       },
@@ -219,6 +225,7 @@ const AgentAvailableTask = () => {
           autoComplete="off"
         >
           <p>作为中介，您可以将该委托给您的任务分发给标注方，请在下面选择您要分发的标注方的名字</p>
+          <p><b>注：</b>您可以在“可配发标注者”菜单下查看您可以配发的标注者</p>
           <Form.Item
             name="labeler"
             rules={[
@@ -230,13 +237,13 @@ const AgentAvailableTask = () => {
               showSearch
               mode="multiple"
               allowClear
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               placeholder="请选择要分配的标注方，支持搜索"
               options={labelerLists.map((labeler) => {
                 return {
                   label: labeler.username,
-                  value: labeler.username
-                }
+                  value: labeler.username,
+                };
               })}
             />
           </Form.Item>
@@ -254,7 +261,7 @@ const AgentAvailableTask = () => {
           </Button>
         </Form>
       </Modal>
-      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 8 }}/>
+      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 8 }} />
     </>
   );
 };

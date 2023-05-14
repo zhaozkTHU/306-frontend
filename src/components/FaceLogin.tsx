@@ -13,7 +13,7 @@ const CameraButton: React.FC<CameraButtonProps> = (props) => {
 
   const handleOk = () => {
     const canvas = canvasRef.current;
-    if(canvas) {
+    if (canvas) {
       canvas.width = 1080;
       canvas.height = 810;
     }
@@ -53,12 +53,12 @@ const CameraButton: React.FC<CameraButtonProps> = (props) => {
     <>
       {/* <Button onClick={handleCapture}>拍摄图片</Button> */}
       {/* <Modal title="拍摄图片" open={open} onOk={handleOk} onCancel={handleCancel}> */}
-        <video ref={videoRef} style={{width: 400}}/>
-        <canvas ref={canvasRef} style={{ display: "none" }} />
-        <Divider/>
-        <Button onClick={handleCapture}>打开摄像头</Button>
-        <Divider type="vertical"/>
-        <Button onClick={handleOk}>拍照</Button>
+      <video ref={videoRef} style={{ width: 400 }} />
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+      <Divider />
+      <Button onClick={handleCapture}>打开摄像头</Button>
+      <Divider type="vertical" />
+      <Button onClick={handleOk}>拍照</Button>
       {/* </Modal> */}
     </>
   );

@@ -95,7 +95,7 @@ const UserInfo = (props: UsersInfoProps) => {
     credits: 0,
     prefer: null,
     is_bound: false,
-    is_vip: false
+    is_vip: false,
   });
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
   const [value, setValue] = React.useState(0);
@@ -257,7 +257,7 @@ const UserInfo = (props: UsersInfoProps) => {
           footer={null}
         >
           <h2 style={{ textAlign: "center" }}>邀请码</h2>
-          <Divider /> 
+          <Divider />
           <p>
             为了<b>造福</b>广大用户，扩大306众包平台的影响力，我们为每个用户配备了邀请码。
           </p>
@@ -271,13 +271,18 @@ const UserInfo = (props: UsersInfoProps) => {
           </p>
         </Modal>
         <ProCard split="vertical">
-          <ProCard colSpan={'50%'}>
-            <Card hoverable style={{
-              marginTop: props.role === "labeler" ? 0 : 50,
-            }}>
-              <Row style={{
-                textAlign: 'center'
-              }}>
+          <ProCard colSpan={"50%"}>
+            <Card
+              hoverable
+              style={{
+                marginTop: props.role === "labeler" ? 0 : 50,
+              }}
+            >
+              <Row
+                style={{
+                  textAlign: "center",
+                }}
+              >
                 <Col span={24}>
                   <Avatar
                     size={60}
@@ -315,10 +320,10 @@ const UserInfo = (props: UsersInfoProps) => {
               <Row>
                 <Col span={8}>
                   经验:
-                  <Tooltip title={`当前经验：${info.exp}/${mapLevel2Exp[info.level]}`}>
+                  <Tooltip title={`当前经验：${info.exp}，下一级需要：${mapLevel2Exp[info.level]}`}>
                     <Progress
                       size="small"
-                      percent={info.exp / mapLevel2Exp[info.level]}
+                      percent={info.exp / mapLevel2Exp[info.level]*100}
                       type="circle"
                       format={() => `${info.exp}`}
                     />
@@ -329,7 +334,7 @@ const UserInfo = (props: UsersInfoProps) => {
                   <Tooltip title="需求方发布任务需要消耗点数，可提现">
                     <Progress
                       size="small"
-                      percent={info.points/100}
+                      percent={info.points / 100}
                       type="circle"
                       format={() => `${info.points}分`}
                     />
@@ -337,14 +342,15 @@ const UserInfo = (props: UsersInfoProps) => {
                 </Col>
                 <Col>
                   信用分:
-                  <Tooltip title="维持较高的信用分有利于你更快的获取服务">
+                  <Tooltip title={info.credits>90?"维持较高的信用分有利于你更快的获取服务":
+                (info.credits<75?"当前信用分较低，可能会影响您获取服务":"当前信用分存在风险，请文明操作，及时回复")}>
                     <Progress
                       size="small"
                       percent={info.credits}
                       type="circle"
                       format={(percent) => `${percent}分`}
                       strokeColor={
-                        info.credits < 70
+                        info.credits < 75
                           ? "red"
                           : info.credits > 90
                           ? "rgb(33, 198, 39)"
@@ -415,17 +421,17 @@ const UserInfo = (props: UsersInfoProps) => {
                       onClick={() => {
                         const invitecode = document.getElementById("invitecode");
                         const clipboardObj = navigator.clipboard;
-                        if(clipboardObj) {
+                        if (clipboardObj) {
                           clipboardObj
-                          .writeText(invitecode ? invitecode.innerText : "")
-                          .then(() => {
-                            message.success("复制成功");
-                          })
-                          .catch(() => {
-                            message.error("复制失败，请稍后重试");
-                          });
+                            .writeText(invitecode ? invitecode.innerText : "")
+                            .then(() => {
+                              message.success("复制成功");
+                            })
+                            .catch(() => {
+                              message.error("复制失败，请稍后重试");
+                            });
                         } else {
-                          message.warning("复制失败，请确保您采用的是https安全连接")
+                          message.warning("复制失败，请确保您采用的是https安全连接");
                         }
                       }}
                       icon={<ContentCopyIcon />}
@@ -547,8 +553,11 @@ const UserInfo = (props: UsersInfoProps) => {
                   </Form>
                 </Modal>
                 <Alert severity={info.is_bound ? "success" : "warning"}>
-                  该账号{info.is_bound ? "已" : "未"}绑定{accountBalance.length == 3 ? "3张" : ""}银行卡{accountBalance.length == 3 ? "，无法继续绑定" : ""}
-                  {accountBalance.length == 3 ? <></> :
+                  该账号{info.is_bound ? "已" : "未"}绑定{accountBalance.length == 3 ? "3张" : ""}
+                  银行卡{accountBalance.length == 3 ? "，无法继续绑定" : ""}
+                  {accountBalance.length == 3 ? (
+                    <></>
+                  ) : (
                     <Button
                       type="link"
                       size="small"
@@ -558,7 +567,7 @@ const UserInfo = (props: UsersInfoProps) => {
                     >
                       点击此处绑定
                     </Button>
-                  }
+                  )}
                 </Alert>
                 <Card
                   title={"账户信息 "}
@@ -570,7 +579,11 @@ const UserInfo = (props: UsersInfoProps) => {
                       onClick={() => {
                         setVisible((i) => !i);
                       }}
-                      icon={<Tooltip title={visible ? "点击此处隐藏" : "点击此处显示"}>{visible ? <VisibilityOffIcon /> : <VisibilityIcon />}</Tooltip>}
+                      icon={
+                        <Tooltip title={visible ? "点击此处隐藏" : "点击此处显示"}>
+                          {visible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </Tooltip>
+                      }
                     />
                   }
                 >
@@ -776,7 +789,7 @@ const UserInfo = (props: UsersInfoProps) => {
               </TabPanel>
               <TabPanel value={value} index={1}>
                 <div>
-                  <RankList/>
+                  <RankList />
                 </div>
               </TabPanel>
             </Box>

@@ -24,15 +24,23 @@ const columns: ColumnsType<RankListData["rank_lists"][0]> = [
   {
     title: "积分",
     dataIndex: "points",
-  }
+  },
 ];
 
 const RankList: React.FC = () => {
-  const [rankListData, setRankListData] = useState<RankListData>({ rank_lists: [], my_rank: 0, my_points: 0 });
+  const [rankListData, setRankListData] = useState<RankListData>({
+    rank_lists: [],
+    my_rank: 0,
+    my_points: 0,
+  });
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    axios.get("/api/rank", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
-      .then((value) => { setRankListData(value.data); console.log(value.data); })
+    axios
+      .get("/api/rank", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .then((value) => {
+        setRankListData(value.data);
+        console.log(value.data);
+      })
       .catch((reason) => {
         console.log(reason);
         message.error("获取排行榜失败");
@@ -50,7 +58,9 @@ const RankList: React.FC = () => {
         rowKey="username"
         pagination={false}
         bordered
-        rowClassName={(_record, index) => index === rankListData.my_rank - 1 ? "highlightrow" : ""}
+        rowClassName={(_record, index) =>
+          index === rankListData.my_rank - 1 ? "highlightrow" : ""
+        }
       />
       你的排名：{rankListData.my_rank}，积分：{rankListData.my_points}
     </>

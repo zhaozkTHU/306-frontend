@@ -1,10 +1,11 @@
-import { Button, Carousel, Col, Divider, Radio, RadioChangeEvent, Row, Spin, Tooltip } from "antd";
+import { Avatar, Button, Checkbox, Col, Divider, Row, Spin, Tooltip } from "antd";
 import { message } from "antd/lib";
 import { useRouter } from "next/router";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Problem from "../demander_problem/problem";
 import { request } from "@/utils/network";
 import Grid from "@mui/material/Grid";
+import { ProCard } from "@ant-design/pro-components";
 
 interface CheckModelProps {
   task_id: number;
@@ -13,6 +14,7 @@ interface CheckModelProps {
   template: string;
   rate: number;
   setIsLabelerList: Dispatch<SetStateAction<boolean>>;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -24,26 +26,35 @@ const CheckModel = (props: CheckModelProps) => {
   const [passedNumber, setPassedNumber] = useState<number>(0);
   const [result, setResult] = useState<any[]>([]);
   const [checkedNumber, setCheckedNumber] = useState<number>(0);
+  const [checkResult, setCheckResult] = useState<boolean[]>([]);
   const router = useRouter();
-  const CarouselRef = useRef<any>(null);
+  const [problemIndex, setProblemIndex] = useState<number>(0);
   /**
    * Request for the labeled data
    *
    */
   useEffect(() => {
-    request(`/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`, "GET")
+    request(
+      `/api/task/checking?task_id=${props.task_id}&labeler_index=${props.labeler_index}`,
+      "GET"
+    )
       .then((response) => {
-        const newProblems: any[] = JSON.parse(JSON.parse(response.data.label_data));
+        const newProblems: any[] = response.data.label_data;
         const totalNumber = newProblems.length;
         setCheckedNumber(Math.ceil((totalNumber * props.rate) / 100));
         setResult(newProblems);
         if (props.is_sample) {
-          for (let i = result.length - 1; i > 0; i--) {
+          for (let i = totalNumber - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [newProblems[i], newProblems[j]] = [newProblems[j], newProblems[i]];
           }
           setResult(newProblems.slice(0, Math.ceil((totalNumber * props.rate) / 100)));
         }
+        const temp: boolean[] = [];
+        for (let i = 0; i < result.length; i++) {
+          temp.push(false);
+        }
+        setCheckResult(temp);
       })
       .catch((err) => {
         console.log(err);
@@ -73,7 +84,7 @@ const CheckModel = (props: CheckModelProps) => {
       })
       .finally(() => {
         setRefreshing(false);
-        // props.setRefreshing(true);
+        props.setRefreshing(true);
       });
   };
   /**
@@ -82,57 +93,67 @@ const CheckModel = (props: CheckModelProps) => {
    */
   return (
     <Spin spinning={refreshing}>
-      <Row>
-        <Col span={8}>需审核题目总量: {result.length}</Col>
-        <Col span={8}>通过题目数量: {passedNumber}</Col>
-        <Col span={8}>当前通过率: {(passedNumber / checkedNumber).toFixed(2)}</Col>
-      </Row>
-      <br />
-      {refreshing ? (
-        <p>Loading...</p>
-      ) : (
-        <Carousel dots={false} ref={CarouselRef}>
-          {result.map((items, index) => (
-            <div key={index}>
+      <ProCard split="vertical" style={{height: "80vh"}}>
+        <ProCard colSpan={"70%"}>
+          <Divider>
+            <h3>审核(下面的虚线内为题目区)</h3>
+          </Divider>
+          {refreshing ? (
+            <p>Loading...</p>
+          ) : (
+            <>
+            <div style={{overflowY: "auto", height:"36vh", border: checkResult[problemIndex]?"dotted rgb(33, 198, 39)":"dotted rgb(221, 180, 32)", padding:10}}>
               <Problem
-                problem={items}
-                index={index}
+                problem={result[problemIndex]}
+                index={problemIndex}
                 total={result.length}
               />
+            </div>
               <Divider />
               <Grid container>
                 <Grid item xs>
-                  <Radio.Group
-                    defaultValue="fail"
-                    onChange={(e: RadioChangeEvent) => {
-                      if (e.target.value === "pass") {
-                        setPassedNumber((b) => b + 1);
-                      } else if (e.target.value === "fail") {
-                        setPassedNumber((b) => b - 1);
+                  <Checkbox checked={checkResult[problemIndex]} onClick={() => {
+                    if (!checkResult[problemIndex]) {
+                      setPassedNumber((b) => b + 1);
+                      const temp: boolean[] = [];
+                      for (let i = 0; i < result.length; i++) {
+                        temp.push(checkResult[i])
                       }
-                    }}
-                  >
-                    <Radio value="pass">合格</Radio>
-                    <Radio value="fail">不合格</Radio>
-                  </Radio.Group>
+                      temp[problemIndex] = true;
+                      setCheckResult(temp);
+                    }
+                  }}>合格</Checkbox>
+                  <Divider type="vertical" />
+                  <Checkbox checked={!checkResult[problemIndex]} onClick={() => {
+                    if (checkResult[problemIndex]) {
+                      setPassedNumber((b) => b - 1);
+                      const temp: boolean[] = [];
+                      for (let i = 0; i < result.length; i++) {
+                        temp.push(checkResult[i])
+                      }
+                      temp[problemIndex] = false;
+                      setCheckResult(temp);
+                    }
+                  }}>不合格</Checkbox>
                 </Grid>
                 <Grid>
-                  <Tooltip title={index === 0 ? "已经是第一题了" : undefined}>
+                  <Tooltip title={problemIndex === 0 ? "已经是第一题了" : undefined}>
                     <Button
-                      disabled={index === 0}
+                      disabled={problemIndex === 0}
                       onClick={() => {
-                        CarouselRef.current?.goTo(index - 1, true);
+                        setProblemIndex((i) => (i - 1))
                       }}
                     >
                       上一题
                     </Button>
                   </Tooltip>
-                  <Divider type="vertical"/>
-                  <Tooltip title={index === result.length - 1 ? "已经是最后一题了" : undefined}>
+                  <Divider type="vertical" />
+                  <Tooltip title={problemIndex === result.length - 1 ? "已经是最后一题了" : undefined}>
                     <Button
-                      disabled={index === result.length - 1}
+                      disabled={problemIndex === result.length - 1}
                       onClick={() => {
-                        CarouselRef.current?.goTo(index + 1, true);
+                        // CarouselRef.current?.goTo(problemIndex + 1, true);
+                        setProblemIndex((i) => (i + 1))
                       }}
                     >
                       下一题
@@ -141,53 +162,92 @@ const CheckModel = (props: CheckModelProps) => {
                 </Grid>
               </Grid>
               <Divider />
-            </div>
-          ))}
-        </Carousel>
-      )}
-      <Grid container>
-        <Grid item xs>
-          <Button
-            onClick={() => {
-              setRefreshing(true);
-              postCheck(true);
-            }}
-            style={{
-              backgroundColor: "#3b5999",
-              color: "white",
-            }}
-          >
-            合格
-          </Button>
-          <Divider type="vertical" />
-          <Button
-            style={{
-              backgroundColor: "#3b5999",
-              color: "white",
-            }}
-            onClick={() => {
-              setRefreshing(true);
-              postCheck(false);
-            }}
-          >
-            不合格
-          </Button>
-        </Grid>
-        <Grid>
-          <Button
-            style={{
-              backgroundColor: "#3b5999",
-              color: "white",
-            }}
-            onClick={() => {
-              props.setIsLabelerList(true);
-            }}
-          >
-            退出审核
-          </Button>
-        </Grid>
-      </Grid>
-    </Spin>
+              </>
+          )
+          }
+          <Grid container>
+            <Grid item xs>
+              <Button
+                onClick={() => {
+                  setRefreshing(true);
+                  postCheck(true);
+                }}
+                style={{
+                  backgroundColor: "#3b5999",
+                  color: "white",
+                }}
+              >
+                合格
+              </Button>
+              <Divider type="vertical" />
+              <Button
+                style={{
+                  backgroundColor: "#3b5999",
+                  color: "white",
+                }}
+                onClick={() => {
+                  setRefreshing(true);
+                  postCheck(false);
+                }}
+              >
+                不合格
+              </Button>
+            </Grid>
+            <Grid>
+              <Button
+                style={{
+                  backgroundColor: "#3b5999",
+                  color: "white",
+                }}
+                onClick={() => {
+                  props.setIsLabelerList(true);
+                }}
+              >
+                退出审核
+              </Button>
+            </Grid>
+          </Grid>
+        </ProCard>
+        <ProCard colSpan={"30%"} >
+          <Divider>
+            总体数据
+          </Divider>
+          <Row>
+            <Col>
+              <span style={{ textAlign: "center" }}>通过题目数量: {passedNumber}</span>
+            </Col>
+            <Divider type="vertical" />
+            <Col>
+              <span style={{ textAlign: "center" }}>当前通过率: {(passedNumber / result.length).toFixed(2)}</span>
+            </Col>
+          </Row>
+          <Divider />
+          <Divider>各题情况</Divider>
+          <div style={{overflowY: "auto", height:"40vh"}}>
+          <Row>
+            {result.map((_, idx) => (
+              <Col key={idx}>
+                <Tooltip title={result[idx].description}>
+                <Avatar size={"large"}
+                  onClick={() => {
+                    setProblemIndex(idx)
+                  }}
+                  style={{
+                    border: idx===problemIndex?"solid rgb(32, 101, 221) 2px":undefined,
+                    backgroundColor: checkResult[idx] ? "rgb(33, 198, 39)" : "rgb(221, 180, 32)",
+                    margin:6
+                  }}>
+                  {idx + 1}
+                </Avatar>
+                </Tooltip>
+              </Col>
+            ))}
+          </Row>
+          </div>
+          {/* </div> */}
+        </ProCard>
+      </ProCard>
+    </Spin >
   );
 };
 
