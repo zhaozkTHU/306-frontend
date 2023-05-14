@@ -185,6 +185,16 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     message.success("Saved!");
   };
 
+  const handleBatch = () => {
+    Modal.confirm({
+      title: "Confirm Batch",
+      content: "Are you sure you want to upload the answers?",
+      onOk: handleConfirmedUpload,
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
+    });
+  };
   const handleUpload = () => {
     Modal.confirm({
       title: "Confirm Upload",
@@ -381,6 +391,14 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
               icon={<SaveOutlined />}
             >
               {timeRemaining <= 0 ? "Deadline passed" : isCurrentProblemSaved() ? "Saved" : "Save"}
+            </Button>
+            <Button
+              onClick={handleBatch}
+              disabled={uploadCompleted || timeRemaining <= 0} // 禁用按钮，如果已上传或截止日期已过
+              type={uploadCompleted || timeRemaining <= 0 ? "default" : "primary"}
+              icon={<UploadOutlined />}
+            >
+              {timeRemaining <= 0 ? "Deadline passed" : "Batch Upload"}
             </Button>
             <Button
               onClick={handleUpload}
