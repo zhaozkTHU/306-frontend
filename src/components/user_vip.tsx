@@ -25,6 +25,7 @@ const MemberComponent = () => {
   });
   const [Loading, setLoading] = useState(true);
   const [vipExpiry, setVipExpiry] = useState(null);
+  const [countdown, setCountdown] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
   const [buyExpModal, setBuyExpModal] = useState(false);
   const [buyTimeModal, setBuyTimeModal] = useState(false);
@@ -37,6 +38,26 @@ const MemberComponent = () => {
     // Call your API when the component mounts
     fetchAccountInfo();
   }, []);
+  useEffect(() => {
+    if (vipExpiry) {
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const diff = vipExpiry * 1000 - now;
+
+        if (diff < 0) {
+          setCountdown('流量包不可用');
+          clearInterval(interval);
+        } else {
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const secs = Math.floor((diff % (1000 * 60)) / 1000);
+          setCountdown(`${hours}h ${mins}m ${secs}s`);
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [vipExpiry]);
 
   const fetchAccountInfo = () => {
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
@@ -81,11 +102,11 @@ const MemberComponent = () => {
   };
 
   if(Loading){
-    return <>return <Spin tip="Loading..."/>;</>
+    return <Spin tip="Loading..."/>;
   }
   return (
     <div>
-      <Tooltip title={vipExpiry ? new Date(vipExpiry * 1000).toLocaleString() : <Spin size="small" tip="Loading..."/>}>
+      <Tooltip title={vipExpiry ? countdown : <Spin size="small" tip="Loading..."/>}>
         <Button
           type="text"
           icon={(accountInfo.level === 'diamond') ? <SketchOutlined /> : <CrownOutlined />}
@@ -122,16 +143,16 @@ const MemberComponent = () => {
         <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal} title="购买流量包">
           <Select 
             onChange={(value: number) => setVipTime(value)}
-            placeholder="Select VIP Time"
+            placeholder="选择流量包时长"
           >
             <Option value={15} disabled={accountInfo && accountInfo.points < 5}>
-              Buy 15s VIP Time
+              15s 流量包
             </Option>
             <Option value={30} disabled={accountInfo && accountInfo.points < 9}>
-              Buy 30s VIP Time
+              30s 流量包
             </Option>
             <Option value={60} disabled={accountInfo && accountInfo.points < 15}>
-              Buy 60s VIP Time
+              60s 流量包
             </Option>
           </Select>
         </Modal>
