@@ -50,6 +50,13 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   useEffect(() => {
     console.log("init", props.initialAnnotations);
     setAnnotations(props.initialAnnotations ?? []);
+    annotationsRef.current = props.initialAnnotations ?? [];
+    drawAnnotations();
+  }, [props.initialAnnotations]);  
+  
+  useEffect(() => {
+    console.log("init", props.initialAnnotations);
+    setAnnotations(props.initialAnnotations ?? []);
     drawAnnotations();
   }, []);
   const drawAnnotations = () => {
