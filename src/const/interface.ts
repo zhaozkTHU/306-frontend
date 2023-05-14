@@ -51,6 +51,16 @@ export interface TagProblem extends Problem {
   };
 }
 
+export interface TextTripleProblem extends Problem {
+  description: string;
+  text: string;
+  triple?: {
+    subject: string;
+    object: string;
+    relation: string;
+  };
+}
+
 export interface TextReviewProblem extends Problem {
   content: string;
   data?: boolean;
@@ -77,6 +87,7 @@ export interface TaskInfo {
     | "ImageFrame"
     | "SoundTag"
     | "VideoTag"
+    | "TextTriple"
     | "TextReview"
     | "ImageReview"
     | "VideoReview"
@@ -99,6 +110,7 @@ export interface TaskInfo {
     | FaceTagProblem[]
     | ImageFrameProblem[]
     | TagProblem[]
+    | TextTripleProblem[]
     | TextReviewProblem[]
     | FileReviewProblem[]
     | Problem[];
@@ -107,6 +119,19 @@ export interface TaskInfo {
 
 export interface TextClassificationData {
   label_data: boolean[][];
+}
+export function isTextTripleProblem(data: any): data is TextTripleProblem {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    typeof data.description === 'string' &&
+    typeof data.text === 'string' &&
+    typeof data.triple === 'object' &&
+    data.triple !== null &&
+    typeof data.triple.subject === 'string' &&
+    typeof data.triple.object === 'string' &&
+    typeof data.triple.relation === 'string'
+  );
 }
 
 export function isFaceTagProblem(data: any): data is FaceTagProblem {
