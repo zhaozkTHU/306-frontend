@@ -35,7 +35,7 @@ const MemberComponent = () => {
   const [buyExpModal, setBuyExpModal] = useState(false);
   const [buyTimeModal, setBuyTimeModal] = useState(false);
   const [exchangeValue, setExchangeValue] = useState(0);
-  const [vipTime, setVipTime] = useState<number>(0);
+  const [vipTime, setVipTime] = useState<number>(15);
   const token = localStorage.getItem("token");
   const { Option } = Select;
 
@@ -50,10 +50,12 @@ const MemberComponent = () => {
 
       intervalIdRef.current = setInterval(() => {
         const now = Date.now();
+        const diffSec = Math.floor((vipExpiry - now) / 1000);
+        console.log(`Time difference in seconds: ${diffSec}`); // 打印时间差，单位为秒
         if (now >= vipExpiry) {
           setTimer("流量包已不可用");
+          message.warning("流量包已过期");
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
-          message.error("流量包已过期");
         } else {
           const diffSec = Math.floor((vipExpiry - now) / 1000);
           const hours = Math.floor(diffSec / 3600);
@@ -75,7 +77,7 @@ const MemberComponent = () => {
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
-        setVipExpiry(response.data.ddl_time);
+        setVipExpiry(response.data.ddl_time * 1000);
         setWaitLoading(false);
       })
       .catch((error) => {
@@ -94,12 +96,12 @@ const MemberComponent = () => {
       .then((response) => {
         setAccountInfo(response.data);
         setBuyExpModal(false);
+        fetchAccountInfo();
         message.success("经验购买成功");
       })
       .catch((error) => {
         console.error(error);
       });
-      fetchAccountInfo();
   };
 
   const buyVipTime = () => {
@@ -120,17 +122,17 @@ const MemberComponent = () => {
     setWaitLoading(true);
     axios.post('/api/membership', {vip_time: vipTime}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
-        setVipExpiry(response.data.ddl_time);
+        setVipExpiry(response.data.ddl_time * 1000);
         setBuyTimeModal(false);
         setWaitLoading(false);
         message.success(`成功购买 ${vipTime}s 流量包`);
+        fetchAccountInfo();
       })
       .catch((error) => {
-        message.error("购买流量包失败");
+        message.error(`购买失败: ${error.message}`);
         console.error(error);
         setWaitLoading(false);
       });
-      fetchAccountInfo();
   };
 
   const getLevelProgress = (level: string) => {
@@ -200,7 +202,8 @@ const MemberComponent = () => {
             />
           </Tooltip>
           {(waitLoading) ? <Spin tip="Waitng..."/> :
-          <Select 
+          <Select
+            value={vipTime}
             onChange={(value: number) => setVipTime(value)}
             placeholder="选择流量包时长"
           >
