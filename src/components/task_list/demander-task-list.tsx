@@ -46,7 +46,7 @@ export interface DemanderTaskTableEntry {
 }
 
 interface DemanderTaskListProps {
-  type: string;
+  type: string|undefined;
 }
 
 const DemanderTaskList = (props: DemanderTaskListProps) => {
@@ -252,32 +252,8 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     },
   ];
 
-  const LabelerTableColumns: ColumnsType<any> = [
-    {
-      title: "标注者编号",
-      dataIndex: "labeler_id",
-      key: "labeler_id",
-      align: "center",
-    },
-    {
-      title: "标注者状态",
-      dataIndex: "labeler_state",
-      key: "labeler_state",
-      align: "center",
-      render: (state) => {
-        return (
-          <Space size={[0, 8]} wrap>
-            <Tag color={mapState2ColorChinese[state].color}>
-              {mapState2ColorChinese[state].description}
-            </Tag>
-          </Space>
-        );
-      },
-    },
-  ]
-
   useEffect(() => {
-    request(`/api/task${props.type}`, "GET")
+    request(`/api/task${props.type?"?state=" + props.type:""}`, "GET")
       .then((response) => {
         const newTasks = response.data.demander_tasks.map((task: any) => {
           return { ...task };

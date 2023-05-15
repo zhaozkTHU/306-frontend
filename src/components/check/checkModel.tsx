@@ -93,7 +93,7 @@ const CheckModel = (props: CheckModelProps) => {
    */
   return (
     <Spin spinning={refreshing}>
-      <ProCard split="vertical" style={{height: "80vh"}}>
+      <ProCard split="vertical" style={{height: "80vh", minHeight: "500px"}}>
         <ProCard colSpan={"70%"}>
           <Divider>
             <h3>审核(下面的虚线内为题目区)</h3>

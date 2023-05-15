@@ -12,6 +12,7 @@ interface CanvasImageProps {
 const colors: string[] = ["#FF0000", "#22ff00", "#d4ff00", "#00ccff"];
 
 const CanvasImage = (props: CanvasImageProps) => {
+  const [refreshing, setRefreshing] = useState<boolean>(true);
   const canvasRef = useRef<any>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   useEffect(() => {
@@ -41,12 +42,15 @@ const CanvasImage = (props: CanvasImageProps) => {
       }
       const dataURL = canvas.toDataURL("image/png");
       setImageUrl(dataURL);
+      setRefreshing(false)
     };
-  }, []);
+  }, [refreshing]);
   return (
     <>
+
       <canvas width={90} ref={canvasRef} style={{ display: "none" }} />
-      {/* <ImageFormatter> */}
+      {refreshing ?
+        <Spin /> :
         <Image
           src={imageUrl}
           // alt="图片加载中，长时间无反应请刷新"
@@ -56,10 +60,10 @@ const CanvasImage = (props: CanvasImageProps) => {
             objectFit: "contain",
             objectPosition: "center center",
           }}
-          alt="图片加载中"
+          alt="图片加载失败"
           loading="lazy"
         />
-      {/* </ImageFormatter> */}
+      }
     </>
   );
 };

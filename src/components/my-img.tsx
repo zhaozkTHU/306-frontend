@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Image, ImageProps } from "antd";
+import { Image, ImageProps, Spin } from "antd";
 interface MyImageProps extends Omit<ImageProps, "src"> {
   url: string;
   onImageLoad?: (size: { width: number; height: number }) => void;
@@ -8,7 +8,7 @@ interface MyImageProps extends Omit<ImageProps, "src"> {
 
 const MyImage = (props: MyImageProps) => {
   const [imageUrl, setImageUrl] = useState<string>("");
-
+  const [refreshing, setRefreshing] = useState<boolean>(true);
   useEffect(() => {
     axios
       .get("/api/file", {
@@ -25,7 +25,10 @@ const MyImage = (props: MyImageProps) => {
       })
       .catch((error) => {
         console.error(error);
-      });
+      })
+      .finally(() => {
+        setRefreshing(false);
+      })
   }, [props.url]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -38,7 +41,11 @@ const MyImage = (props: MyImageProps) => {
   };
 
   return (
-    <Image src={imageUrl} {...props} alt={props.alt} onLoad={handleImageLoad} preview={false} />
+  <>
+    {refreshing?<Spin spinning={refreshing} tip="图片加载中..."/>
+    : <Image src={imageUrl} {...props} alt={props.alt} onLoad={handleImageLoad} />
+    }
+  </>
   );
 };
 

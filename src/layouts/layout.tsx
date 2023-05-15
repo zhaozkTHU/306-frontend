@@ -15,6 +15,8 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   BellFilled,
+  ClockCircleOutlined,
+  PartitionOutlined
 } from "@ant-design/icons";
 import { Col, MenuProps, Row, Spin } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
@@ -46,10 +48,12 @@ const demanderItems: MenuItem[] = [
   getItem("所有任务", "/demander/all_task", <OrderedListOutlined />),
   getItem("新建任务", "/demander/new_task", <PlusOutlined />),
   getItem("中介列表", "/demander/agent_list", <TeamOutlined />),
+  getItem("待管理员审核", "/demander/admin_checking", <HighlightOutlined />),
+  getItem("分发中", "/demander/distributing", <PartitionOutlined />),
   getItem("标注中", "/demander/labeling", <MonitorOutlined />),
   getItem("待审核", "/demander/checking", <QuestionCircleOutlined />),
   getItem("已完成", "/demander/completed", <CarryOutOutlined />),
-  getItem("管理员审核", "/demander/adminchecking", <HighlightOutlined />),
+  getItem("已过期", "/demander/overdue", <ClockCircleOutlined />),
   getItem("用户信息", "/demander/info", <UserOutlined />),
 ];
 
@@ -59,6 +63,7 @@ const labelerItems: MenuItem[] = [
   getItem("审核中", "/labeler/checking", <QuestionCircleOutlined />),
   getItem("审核未通过", "/labeler/failed", <ExclamationCircleOutlined />),
   getItem("已完成", "/labeler/completed", <CarryOutOutlined />),
+  getItem("已过期", "/labeler/overdue", <ClockCircleOutlined />),
   getItem("用户信息", "/labeler/info", <UserOutlined />),
 ];
 
@@ -124,7 +129,7 @@ const MyLayout = (props: MyLayoutProps) => {
   }
   return (
     <Spin spinning={!router.isReady}>
-    <Layout style={{ maxHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100vh" }}>
       {/* 
         Sider that take up the room so that the Content
         can collapse or not with Sider
@@ -132,7 +137,7 @@ const MyLayout = (props: MyLayoutProps) => {
       <Sider
         collapsed={collapsed}
         style={{
-          height: "100%",
+          height: "100vh",
           zIndex: 9,
         }}
         theme="light"
@@ -144,7 +149,7 @@ const MyLayout = (props: MyLayoutProps) => {
         style={{
           overflow: "auto",
           position: "fixed",
-          height: "100%",
+          height: "100vh",
           boxShadow: "3px 3px 10px #00000038",
           zIndex: 10,
         }}
@@ -178,13 +183,14 @@ const MyLayout = (props: MyLayoutProps) => {
       <Layout className="site-layout" style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh"
+        minHeight: "100vh"
       }}>
         <Header
           style={{
             padding: 0,
             background: "#3b5999",
             height: "12vh",
+            minHeight:"64px",
             width: "100%",
             position: "sticky",
             top: 0,
@@ -229,8 +235,7 @@ const MyLayout = (props: MyLayoutProps) => {
                 }}
                 style={{
                   fontSize: "25px",
-                  width: "12vh",
-                  height: 80,
+                  height: "12vh",
                 }}
                 size="large"
                 aria-controls={open ? "account-menu" : undefined}
@@ -310,14 +315,16 @@ const MyLayout = (props: MyLayoutProps) => {
         <Content
           style={{
             backgroundColor: "#ffffff",
-            flex: 1
           }}
         >
           <div
             style={{
               padding: "20px",
               borderRadius: "10px",
-              position: "relative"
+              position: "relative",
+              height: "80vh",
+              minHeight: "585px",
+              overflow: "auto"
             }}
           >
             {props.children}
@@ -330,7 +337,7 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
         </Content>
-        <Footer style={{ textAlign: "center" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
     </Layout>
     </Spin>
