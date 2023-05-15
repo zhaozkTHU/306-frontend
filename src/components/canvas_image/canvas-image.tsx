@@ -28,14 +28,14 @@ const CanvasImage = (props: CanvasImageProps) => {
           ctx.strokeStyle = colors[i % 4];
           ctx.lineWidth = 2;
           ctx.strokeRect(
-            props.data[i].x,
-            props.data[i].y,
-            props.data[i].width,
-            props.data[i].height
+            props.data[i].x*canvas.width,
+            props.data[i].y*canvas.height,
+            props.data[i].width*canvas.width,
+            props.data[i].height*canvas.height
           );
         } else {
           ctx.beginPath();
-          ctx.arc(props.data[i].x, props.data[i].y, 3, 0, 2 * Math.PI);
+          ctx.arc(props.data[i].x*canvas.width, props.data[i].y*canvas.height, canvas.width/200, 0, 2 * Math.PI);
           ctx.fillStyle = "red";
           ctx.fill();
         }
@@ -47,13 +47,12 @@ const CanvasImage = (props: CanvasImageProps) => {
   }, [refreshing]);
   return (
     <>
-
       <canvas width={90} ref={canvasRef} style={{ display: "none" }} />
       {refreshing ?
-        <Spin /> :
+        <Spin tip="图片加载中，请稍候..."/> :
+        <ImageFormatter>
         <Image
           src={imageUrl}
-          // alt="图片加载中，长时间无反应请刷新"
           width={"100%"}
           height={"100%"}
           style={{
@@ -63,6 +62,7 @@ const CanvasImage = (props: CanvasImageProps) => {
           alt="图片加载失败"
           loading="lazy"
         />
+        </ImageFormatter>
       }
     </>
   );

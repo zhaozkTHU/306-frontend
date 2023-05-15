@@ -56,7 +56,25 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const [tasks, setTasks] = useState<DemanderTaskTableEntry[]>([]);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [autoCheckingModalOpen, setAutoCheckingModalOpen] = useState<boolean>(false);
-
+  const [detail, setDetail] = useState<DemanderTaskTableEntry>({
+    task_id: -1,
+    create_at: 0,
+    deadline: 0,
+    title: "标题五个字",
+    state: [],
+    labeler_number: 0,
+    labeler_id: [],
+    template: "模板五个字",
+    labeler_state: [],
+    pass_check: false,
+    labeler_credits: [],
+    reward: 0,
+    time: 0,
+    distribute: "agent",
+    distribute_type: "order",
+    type: "event",
+    agent_username: "agent1",
+  });
   const auto_check = async (task_id: number, credits: number, accuracy: number) => {
     request("/api/get_agent", "POST", {
       task_id: task_id,
@@ -98,25 +116,6 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         setRefreshing(true);
       });
   };
-  const [detail, setDetail] = useState<DemanderTaskTableEntry>({
-    task_id: -1,
-    create_at: 0,
-    deadline: 0,
-    title: "标题五个字",
-    state: [],
-    labeler_number: 0,
-    labeler_id: [],
-    template: "模板五个字",
-    labeler_state: [],
-    pass_check: false,
-    labeler_credits: [],
-    reward: 0,
-    time: 0,
-    distribute: "agent",
-    distribute_type: "order",
-    type: "event",
-    agent_username: "agent1",
-  });
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
     {
@@ -244,6 +243,16 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 }}
               >
                 自动审核
+              </Button>
+            </Tooltip>
+            <Tooltip title="过期任务可以重新分发">
+              <Button
+                type="link"
+                onClick={() => {
+                  
+                }}
+              >
+                重分发
               </Button>
             </Tooltip>
           </>
@@ -405,6 +414,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           </Descriptions.Item>
           <Descriptions.Item label="单题限时" span={1}>
             {detail.time}秒
+          </Descriptions.Item>
+          <Descriptions.Item label="分发方式" span={1}>
+            {detail.labeler_number}
+          </Descriptions.Item>
+          <Descriptions.Item label="类型标签" span={1}>
+            {detail.reward}
           </Descriptions.Item>
         </Descriptions>
         <h3>题目详情</h3>

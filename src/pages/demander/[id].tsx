@@ -44,6 +44,7 @@ const TasktaskScreen = () => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
+  const [isChecking, setIsChecking] = useState<boolean>(false);
   const [task, setTask] = useState<DemanderTaskTableEntry>({
     task_id: -1,
     create_at: 0,
@@ -226,11 +227,12 @@ const TasktaskScreen = () => {
       render: (_, record) => {
         return (
           <>
-            <Tooltip title="处于待审核状态可以审核">
+            <Tooltip title="处于待审核状态可以审核，你也可以通过这里查看某个标注方的标注">
               <Button
                 type="link"
-                disabled={record.labeler_state !== 3}
+                disabled={record.labeler_state !== 3&&record.labeler_state !== 4&&record.labeler_state !== 5}
                 onClick={() => {
+                  setIsChecking(record.labeler_state === 3)
                   setLabelerId(record.labeler_id);
                   setIsSample(false);
                   setIsLabelerList(false);
@@ -260,6 +262,7 @@ const TasktaskScreen = () => {
                   </>
                 }
                 onConfirm={() => {
+                  setIsChecking(record.labeler_state === 3)
                   setLabelerId(record.labeler_id);
                   setIsSample(true);
                   setIsLabelerList(false);
@@ -307,7 +310,7 @@ const TasktaskScreen = () => {
             </Tooltip>
             <Tooltip title="你可以对不合格的标注方进行举报">
             <Button type="link"
-              disabled={record.state!==5}
+              disabled={record.labeler_state!==5}
               onClick={() => {
                 setLabelerId(record.labeler_id)
                 setReportModalOpen(true);
@@ -356,6 +359,7 @@ const TasktaskScreen = () => {
                 rate={slideValue}
                 setIsLabelerList={setIsLabelerList}
                 setRefreshing={setRefreshing}
+                is_checking={isChecking}
               />
             </>
           )}

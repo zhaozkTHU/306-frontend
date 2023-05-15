@@ -8,11 +8,13 @@ import { Avatar, Button, Col, Divider, Row, Spin, Statistic, Tooltip, message } 
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 interface labelProps {
-  setLabeling: Dispatch<SetStateAction<boolean>>
+  setLabeling: Dispatch<SetStateAction<boolean>>;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
   problemList: any[];
   task_id: number;
   template: string;
-  time: number
+  time: number;
+  deadline: number;
 }
 
 const Label = (props: labelProps) => {
@@ -20,7 +22,7 @@ const Label = (props: labelProps) => {
   const [problemList, setProblemList] = useState<any[]>(props.problemList);
   const [template, setTemplate] = useState<string>("TextClassification");
   const [time, setTime] = useState<number>(props.time);
-  const [total, setTotal] = useState<number>(2);
+  const [total, setTotal] = useState<number>(props.problemList.length);
   const [t, setT] = useState(()=> {
     const storedTimer = localStorage.getItem(`${props.task_id}-${problemIndex}`)
     return storedTimer ? JSON.parse(storedTimer) : 0;
@@ -34,6 +36,11 @@ const Label = (props: labelProps) => {
     console.log(problemList)
   })
   useEffect(() => {
+    if(Date.now() > props.deadline*1000) {
+      props.setRefreshing(true);
+      props.setLabeling(false);
+      message.warning("截止时间已到，本次任务将被回收，请规范自己的标注行为")
+    }
     localStorage.setItem(
       `${props.task_id}-${problemIndex}`,
       JSON.stringify(t)
@@ -66,7 +73,7 @@ const Label = (props: labelProps) => {
     request("/api/submit", "POST", {
       is_completed: is_completed,
       task_id: props.task_id,
-      tag_style: {
+      tag_data: {
         tag_time: Date.now(),
         tags: newProblems,
         tag_style: props.template
@@ -74,6 +81,10 @@ const Label = (props: labelProps) => {
     })
     .then(() => {
       message.success("标注上传成功")
+      if(is_completed) {
+        props.setLabeling(false);
+        props.setRefreshing(true);
+      }
     })
     .catch(() => {
       message.error("标注上传失败，请稍后重试")
@@ -87,7 +98,6 @@ const Label = (props: labelProps) => {
     <Spin spinning={loading} tip="题目数据加载中...">
       <ProCard split="vertical" style={{ height: "80vh", minHeight: "500px" }}>
         <ProCard colSpan={"70%"}>
-          <div style={{ overflowY: "auto", height: "80vh", padding: 10 }}>
             <Divider>
               <h3>标注(下面的虚线内为题目区)</h3>
             </Divider>
@@ -95,12 +105,14 @@ const Label = (props: labelProps) => {
               <p>Loading...</p>
             ) : (
               <>
+               <div style={{ overflowY: "auto", height: "40vh", padding: 10 }}>
                 <LabelerProblem
                   problemList={problemList}
                   total={total}
                   index={problemIndex}
                   setProblemList={setProblemList}
                 />
+                </div>
                 <Divider />
                 <Grid>
                   <Tooltip title={problemIndex === 0 ? "已经是第一题了" : undefined}>
@@ -125,7 +137,7 @@ const Label = (props: labelProps) => {
                     </Button>
                   </Tooltip>
                   <Divider type="vertical" />
-                  <Tooltip title={"保存现有标注"}>
+                  <Tooltip title={"保存现有标注，未达到计时上限(右侧题号为红色)的无法保存"}>
                     <Button
                       onClick={() => {
                         setLoading(true)
@@ -136,10 +148,10 @@ const Label = (props: labelProps) => {
                     </Button>
                   </Tooltip>
                   <Divider type="vertical" />
-                  <Tooltip title={"提交标注结果，提交之后将不能再更改"}>
+                  <Tooltip title={"提交标注结果，未达到计时上限(右侧题号为红色)的题目无法提交，提交之后将不能再更改"}>
                     <Button
                       onClick={() => {
-                        setLoading(true)
+                        setLoading(true);
                         postLabel(true);
                       }}
                     >
@@ -148,13 +160,17 @@ const Label = (props: labelProps) => {
                   </Tooltip>
                   <Divider type="vertical"/>
                   <Tooltip title="点击此处退出标注">
-                  <Button onClick={() => {props.setLabeling(false)}}>退出标注</Button>
+                  <Button onClick={() => {
+                    props.setLabeling(false)
+                    props.setRefreshing(true);
+                  }}>
+                    退出标注
+                  </Button>
                   </Tooltip>
                 </Grid>
               </>
             )
             }
-          </div>
         </ProCard>
         <ProCard colSpan={"30%"} >
           <Divider>
@@ -169,7 +185,7 @@ const Label = (props: labelProps) => {
             </Col>
           </Row>
           <Row>
-            <h3 style={{textAlign:"center"}}>过期时限: {transTime(23198547983897)}</h3>
+            <h3 style={{textAlign:"center"}}>过期时限: {transTime(props.deadline)}</h3>
           </Row>
           <Divider>各题情况</Divider>
           <div style={{ overflowY: "auto", height: "40vh" }}>

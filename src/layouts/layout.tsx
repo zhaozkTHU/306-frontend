@@ -58,8 +58,7 @@ const demanderItems: MenuItem[] = [
 ];
 
 const labelerItems: MenuItem[] = [
-  getItem("新任务", "/labeler/new_task", <EditOutlined />),
-  getItem("标注中", "/labeler/labeling", <MonitorOutlined />),
+  getItem("我的任务", "/labeler/my_task", <EditOutlined />),
   getItem("审核中", "/labeler/checking", <QuestionCircleOutlined />),
   getItem("审核未通过", "/labeler/failed", <ExclamationCircleOutlined />),
   getItem("已完成", "/labeler/completed", <CarryOutOutlined />),

@@ -24,7 +24,7 @@ const Dotted = (props: DottedProps) => {
       canvas.height = 400 * img.height / img.width;
       for (const marker of props.problemList[props.index].data ? props.problemList[props.index].data : []) {
         ctx.beginPath();
-        ctx.arc(marker.x, marker.y, 5, 0, 2 * Math.PI);
+        ctx.arc(marker.x * canvas.width, marker.y * canvas.height, canvas.width/200, 0, 2 * Math.PI);
         ctx.fillStyle = "red";
         ctx.fill();
       }
@@ -53,13 +53,12 @@ const Dotted = (props: DottedProps) => {
   }, []);
 
   const handleMouseUp = (event: any) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
     const offsetX = event.offsetX;
     const offsetY = event.offsetY;
     const newProblems = [...props.problemList];
-    console.log(1)
-    console.log([...(newProblems[props.index].data)]);
-    // [...(newProblems[props.index].data ? newProblems[props.index].data : []), { x: startX / canvas.width, y: startY / canvas.height, width: width / canvas.width, height: height / canvas.height }];
-    newProblems[props.index].data = [...(newProblems[props.index].data ? newProblems[props.index].data : []), { x: offsetX, y: offsetY }];
+    newProblems[props.index].data = [...(newProblems[props.index].data ? newProblems[props.index].data : []), { x: offsetX / canvas.width, y: offsetY / canvas.height }];
     props.setProblemList(newProblems)
     setFlag((i) => (!i));
   }
@@ -79,7 +78,7 @@ const Dotted = (props: DottedProps) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const marker of props.problemList[props.index].data ? props.problemList[props.index].data : []) {
       ctx.beginPath();
-      ctx.arc(marker.x, marker.y, 5, 0, 2 * Math.PI);
+      ctx.arc(marker.x*canvas.width, marker.y*canvas.height, canvas.width/200, 0, 2 * Math.PI);
       ctx.fillStyle = "red";
       ctx.fill();
     }
@@ -120,9 +119,10 @@ const Dotted = (props: DottedProps) => {
         <img src={imageUrl} style={{ position: "relative", top: "0", left: "0", zIndex: "1", width: 400 }} />
         <canvas
           ref={canvasRef}
-          style={{ position: "absolute", top: "0", left: "0", zIndex: "2", backgroundColor: "transparent", width: 400,
-          display: loading?"none":"block"
-        }} />
+          style={{
+            position: "absolute", top: "0", left: "0", zIndex: "2", backgroundColor: "transparent", width: 400,
+            display: loading ? "none" : "block"
+          }} />
       </Spin>
     </div>
   );
