@@ -177,8 +177,7 @@ const MemberComponent = () => {
         </Modal>
       )}
       { helpModal && buyTimeModal && (
-        <Modal onCancel={() => setHelpModal(false)} onOk={() => setHelpModal(false)} open={helpModal}>
-          <Divider children={"流量包"}/>
+        <Modal onCancel={() => setHelpModal(false)} onOk={() => setHelpModal(false)} open={helpModal} title={"流量包"}>
           <p>
             不同的会员等级对应不同的流量限制，低等级会员购买流量包可以<b>暂时</b>获得<span style={{ color: "red" }}>钻石级别</span>流量限制
           </p>
@@ -189,8 +188,7 @@ const MemberComponent = () => {
       )}
 
       { buyTimeModal && (
-        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal}>
-          <Divider children={"购买流量包"}/>
+        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal} title={"购买流量包"}>
           <Tooltip title="什么是流量包">
             <Button
               type="text"
