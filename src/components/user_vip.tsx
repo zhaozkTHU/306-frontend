@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider } from 'antd';
 import { 
   SketchOutlined,
@@ -26,8 +26,10 @@ const MemberComponent = () => {
   });
   const [Loading, setLoading] = useState(true);
   const [waitLoading, setWaitLoading] = useState(false);
-  const [vipExpiry, setVipExpiry] = useState(null);
-  const [countdown, setCountdown] = useState<string>('');
+  const [vipExpiry, setVipExpiry] = useState<number>(Date.now());
+  const [timer, setTimer] = useState<string>("");
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null); // Using ref to hold the intervalId
+
   const [showModal, setShowModal] = useState(false);
   const [helpModal, setHelpModal] = useState(false); 
   const [buyExpModal, setBuyExpModal] = useState(false);
@@ -41,24 +43,31 @@ const MemberComponent = () => {
     fetchAccountInfo();
   }, []);
   useEffect(() => {
-    if (vipExpiry) {
-      const interval = setInterval(() => {
-        const now = Date.now();
-        const diff = vipExpiry * 1000 - now;
+    if (vipExpiry > 0) {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
 
-        if (diff < 0) {
-          setCountdown('流量包不可用');
-          clearInterval(interval);
+      intervalIdRef.current = setInterval(() => {
+        const now = Date.now();
+        if (now >= vipExpiry) {
+          setTimer("流量包已不可用");
+          clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
+          message.error("流量包已过期");
         } else {
-          const hours = Math.floor(diff / (1000 * 60 * 60));
-          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const secs = Math.floor((diff % (1000 * 60)) / 1000);
-          setCountdown(`${hours}h ${mins}m ${secs}s`);
+          const diffSec = Math.floor((vipExpiry - now) / 1000);
+          const hours = Math.floor(diffSec / 3600);
+          const minutes = Math.floor((diffSec % 3600) / 60);
+          const seconds = diffSec % 60;
+          setTimer(`${hours}h ${minutes}m ${seconds}s`);
         }
       }, 1000);
-
-      return () => clearInterval(interval);
     }
+    return () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+    };
   }, [vipExpiry]);
 
   const fetchAccountInfo = () => {
@@ -66,10 +75,11 @@ const MemberComponent = () => {
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
+        setVipExpiry(response.data.ddl_time);
         setWaitLoading(false);
       })
       .catch((error) => {
-        message.error(error);
+        message.error("获取账户信息失败");
         console.error(error);
         setWaitLoading(false);
       });
@@ -116,7 +126,7 @@ const MemberComponent = () => {
         message.success(`成功购买 ${vipTime}s 流量包`);
       })
       .catch((error) => {
-        message.error(error);
+        message.error("购买流量包失败");
         console.error(error);
         setWaitLoading(false);
       });
@@ -132,7 +142,7 @@ const MemberComponent = () => {
   // }
   return (
     <div>
-      <Tooltip title={vipExpiry ? countdown : <Spin size="small" tip="Loading..."/>}>
+      <Tooltip title={timer}>
         <Button
           type="text"
           icon={(accountInfo.level === 'diamond') ? <SketchOutlined /> : <CrownOutlined />}

@@ -237,6 +237,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         "/api/submit",
         {
           task_id: taskInfo.task_id,
+          is_completed: true,
           tag_data,
         },
         { headers: { Authorization: `Bearer ${token}` } }
