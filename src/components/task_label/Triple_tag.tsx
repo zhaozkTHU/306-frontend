@@ -56,13 +56,12 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
 
   // save cur prob id to localstorage
   useEffect(() => {
-    // 存储 currentProblemIndex 到 localStorage
     localStorage.setItem(
       `currentProblemIndex-${taskInfo.task_id}`,
       JSON.stringify(currentProblemIndex)
     );
   }, [currentProblemIndex]);
-  // save answers into localstorage
+
   useEffect(() => {
     localStorage.setItem(`tripleAll-${taskInfo.task_id}`, JSON.stringify(tripleAll));
   }, [tripleAll]);
@@ -81,7 +80,6 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
       setTimer((prevTimer: number) => prevTimer + 1);
     }, 1000); // 每1000毫秒（1秒）更新一次
     return () => {
-      // 清除intervalId以避免内存泄漏
       clearInterval(interval);
     };
   }, [currentProblemIndex]);
@@ -92,7 +90,6 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
       JSON.stringify(timer)
     );
   }, [timer]);
-  // task ddl count
   useEffect(() => {
     const countdown = setInterval(() => {
       const remainingTime = taskInfo.deadline - Date.now();
@@ -132,6 +129,7 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
   const handleSubjectChange = (e: any) => {
     if (currentProblem.text.includes(e.target.value)) {
         setTriple((prev)=>({subject: e.target.value, object: prev.object, relation: prev.relation}));
+        setTripleStatus({subject: '', object: '', relation: ''});
     } 
     else {
         setTripleStatus({subject: 'error', object: '', relation: ''});
@@ -140,6 +138,7 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
   const handleObjectChange = (e: any) => {
     if (currentProblem.text.includes(e.target.value)) {
         setTriple((prev)=>({subject: prev.subject, object: e.target.value, relation: prev.relation}));
+        setTripleStatus({subject: '', object: '', relation: ''});
     } 
     else {
         setTripleStatus({subject: '', object: 'error', relation: ''});
@@ -316,7 +315,7 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
     console.log("Loading...");
     return <Spin tip="Loading..." />;
   }
-  if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
+  if (taskInfo.template === "TextTriple") {
     return (
       <div>
         <Steps current={currentProblemIndex}>
@@ -363,6 +362,7 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
                     placeholder="请输入主体"
                     allowClear
                     maxLength={20}
+                    disabled={!(currentProblem && currentProblem.text)}
                 />
             </Form.Item>
             <Form.Item
@@ -376,6 +376,7 @@ const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
                     placeholder="请输入对象"
                     allowClear
                     maxLength={20}
+                    disabled={!(currentProblem && currentProblem.text)}
                 /> 
             </Form.Item>
             <Form.Item>

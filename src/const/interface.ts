@@ -126,11 +126,13 @@ export function isTextTripleProblem(data: any): data is TextTripleProblem {
     data !== null &&
     typeof data.description === 'string' &&
     typeof data.text === 'string' &&
-    typeof data.triple === 'object' &&
-    data.triple !== null &&
-    typeof data.triple.subject === 'string' &&
-    typeof data.triple.object === 'string' &&
-    typeof data.triple.relation === 'string'
+    (data.triple === undefined || 
+    (
+      data.triple !== null && data.triple === 'object' && 
+      typeof data.triple.subject === 'string' &&
+      typeof data.triple.object === 'string' &&
+      typeof data.triple.relation === 'string'
+    ))
   );
 }
 
