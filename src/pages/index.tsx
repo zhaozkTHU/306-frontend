@@ -28,30 +28,34 @@ export default function LoginScreen(props: LoginScreenPorps) {
   const [isFoundPassword, setIsFoundPassword] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [faceModal, setFaceModal] = useState(false);
+  const [faceModalLoading, setFaceModalLoading] = useState(false);
   const CarouselRef = useRef<any>(null);
 
-  const faceLogin = async (faceImg: File) => {
-    const formData = new FormData();
-    formData.append("face_image", faceImg);
-    axios.post("/api/user/verify", formData)
-      .then((response) => {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("role", response.data.role);
-        props.setRole(response.data.role);
-        router.push(`/${response.data.role}/info`);
-        message.success("登录成功");
-      })
-      .catch((error) => {
-        if (error.response) {
-          message.error(`登录失败，${error?.response?.data?.message}`);
-        } else {
-          message.error("网络失败，请稍后再试");
-        }
-      })
-      .finally(() => {
-        setRefreshing(false);
-      });
-  };
+  const faceLogin = (faceImg: File): Promise<void> =>
+    new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("face_image", faceImg);
+      axios.post("/api/user/verify", formData)
+        .then((response) => {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("role", response.data.role);
+          props.setRole(response.data.role);
+          router.push(`/${response.data.role}/info`);
+          message.success("登录成功");
+          resolve();
+        })
+        .catch((error) => {
+          if (error.response) {
+            message.error(`登录失败，${error?.response?.data?.message}`);
+          } else {
+            message.error("网络失败，请稍后再试");
+          }
+          reject();
+        })
+        .finally(() => {
+          setRefreshing(false);
+        });
+    });
 
   const login = async (values: { username: string; hashPassword: string; }) => {
     request("/api/user/login", "POST", {
@@ -97,10 +101,14 @@ export default function LoginScreen(props: LoginScreenPorps) {
         onCancel={() => setFaceModal(false)}
         footer={null}
       >
-        <CameraButton fileName="face.jpg" onFinish={(faceImg) => {
-          setFaceModal(false);
-          faceLogin(faceImg);
-        }} />
+        <Spin spinning={faceModalLoading}>
+          <CameraButton fileName="face.jpg" onFinish={(faceImg) => {
+            setFaceModalLoading(true);
+            faceLogin(faceImg)
+              .then(() => setFaceModal(false))
+              .finally(() => setFaceModalLoading(false));
+          }} />
+        </Spin>
       </Modal>
 
       <Modal
