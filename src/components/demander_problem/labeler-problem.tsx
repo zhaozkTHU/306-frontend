@@ -6,6 +6,7 @@ import MyVideo from "../my-video";
 import { Dispatch, SetStateAction } from "react";
 import Dotted from "@/components/demander_problem/dotted";
 import Rectangle from "@/components/demander_problem/rectangle";
+import { TextField } from "@mui/material";
 
 interface LabelerProblemProps {
   problemList: any[]
@@ -104,7 +105,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
         <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problemList[props.index].description}
         </h3>
-        <Dotted problemList={props.problemList} index={props.index} setProblemList={props.setProblemList}/>
+        <Dotted problemList={props.problemList} index={props.index} setProblemList={props.setProblemList} />
       </>
     )
   } else if (props.problemList[props.index].template == "ImageFrame") {
@@ -240,7 +241,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
               console.log(newProblems)
             }}>
             <Radio value={true}>合格</Radio>
-            <Divider type="vertical"/>
+            <Divider type="vertical" />
             <Radio value={false}>不合格</Radio>
           </Radio.Group>
         </>
@@ -273,7 +274,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
               console.log(newProblems)
             }}>
             <Radio value={true}>合格</Radio>
-            <Divider type="vertical"/>
+            <Divider type="vertical" />
             <Radio value={false}>不合格</Radio>
           </Radio.Group>
         </>
@@ -301,7 +302,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
             console.log(newProblems)
           }}>
           <Radio value={true}>合格</Radio>
-          <Divider type="vertical"/>
+          <Divider type="vertical" />
           <Radio value={false}>不合格</Radio>
         </Radio.Group>
       </>
@@ -323,10 +324,56 @@ const LabelerProblem = (props: LabelerProblemProps) => {
               console.log(newProblems)
             }}>
             <Radio value={true}>合格</Radio>
-            <Divider type="vertical"/>
+            <Divider type="vertical" />
             <Radio value={false}>不合格</Radio>
           </Radio.Group>
         </>
+      </>
+    )
+  } if (props.problemList[props.index].template == "TextTriple") {
+    return (
+      <>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problemList[props.index].description}
+        </h3>
+        <p>{props.problemList[props.index].text}</p>
+        <TextField
+          label="主体"
+          onChange={(e) => {
+            const newProblems: any[] = [...props.problemList];
+            if(!newProblems[props.index].data) {
+              newProblems[props.index].data = {};
+            }
+            newProblems[props.index].data.subject = (e.target.value);
+            props.setProblemList(newProblems)
+          }}
+          value={props.problemList[props.index].data ? props.problemList[props.index].data.input : ""}
+        />
+        <TextField
+          label="对象"
+          onChange={(e) => {
+            const newProblems: any[] = [...props.problemList];
+            if(!newProblems[props.index].data) {
+              newProblems[props.index].data = {};
+            }
+            newProblems[props.index].data.object = (e.target.value);
+            props.setProblemList(newProblems)
+          }}
+          value={props.problemList[props.index].data ? props.problemList[props.index].data.input : ""}
+        />
+        <TextField
+          label="关系"
+          multiline
+          onChange={(e) => {
+            const newProblems: any[] = [...props.problemList];
+            if(!newProblems[props.index].data) {
+              newProblems[props.index].data = {};
+            }
+            newProblems[props.index].data.relation = (e.target.value);
+            props.setProblemList(newProblems)
+          }}
+          value={props.problemList[props.index].data ? props.problemList[props.index].data.input : ""}
+        />
       </>
     )
   } else {

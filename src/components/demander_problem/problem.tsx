@@ -192,7 +192,7 @@ const Problem = (props: ProbelmProps) => {
       )
     }
   } else if (props.problem.template == "VideoTag") {
-    if(props.problem.template) {
+    if (props.problem.template) {
       return (
         <>
           <h3 style={{ fontSize: "26px" }}>
@@ -264,7 +264,7 @@ const Problem = (props: ProbelmProps) => {
         </h3>
         <>
           <p>{props.problem.content}</p>
-          <Radio.Group value={props.problem.data?props.problem.data:undefined} disabled>
+          <Radio.Group value={props.problem.data ? props.problem.data : undefined} disabled>
             <Radio value={true}>合格</Radio>
             <Radio value={false}>不合格</Radio>
           </Radio.Group>
@@ -290,7 +290,7 @@ const Problem = (props: ProbelmProps) => {
               width="100%"
             />
           </ImageFormatter>
-          <Radio.Group value={props.problem.data?props.problem.data:undefined} disabled>
+          <Radio.Group value={props.problem.data ? props.problem.data : undefined} disabled>
             <Radio value={true}>合格</Radio>
             <Radio value={false}>不合格</Radio>
           </Radio.Group>
@@ -311,7 +311,7 @@ const Problem = (props: ProbelmProps) => {
           }}
         />
         <Divider />
-        <Radio.Group value={props.problem.data?props.problem.data:undefined} disabled>
+        <Radio.Group value={props.problem.data ? props.problem.data : undefined} disabled>
           <Radio value={true}>合格</Radio>
           <Radio value={false}>不合格</Radio>
         </Radio.Group>
@@ -326,11 +326,23 @@ const Problem = (props: ProbelmProps) => {
         <>
           <MyAudio url={props.problem.url} />
           <Divider />
-          <Radio.Group value={props.problem.data?props.problem.data:undefined} disabled>
+          <Radio.Group value={props.problem.data ? props.problem.data : undefined} disabled>
             <Radio value={true}>合格</Radio>
             <Radio value={false}>不合格</Radio>
           </Radio.Group>
         </>
+      </>
+    )
+  } else if (props.problem.template == "TextTriple") {
+    return (
+      <>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problem.description}
+        </h3>
+        <p>{props.problem.text}</p>
+        <p><b>主体：</b>{props.problem.data?props.problem.data.subject:"（未标注）"}</p>
+        <p><b>对象：</b>{props.problem.data?props.problem.data.object:"（未标注）"}</p>
+        <p><b>关系：</b>{props.problem.data?props.problem.data.relation:"（未标注）"}</p>
       </>
     )
   } else {
