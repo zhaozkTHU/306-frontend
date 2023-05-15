@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select } from 'antd';
+import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider } from 'antd';
 import { 
   SketchOutlined,
   CrownOutlined,
+  QuestionCircleOutlined
 } from "@ant-design/icons";
 import axios from 'axios';
 import { mapLevel2Exp, mapLevel2Zh } from "@/const/interface"; // Importing your mappings
@@ -24,9 +25,11 @@ const MemberComponent = () => {
     };
   });
   const [Loading, setLoading] = useState(true);
+  const [waitLoading, setWaitLoading] = useState(false);
   const [vipExpiry, setVipExpiry] = useState(null);
   const [countdown, setCountdown] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
+  const [helpModal, setHelpModal] = useState(false); 
   const [buyExpModal, setBuyExpModal] = useState(false);
   const [buyTimeModal, setBuyTimeModal] = useState(false);
   const [exchangeValue, setExchangeValue] = useState(0);
@@ -35,7 +38,6 @@ const MemberComponent = () => {
   const { Option } = Select;
 
   useEffect(() => {
-    // Call your API when the component mounts
     fetchAccountInfo();
   }, []);
   useEffect(() => {
@@ -60,13 +62,16 @@ const MemberComponent = () => {
   }, [vipExpiry]);
 
   const fetchAccountInfo = () => {
+    setWaitLoading(true);
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
-        setLoading(false);
+        setWaitLoading(false);
       })
       .catch((error) => {
+        message.error(error);
         console.error(error);
+        setWaitLoading(false);
       });
   };
   const buyExperience = () => {
@@ -79,43 +84,59 @@ const MemberComponent = () => {
       .then((response) => {
         setAccountInfo(response.data);
         setBuyExpModal(false);
-        message.success("Experience purchased successfully");
+        message.success("经验购买成功");
       })
       .catch((error) => {
         console.error(error);
       });
+      fetchAccountInfo();
   };
 
   const buyVipTime = () => {
+    Modal.confirm({
+      title: "确认购买",
+      content: `确定要购买 ${vipTime}s 流量包吗？`,
+      onOk: handleConfirmedBuyVipTime,
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
+    });
+  };
+  const handleConfirmedBuyVipTime = () => {
     if(vipTime <= 0 || !(vipTime === 15 || vipTime === 30 || vipTime === 60)) {
-      message.error('Please select a legal time period');
+      message.error(`不合法的流量包时长: ${vipTime}s`);
       return;
     }
+    setWaitLoading(true);
     axios.post('/api/membership', {vip_time: vipTime}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setVipExpiry(response.data.ddl_time);
         setBuyTimeModal(false);
-        message.success("VIP time purchased successfully");
+        setWaitLoading(false);
+        message.success(`成功购买 ${vipTime}s 流量包`);
       })
       .catch((error) => {
+        message.error(error);
         console.error(error);
+        setWaitLoading(false);
       });
+      fetchAccountInfo();
   };
 
   const getLevelProgress = (level: string) => {
     return (accountInfo.exp / mapLevel2Exp[level]) * 100;
   };
 
-  if(Loading){
-    return <Spin tip="Loading..."/>;
-  }
+  // if(Loading){
+  //   return <Spin tip="Loading..."/>;
+  // }
   return (
     <div>
       <Tooltip title={vipExpiry ? countdown : <Spin size="small" tip="Loading..."/>}>
         <Button
           type="text"
           icon={(accountInfo.level === 'diamond') ? <SketchOutlined /> : <CrownOutlined />}
-          onClick={() => setShowModal(true)}
+          onClick={() => (setShowModal(true), fetchAccountInfo())}
           style={{
             fontSize: "20px",
             width: 80,
@@ -127,27 +148,50 @@ const MemberComponent = () => {
 
       {showModal && (
         <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
-          <h2>{accountInfo && accountInfo.username}</h2>
+          <h2>{accountInfo.username}</h2>
           <Tag color={mapLevel2Zh[accountInfo.level].color}>
-            Level: {mapLevel2Zh[accountInfo.level].name}
+            会员等级: {mapLevel2Zh[accountInfo.level].name}
           </Tag>
-          <p>Points: {accountInfo && accountInfo.points}</p>
-          <p>Experience: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
+          <p>点数: {accountInfo.points}</p>
+          <p>经验: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
           <Space >
-            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyExpModal(true)}>Buy Experience</Button>
-            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyTimeModal(true)}>Buy VIP Time</Button>
+            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyExpModal(true)}>购买经验</Button>
+            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyTimeModal(true)}>购买流量包</Button>
           </Space>
         </Modal>
       )}
 
-      {buyExpModal && (
+      { buyExpModal && (
         <Modal onCancel={() => setBuyExpModal(false)} onOk={buyExperience} open={buyExpModal} title="购买经验">
           <InputNumber min={1} max={accountInfo && accountInfo.points} onChange={value => setExchangeValue(value || 0)} />
         </Modal>
       )}
+      { helpModal && buyTimeModal && (
+        <Modal onCancel={() => setHelpModal(false)} onOk={() => setHelpModal(false)} open={helpModal}>
+          <Divider children={"流量包"}/>
+          <p>
+            不同的会员等级对应不同的流量限制，低等级会员购买流量包可以<b>暂时</b>获得<span style={{ color: "red" }}>钻石级别</span>流量限制
+          </p>
+          <p>
+            目前提供三种时长的流量包: <b>15s</b>, <b>30s</b>, <b>60s</b>, 分别需要消耗 <b>5</b>, <b>9</b>, <b>15</b> 点数
+          </p>
+        </Modal>
+      )}
 
-      {buyTimeModal && (
-        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal} title="购买流量包">
+      { buyTimeModal && (
+        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal}>
+          <Divider children={"购买流量包"}/>
+          <Tooltip title="什么是流量包">
+            <Button
+              type="text"
+              size="small"
+              onClick={() => {
+                setHelpModal(true);
+              }}
+              icon={<QuestionCircleOutlined />}
+            />
+          </Tooltip>
+          {(waitLoading) ? <Spin tip="Waitng..."/> :
           <Select 
             onChange={(value: number) => setVipTime(value)}
             placeholder="选择流量包时长"
@@ -161,7 +205,7 @@ const MemberComponent = () => {
             <Option value={60} disabled={accountInfo && accountInfo.points < 15}>
               60s 流量包
             </Option>
-          </Select>
+          </Select>}
         </Modal>
       )}
     </div>
