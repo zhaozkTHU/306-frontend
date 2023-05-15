@@ -197,7 +197,7 @@ const AdministratorCheckTask = () => {
           onFinish={(values) => {
             setLoading(true);
             postCheckTask(taskId, false, values.credits, values.message);
-            setDenyModalOpen(false)
+            setDenyModalOpen(false);
           }}
           autoComplete="off"
         >
@@ -295,7 +295,11 @@ const AdministratorCheckTask = () => {
               {taskDetail.labeler_number}
             </Descriptions.Item>
             <Descriptions.Item label="分发方式" span={4}>
-              {taskDetail.distribute === "agent" ? `中介: ${taskDetail.agent_username}` : (taskDetail.distribute_type === "smart" ? "系统-智能" : "系统-顺序")}
+              {taskDetail.distribute === "agent"
+                ? `中介: ${taskDetail.agent_username}`
+                : taskDetail.distribute_type === "smart"
+                ? "系统-智能"
+                : "系统-顺序"}
             </Descriptions.Item>
           </Descriptions>
         </>

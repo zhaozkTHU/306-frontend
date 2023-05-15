@@ -83,6 +83,11 @@ const selectOptions: SelectProps["options"] = [
   },
 ];
 
+export interface TaskInfoFormProps {
+  taskInfo?: TaskInfo;
+  onFinish: (info: TaskInfo) => Promise<void>;
+}
+
 /**
  * 任务信息表单组件
  * @param props.taskInfo 任务信息
@@ -90,10 +95,7 @@ const selectOptions: SelectProps["options"] = [
  * @returns 任务信息表单组件
  * @private
  */
-const TaskInfoForm: React.FC<{
-  taskInfo?: TaskInfo;
-  onFinish: (info: TaskInfo) => void;
-}> = (props) => {
+const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
   const deleteList = useAppSelector((state) => state.deleteList.value);
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -171,16 +173,19 @@ const TaskInfoForm: React.FC<{
         url: (v.url[0] as any)?.response?.url,
       }));
     }
-    props.onFinish({ ...value, deadline, task_data, batch });
-    deleteList.forEach((url) => {
-      axios.delete("/api/file", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        params: { url },
-      });
-    });
-    dispatch(clear());
-    setLoading(false);
-    form.resetFields();
+    props
+      .onFinish({ ...value, deadline, task_data, batch })
+      .then(() => {
+        deleteList.forEach((url) => {
+          axios.delete("/api/file", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            params: { url },
+          });
+        });
+        dispatch(clear());
+        form.resetFields();
+      })
+      .finally(() => setLoading(false));
   };
 
   const handlePreview = async (file: UploadFile) => {
@@ -243,8 +248,6 @@ const TaskInfoForm: React.FC<{
               <Select
                 onChange={(v) => {
                   form.setFieldValue("task_data", []);
-                  console.log(v);
-                  console.log(form.getFieldsValue());
                 }}
                 options={selectOptions}
               />

@@ -122,17 +122,16 @@ export interface TextClassificationData {
 }
 export function isTextTripleProblem(data: any): data is TextTripleProblem {
   return (
-    typeof data === 'object' &&
+    typeof data === "object" &&
     data !== null &&
-    typeof data.description === 'string' &&
-    typeof data.text === 'string' &&
-    (data.triple === undefined || 
-    (
-      data.triple !== null && data.triple === 'object' && 
-      typeof data.triple.subject === 'string' &&
-      typeof data.triple.object === 'string' &&
-      typeof data.triple.relation === 'string'
-    ))
+    typeof data.description === "string" &&
+    typeof data.text === "string" &&
+    (data.triple === undefined ||
+      (data.triple !== null &&
+        data.triple === "object" &&
+        typeof data.triple.subject === "string" &&
+        typeof data.triple.object === "string" &&
+        typeof data.triple.relation === "string"))
   );
 }
 
@@ -208,33 +207,47 @@ type StateColor = {
 };
 
 type StateColors = {
-  [state: string|number]: StateColor;
+  [state: string | number]: StateColor;
 };
 
 export const mapState2ColorChinese: StateColors = {
-
-
   0: { color: "rgb(160, 227, 109)", description: "已分发", show: "任务已分发，等待对方接受" },
   1: { color: "rgb(203, 8, 21)", description: "已拒绝", show: "对方拒绝了你的任务" },
   2: { color: "rgb(33, 198, 198)", description: "标注中", show: "对方正在对你的任务进行标注" },
-  3: { color: "#c8c027", description: "待审核" , show: "对方已完成标注，请对这个标注进行审核"},
+  3: { color: "#c8c027", description: "待审核", show: "对方已完成标注，请对这个标注进行审核" },
   4: { color: "rgb(33, 198, 39)", description: "已完成", show: "对方已完成标注请通过了审核" },
   5: { color: "rgb(252, 61, 14)", description: "不合格", show: "对方的标注不合格" },
-
 
   blocked: { color: "rgb(252, 61, 14)", description: "已封禁", show: "该账号已被封禁" },
   unblocked: { color: "rgb(33, 198, 39)", description: "正常", show: "该账号可以正常使用" },
 
-
-  admin_checking: {color: "rgb(221, 202, 32)", description: "待管理员审核", show: "任务已创建，请等待管理员审核"},
-  distributing: { color: "rgb(160, 227, 109)", description: "分发中", show: "接受您的任务的标注方人数尚不足您的需求，我们正在尽力分发" },
-  labeling: { color: "rgb(33, 198, 198)", description: "标注中", show: "标注方正在对您的任务做标注" },
+  admin_checking: {
+    color: "rgb(221, 202, 32)",
+    description: "待管理员审核",
+    show: "任务已创建，请等待管理员审核",
+  },
+  distributing: {
+    color: "rgb(160, 227, 109)",
+    description: "分发中",
+    show: "接受您的任务的标注方人数尚不足您的需求，我们正在尽力分发",
+  },
+  labeling: {
+    color: "rgb(33, 198, 198)",
+    description: "标注中",
+    show: "标注方正在对您的任务做标注",
+  },
   checking: { color: "#c8c027", description: "待审核", show: "已经有标注方完成任务，请审核" },
-  completed: { color: "rgb(33, 198, 39)", description: "已完成", show: "任务已完成，您可以导出数据了" },
-  overdue: { color: "rgb(252, 61, 14)", description: "已过期", show: "任务已过期，您可以选择导出现有数据或重新分发" },
+  completed: {
+    color: "rgb(33, 198, 39)",
+    description: "已完成",
+    show: "任务已完成，您可以导出数据了",
+  },
+  overdue: {
+    color: "rgb(252, 61, 14)",
+    description: "已过期",
+    show: "任务已过期，您可以选择导出现有数据或重新分发",
+  },
 };
-
-
 
 type EnEntemplateZhtemplate = {
   [state: string]: string;

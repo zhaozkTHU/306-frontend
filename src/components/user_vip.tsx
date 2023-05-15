@@ -18,8 +18,8 @@ interface Info {
 const MemberComponent = () => {
   const [accountInfo, setAccountInfo] = useState<Info>(() => {
     return {
-      username: '名字五个字',
-      level: 'bronze',
+      username: "名字五个字",
+      level: "bronze",
       exp: 0,
       points: 0,
     };
