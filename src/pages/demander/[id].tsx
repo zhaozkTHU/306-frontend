@@ -206,12 +206,8 @@ const TasktaskScreen = () => {
       width: "25%",
       render: (state, record) => {
         return (
-          <Tooltip
-            title={mapState2ColorChinese[state].show}
-          >
-            <Tag
-              color={mapState2ColorChinese[state].color}
-            >
+          <Tooltip title={mapState2ColorChinese[state].show}>
+            <Tag color={mapState2ColorChinese[state].color}>
               {mapState2ColorChinese[state].description}
             </Tag>
           </Tooltip>
@@ -265,7 +261,7 @@ const TasktaskScreen = () => {
                   setIsLabelerList(false);
                 }}
               >
-                <Button type="link" disabled={record.labeler_state !==3 }>
+                <Button type="link" disabled={record.labeler_state !== 3}>
                   抽样审核
                 </Button>
               </Popconfirm>
@@ -306,13 +302,16 @@ const TasktaskScreen = () => {
               </Popconfirm>
             </Tooltip>
             <Tooltip title="你可以对不合格的标注方进行举报">
-            <Button type="link"
-              disabled={record.state!==5}
-              onClick={() => {
-                setLabelerId(record.labeler_id)
-                setReportModalOpen(true);
-              }}
-            >举报</Button>
+              <Button
+                type="link"
+                disabled={record.state !== 5}
+                onClick={() => {
+                  setLabelerId(record.labeler_id);
+                  setReportModalOpen(true);
+                }}
+              >
+                举报
+              </Button>
             </Tooltip>
           </>
         );
@@ -321,130 +320,132 @@ const TasktaskScreen = () => {
   ];
   const query = router.query;
   return (
-    <div style={{
-      position: "absolute",
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-    }}>
-    <Spin spinning={refreshing||loading}>
-      {/* <ProCard split="vertical">
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      }}
+    >
+      <Spin spinning={refreshing || loading}>
+        {/* <ProCard split="vertical">
         <ProCard colSpan={"0%"}></ProCard>
         <ProCard> */}
-          {isLabelerList ? (
-            <>
-              <Table
-                columns={LabelerTableColumns}
-                dataSource={task.labeler_id.map((id, idx) => {
-                  return {
-                    labeler_id: id,
-                    labeler_state: task.labeler_state[idx],
-                    labeler_credits: task.labeler_credits[idx]
-                  };
-                })}
-                pagination={{ pageSize: 5 }}
-              />
-            </>
-          ) : (
-            <>
-              <CheckModel
-                task_id={task.task_id}
-                labeler_index={labelerId}
-                is_sample={isSample}
-                template={task.template}
-                rate={slideValue}
-                setIsLabelerList={setIsLabelerList}
-                setRefreshing={setRefreshing}
-              />
-            </>
-          )}
-      <Modal
-        open={reportModalOpen}
-        onCancel={() => {
-          setReportModalOpen(false);
-        }}
-        footer={null}
-        destroyOnClose
-      >
-        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-          举报
-        </Typography>
-        <Divider></Divider>
-        <Form
-          name="basic"
-          initialValues={{ remember: true }}
-          onFinish={(values) => {
-            setLoading(true);
-            const image_url = values.image_description.map((image: any) => image.response?.url);
-            postReport(task.task_id, labelerId, values.description, image_url);
+        {isLabelerList ? (
+          <>
+            <Table
+              columns={LabelerTableColumns}
+              dataSource={task.labeler_id.map((id, idx) => {
+                return {
+                  labeler_id: id,
+                  labeler_state: task.labeler_state[idx],
+                  labeler_credits: task.labeler_credits[idx],
+                };
+              })}
+              pagination={{ pageSize: 5 }}
+            />
+          </>
+        ) : (
+          <>
+            <CheckModel
+              task_id={task.task_id}
+              labeler_index={labelerId}
+              is_sample={isSample}
+              template={task.template}
+              rate={slideValue}
+              setIsLabelerList={setIsLabelerList}
+              setRefreshing={setRefreshing}
+            />
+          </>
+        )}
+        <Modal
+          open={reportModalOpen}
+          onCancel={() => {
             setReportModalOpen(false);
           }}
-          autoComplete="off"
+          footer={null}
+          destroyOnClose
         >
-          <p>如果您认为该标注者有恶意刷题等行为，欢迎您对该标注者进行举报。</p>
-          <p>
-            <b>注:</b>{" "}
-            请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分
-          </p>
-          <p>
-            请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高
-          </p>
-          <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
-            <TextField
-              name="description"
-              fullWidth
-              id="description"
-              label="原因说明"
-              autoFocus
-              type="description"
-              multiline
-            />
-          </Form.Item>
-          <p>
-            请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高
-          </p>
-          <Form.Item
-            name="image_description"
-            rules={[{ required: true, message: "请上传文件" }]}
-            valuePropName="fileList"
-            getValueFromEvent={(e) => {
-              console.log(e);
-              return e?.fileList;
+          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+            举报
+          </Typography>
+          <Divider></Divider>
+          <Form
+            name="basic"
+            initialValues={{ remember: true }}
+            onFinish={(values) => {
+              setLoading(true);
+              const image_url = values.image_description.map((image: any) => image.response?.url);
+              postReport(task.task_id, labelerId, values.description, image_url);
+              setReportModalOpen(false);
             }}
+            autoComplete="off"
           >
-            <Upload
-              {...UploadPropsByType("image")}
-              listType="picture-card"
-              onPreview={handlePreview}
+            <p>如果您认为该标注者有恶意刷题等行为，欢迎您对该标注者进行举报。</p>
+            <p>
+              <b>注:</b>{" "}
+              请勿恶意进行举报，若管理员发现您有恶意举报行为，可能会驳回您的举报并扣除您的信用分
+            </p>
+            <p>
+              请对被举报者的恶意行为进行<b>说明</b>，您的描述越详尽，举报成功的概率越高
+            </p>
+            <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
+              <TextField
+                name="description"
+                fullWidth
+                id="description"
+                label="原因说明"
+                autoFocus
+                type="description"
+                multiline
+              />
+            </Form.Item>
+            <p>
+              请提供<b>图片证据</b>，图片证据越详尽，举报成功的概率越高
+            </p>
+            <Form.Item
+              name="image_description"
+              rules={[{ required: true, message: "请上传文件" }]}
+              valuePropName="fileList"
+              getValueFromEvent={(e) => {
+                console.log(e);
+                return e?.fileList;
+              }}
             >
-              <PlusOutlined style={{ fontSize: "24px" }} />
-            </Upload>
-          </Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            block
-            size="large"
-            style={{
-              backgroundColor: "#3b5999",
-              marginBottom: "5px",
-            }}
-          >
-            发布举报
-          </Button>
+              <Upload
+                {...UploadPropsByType("image")}
+                listType="picture-card"
+                onPreview={handlePreview}
+              >
+                <PlusOutlined style={{ fontSize: "24px" }} />
+              </Upload>
+            </Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              style={{
+                backgroundColor: "#3b5999",
+                marginBottom: "5px",
+              }}
+            >
+              发布举报
+            </Button>
 
-          <Modal
-            open={previewOpen}
-            title={previewTitle}
-            footer={null}
-            onCancel={() => setPreviewOpen(false)}
-          >
-            <Image alt="image" style={{ width: "100%" }} src={previewImage} />
-          </Modal>
-        </Form>
-      </Modal>
-    </Spin>
+            <Modal
+              open={previewOpen}
+              title={previewTitle}
+              footer={null}
+              onCancel={() => setPreviewOpen(false)}
+            >
+              <Image alt="image" style={{ width: "100%" }} src={previewImage} />
+            </Modal>
+          </Form>
+        </Modal>
+      </Spin>
     </div>
   );
 };

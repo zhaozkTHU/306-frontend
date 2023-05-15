@@ -35,7 +35,8 @@ export default function LoginScreen(props: LoginScreenPorps) {
     new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append("face_image", faceImg);
-      axios.post("/api/user/verify", formData)
+      axios
+        .post("/api/user/verify", formData)
         .then((response) => {
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("role", response.data.role);
@@ -57,7 +58,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         });
     });
 
-  const login = async (values: { username: string; hashPassword: string; }) => {
+  const login = async (values: { username: string; hashPassword: string }) => {
     request("/api/user/login", "POST", {
       username: values.username,
       password: values.hashPassword,
@@ -96,18 +97,17 @@ export default function LoginScreen(props: LoginScreenPorps) {
         <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
 
-      <Modal
-        open={faceModal}
-        onCancel={() => setFaceModal(false)}
-        footer={null}
-      >
+      <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
         <Spin spinning={faceModalLoading}>
-          <CameraButton fileName="face.jpg" onFinish={(faceImg) => {
-            setFaceModalLoading(true);
-            faceLogin(faceImg)
-              .then(() => setFaceModal(false))
-              .finally(() => setFaceModalLoading(false));
-          }} />
+          <CameraButton
+            fileName="face.jpg"
+            onFinish={(faceImg) => {
+              setFaceModalLoading(true);
+              faceLogin(faceImg)
+                .then(() => setFaceModal(false))
+                .finally(() => setFaceModalLoading(false));
+            }}
+          />
         </Spin>
       </Modal>
 
@@ -205,7 +205,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                 name="password"
                 rules={[
                   { required: true, message: "密码不能为空" },
-                  ({ }) => ({
+                  ({}) => ({
                     validator(_, value) {
                       if (
                         !value ||
@@ -265,10 +265,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                   </Button>
                 </Grid>
                 <Grid item xs>
-                  <Button
-                    type="link"
-                    onClick={() => setFaceModal(true)}
-                  >
+                  <Button type="link" onClick={() => setFaceModal(true)}>
                     人脸验证登录
                   </Button>
                 </Grid>

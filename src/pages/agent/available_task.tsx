@@ -137,7 +137,7 @@ const AgentAvailableTask = () => {
               <Button
                 type="link"
                 onClick={() => {
-                  setLoading(true)
+                  setLoading(true);
                   downLoadZip(record.batch_file, setLoading);
                 }}
               >
@@ -145,15 +145,15 @@ const AgentAvailableTask = () => {
               </Button>
             </Tooltip>
             <Tooltip title="点击此处进行任务分发">
-            <Button
-              type="link"
-              onClick={() => {
-                setDetail(record);
-                setDistributeModalOpen(true);
-              }}
-            >
-              分发
-            </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setDetail(record);
+                  setDistributeModalOpen(true);
+                }}
+              >
+                分发
+              </Button>
             </Tooltip>
           </>
         );
@@ -225,13 +225,10 @@ const AgentAvailableTask = () => {
           autoComplete="off"
         >
           <p>作为中介，您可以将该委托给您的任务分发给标注方，请在下面选择您要分发的标注方的名字</p>
-          <p><b>注：</b>您可以在“可配发标注者”菜单下查看您可以配发的标注者</p>
-          <Form.Item
-            name="labeler"
-            rules={[
-              { required: true, message: "不能为空" },
-            ]}
-          >
+          <p>
+            <b>注：</b>您可以在“可配发标注者”菜单下查看您可以配发的标注者
+          </p>
+          <Form.Item name="labeler" rules={[{ required: true, message: "不能为空" }]}>
             <Select
               size="large"
               showSearch
@@ -261,7 +258,12 @@ const AgentAvailableTask = () => {
           </Button>
         </Form>
       </Modal>
-      <Table columns={TasksTableColumns} dataSource={tasks} loading={refreshing || loading} pagination={{ pageSize: 8 }} />
+      <Table
+        columns={TasksTableColumns}
+        dataSource={tasks}
+        loading={refreshing || loading}
+        pagination={{ pageSize: 8 }}
+      />
     </>
   );
 };
