@@ -38,20 +38,6 @@ const TagList: React.FC = () => {
       })
       .then((response) => {
         const tasks_json = response.data;
-        // const task: TaskInfo[] = [
-        //   {
-        //     task_id: tasks_json.task_id,
-        //     title: tasks_json.title,
-        //     create_at: tasks_json.create_at,
-        //     deadline: tasks_json.deadline,
-        //     template: tasks_json.template,
-        //     reward: tasks_json.reward,
-        //     time: tasks_json.time,
-        //     labeler_number: tasks_json.labeler_number,
-        //     demander_id: tasks_json.demander_id,
-        //     task_data: tasks_json.task_data,
-        //   },
-        // ];
         if (tasks_json.task) {
           setTasks([tasks_json.task]);
         } else {
@@ -89,7 +75,6 @@ const TagList: React.FC = () => {
       render: (_: any, record: TaskInfo) => (
         <>
           <TagBoard task={record} />
-          <Button onClick={() => handleStatusChange(Number(record.task_id), "no")}>Refuse</Button>
         </>
       ),
     },
