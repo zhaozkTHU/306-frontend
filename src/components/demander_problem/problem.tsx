@@ -122,7 +122,6 @@ const Problem = (props: ProbelmProps) => {
     return (
       <>
         <h3 style={{ fontSize: "26px" }}>
-        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <CanvasImage
@@ -341,9 +340,9 @@ const Problem = (props: ProbelmProps) => {
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <p>{props.problem.text}</p>
-        <p><b>主体：</b>{props.problem.data?props.problem.data.subject:"（未标注）"}</p>
-        <p><b>对象：</b>{props.problem.data?props.problem.data.object:"（未标注）"}</p>
-        <p><b>关系：</b>{props.problem.data?props.problem.data.relation:"（未标注）"}</p>
+        <p><b>主体：</b>{props.problem.data ? props.problem.data.subject : "（未标注）"}</p>
+        <p><b>对象：</b>{props.problem.data ? props.problem.data.object : "（未标注）"}</p>
+        <p><b>关系：</b>{props.problem.data ? props.problem.data.relation : "（未标注）"}</p>
       </>
     )
   } else {

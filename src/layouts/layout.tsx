@@ -129,197 +129,44 @@ const MyLayout = (props: MyLayoutProps) => {
   }
   return (
     <Spin spinning={!router.isReady}>
-    <Layout style={{ minHeight: "100vh" }}>
-      {/* 
+      <Layout style={{ minHeight: "100vh" }}>
+        {/* 
         Sider that take up the room so that the Content
         can collapse or not with Sider
       */}
-      <Sider
-        collapsed={collapsed}
-        style={{
-          height: "100vh",
-          zIndex: 9,
-        }}
-        theme="light"
-        // collapsedWidth="0"
-        width={"17%"}
-      />
-      <Sider
-        collapsed={collapsed}
-        style={{
-          overflow: "auto",
-          position: "fixed",
-          height: "100vh",
-          boxShadow: "3px 3px 10px #00000038",
-          zIndex: 10,
-        }}
-        width={"17%"}
-        theme="light"
-        // collapsedWidth="0"
-      >
-        <div
+        <Sider
+          collapsed={collapsed}
           style={{
-            height: "100%",
+            height: "100vh",
             zIndex: 9,
           }}
           theme="light"
-          // collapsedWidth="0"
           width={"17%"}
         />
-      </Sider>
-      <Layout className="site-layout" style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh"
-      }}>
-        <Header
+        <Sider
+          collapsed={collapsed}
           style={{
-            padding: 0,
-            background: "#3b5999",
-            height: "12vh",
-            minHeight:"64px",
-            width: "100%",
-            position: "sticky",
-            top: 0,
-            zIndex: 3,
-            boxShadow: "3px 3px 5px #00000038",
-          }}
-        >
-          <Row>
-            <Col span={8}>
-              <Button
-                type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => {
-                  setCollapsed((i) => !i);
-                }}
-                style={{
-                  fontSize: "25px",
-                  width: 80,
-                  height: "12vh",
-                  color: "white",
-                }}
-              />
-            </Col>
-            <Col span={12}></Col>
-            <Col span={2}>
-              <Button
-                type="text"
-                icon={<BellFilled />}
-                style={{
-                  fontSize: "20px",
-                  // width: 80,
-                  height: "12vh",
-                  color: "white",
-                }}
-              />
-            </Col>
-            <Col span={2}>
-              <Button
-                type="text"
-                onClick={(event) => {
-                  setAnchorEl(event.currentTarget);
-                }}
-                style={{
-                  fontSize: "25px",
-                  height: "12vh",
-                }}
-                size="large"
-                aria-controls={open ? "account-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-              >
-                <Avatar
-                  size="large"
-                  style={{
-                    backgroundColor: "rgb(33, 204, 73)",
-                  }}
-                  shape="square"
-                >
-                  {mapRole2En[props.role]}
-                </Avatar>
-              </Button>
-              <Menu
-                open={open}
-                anchorEl={anchorEl}
-                id="account-menu"
-                onClose={() => {
-                  setAnchorEl(null);
-                }}
-                onClick={() => {
-                  setAnchorEl(null);
-                }}
-                transformOrigin={{ horizontal: "left", vertical: "top" }}
-                anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-                PaperProps={{
-                  elevation: 0,
-                  sx: {
-                    overflow: "visible",
-                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                    mt: 1.5,
-                    "& .MuiAvatar-root": {
-                      width: 32,
-                      height: 32,
-                      ml: -0.5,
-                      mr: 1,
-                    },
-                    "&:before": {
-                      content: '""',
-                      display: "block",
-                      position: "absolute",
-                      top: 0,
-                      right: 14,
-                      width: 10,
-                      height: 10,
-                      bgcolor: "background.paper",
-                      transform: "translateY(-50%) rotate(45deg)",
-                      zIndex: 0,
-                    },
-                  },
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    localStorage.clear();
-                    router.push("/");
-                  }}
-                >
-                  <Logout />
-                  退出登录
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    router.push(`/${props.role}/info`);
-                  }}
-                >
-                  <PersonOutlineOutlinedIcon />
-                  查看信息
-                </MenuItem>
-              </Menu>
-            </Col>
-          </Row>
-        </Header>
-        <Content
-          style={{
-            backgroundColor: "#ffffff",
+            overflow: "auto",
+            position: "fixed",
+            height: "100vh",
+            boxShadow: "3px 3px 10px #00000038",
+            zIndex: 10,
           }}
           width={"17%"}
           theme="light"
-          // collapsedWidth="0"
+        // collapsedWidth="0"
         >
           <div
             style={{
-              padding: "20px",
-              borderRadius: "10px",
-              position: "relative",
-              height: "80vh",
-              minHeight: "585px",
-              overflow: "auto"
+              height: 70,
+              background: "rgba(255, 255, 255, 0.2)",
+              marginTop: "5px",
             }}
           >
             <img src={"/logo/logo.png"} alt={"logo加载失败"} width={"100%"} height={"auto"} />
           </div>
           <div style={{ height: "5%" }} />
+
           <AntMenu
             style={{
               border: "none",
@@ -333,19 +180,17 @@ const MyLayout = (props: MyLayoutProps) => {
             }}
           />
         </Sider>
-        <Layout
-          className="site-layout"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100vh",
-          }}
-        >
+        <Layout className="site-layout" style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh"
+        }}>
           <Header
             style={{
               padding: 0,
               background: "#3b5999",
               height: "12vh",
+              minHeight: "64px",
               width: "100%",
               position: "sticky",
               top: 0,
@@ -369,11 +214,12 @@ const MyLayout = (props: MyLayoutProps) => {
                   }}
                 />
               </Col>
-              <Col span={8}></Col>
+              <Col span={12}></Col>
               <Col span={2}>
                 <MemberComponent />
               </Col>
-              <Col span={2}>
+
+              {/* <Col span={2}>
                 <Button
                   type="text"
                   icon={<BellFilled />}
@@ -384,7 +230,7 @@ const MyLayout = (props: MyLayoutProps) => {
                     color: "white",
                   }}
                 />
-              </Col>
+              </Col> */}
               <Col span={2}>
                 <Button
                   type="text"
@@ -393,8 +239,7 @@ const MyLayout = (props: MyLayoutProps) => {
                   }}
                   style={{
                     fontSize: "25px",
-                    width: "12vh",
-                    height: 80,
+                    height: "12vh",
                   }}
                   size="large"
                   aria-controls={open ? "account-menu" : undefined}
@@ -493,8 +338,9 @@ const MyLayout = (props: MyLayoutProps) => {
           <div style={{ padding: 24, minHeight: 360, background: colorBgContainer }}>
                         Bill is a cat.
                     </div> */}
-        </Content> 
-        <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+          </Content>
+          <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
+        </Layout>
       </Layout>
     </Spin>
   );

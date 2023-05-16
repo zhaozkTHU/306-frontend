@@ -226,7 +226,7 @@ const TasktaskScreen = () => {
             <Tooltip title="处于待审核状态可以审核，你也可以通过这里查看某个标注方的标注">
               <Button
                 type="link"
-                disabled={record.labeler_state !== 3&&record.labeler_state !== 4&&record.labeler_state !== 5}
+                disabled={record.labeler_state !== 3 && record.labeler_state !== 4 && record.labeler_state !== 5}
                 onClick={() => {
                   setIsChecking(record.labeler_state === 3)
                   setLabelerId(record.labeler_id);
@@ -336,58 +336,46 @@ const TasktaskScreen = () => {
         {/* <ProCard split="vertical">
         <ProCard colSpan={"0%"}></ProCard>
         <ProCard> */}
-           {isLabelerList ? (
-            <>
-              <Table
-                columns={LabelerTableColumns}
-                dataSource={task.labeler_id.map((id, idx) => {
-                  return {
-                    labeler_id: id,
-                    labeler_state: task.labeler_state[idx],
-                    labeler_credits: task.labeler_credits[idx]
-                  };
-                })}
-                pagination={{ pageSize: 5 }}
-              />
-            </>
-          ) : (
-            <>
-              <CheckModel
-                task_id={task.task_id}
-                labeler_index={labelerId}
-                is_sample={isSample}
-                template={task.template}
-                rate={slideValue}
-                setIsLabelerList={setIsLabelerList}
-                setRefreshing={setRefreshing}
-                is_checking={isChecking}
-              />
-            </>
-          )}
-      <Modal
-        open={reportModalOpen}
-        onCancel={() => {
-          setReportModalOpen(false);
-        }}
-        footer={null}
-        destroyOnClose
-      >
-        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-          举报
-        </Typography>
-        <Divider></Divider>
-        <Form
-          name="basic"
-          initialValues={{ remember: true }}
-          onFinish={(values) => {
-            setLoading(true);
-            const image_url = values.image_description.map((image: any) => image.response?.url);
-            postReport(task.task_id, labelerId, values.description, image_url);
+        {isLabelerList ? (
+          <>
+            <Table
+              columns={LabelerTableColumns}
+              dataSource={task.labeler_id.map((id, idx) => {
+                return {
+                  labeler_id: id,
+                  labeler_state: task.labeler_state[idx],
+                  labeler_credits: task.labeler_credits[idx]
+                };
+              })}
+              pagination={{ pageSize: 5 }}
+            />
+          </>
+        ) : (
+          <>
+            <CheckModel
+              task_id={task.task_id}
+              labeler_index={labelerId}
+              is_sample={isSample}
+              template={task.template}
+              rate={slideValue}
+              setIsLabelerList={setIsLabelerList}
+              setRefreshing={setRefreshing}
+              is_checking={isChecking}
+            />
+          </>
+        )}
+        <Modal
+          open={reportModalOpen}
+          onCancel={() => {
             setReportModalOpen(false);
           }}
           footer={null}
           destroyOnClose
         >
+          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+            举报
+          </Typography>
+          <Divider></Divider>
           <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
             举报
           </Typography>
@@ -454,16 +442,15 @@ const TasktaskScreen = () => {
             >
               发布举报
             </Button>
-
-            <Modal
-              open={previewOpen}
-              title={previewTitle}
-              footer={null}
-              onCancel={() => setPreviewOpen(false)}
-            >
-              <Image alt="image" style={{ width: "100%" }} src={previewImage} />
-            </Modal>
           </Form>
+        </Modal>
+        <Modal
+          open={previewOpen}
+          title={previewTitle}
+          footer={null}
+          onCancel={() => setPreviewOpen(false)}
+        >
+          <Image alt="image" style={{ width: "100%" }} src={previewImage} />
         </Modal>
       </Spin>
     </div>
