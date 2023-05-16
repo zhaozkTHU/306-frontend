@@ -18,14 +18,16 @@ import {
   ClockCircleOutlined,
   PartitionOutlined
 } from "@ant-design/icons";
-import { Col, MenuProps, Row, Spin } from "antd";
+import { Col, MenuProps, Modal, Row, Spin } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
 import Menu from "@mui/material/Menu";
 import { MenuItem } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MemberComponent from "@/components/user_vip";
+import CameraButton from "@/components/FaceLogin";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -100,6 +102,8 @@ const MyLayout = (props: MyLayoutProps) => {
   const [pageHead, setPageHead] = useState<string>("用户信息");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [faceModal, setFaceModal] = useState<boolean>(false);
+  const [faceModalLoading, setFaceModalLoading] = useState<boolean>(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -216,21 +220,8 @@ const MyLayout = (props: MyLayoutProps) => {
               </Col>
               <Col span={12}></Col>
               <Col span={2}>
-                <MemberComponent />
+                <MemberComponent/>
               </Col>
-
-              {/* <Col span={2}>
-                <Button
-                  type="text"
-                  icon={<BellFilled />}
-                  style={{
-                    fontSize: "20px",
-                    // width: 80,
-                    height: "12vh",
-                    color: "white",
-                  }}
-                />
-              </Col> */}
               <Col span={2}>
                 <Button
                   type="text"
@@ -297,7 +288,8 @@ const MyLayout = (props: MyLayoutProps) => {
                 >
                   <MenuItem
                     onClick={() => {
-                      localStorage.clear();
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("role");
                       router.push("/");
                     }}
                   >
@@ -311,6 +303,14 @@ const MyLayout = (props: MyLayoutProps) => {
                   >
                     <PersonOutlineOutlinedIcon />
                     查看信息
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setFaceModal(true);
+                    }}
+                  >
+                    <SentimentSatisfiedAltIcon />
+                    上传人脸
                   </MenuItem>
                 </Menu>
               </Col>
@@ -339,6 +339,19 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
           </Content>
+          <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
+            <Spin spinning={faceModalLoading}>
+              <CameraButton
+                fileName="face.jpg"
+                onFinish={(faceImg) => {
+                  // setFaceModalLoading(true);
+                  // alert("vrf")
+                  //   .then(() => setFaceModal(false))
+                  //   .finally(() => setFaceModalLoading(false));
+                }}
+              />
+            </Spin>
+          </Modal>
           <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
         </Layout>
       </Layout>

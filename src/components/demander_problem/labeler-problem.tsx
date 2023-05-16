@@ -109,12 +109,14 @@ const LabelerProblem = (props: LabelerProblemProps) => {
       </>
     )
   } else if (props.problemList[props.index].template == "ImageFrame") {
-    return (<>
-      <h3 style={{ fontSize: "26px" }}>
-        第{props.index + 1}/{props.total}题: {props.problemList[props.index].description}
-      </h3>
-      <Rectangle problemList={props.problemList} index={props.index} setProblemList={props.setProblemList} />
-    </>)
+    return (
+      <>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problemList[props.index].description}
+        </h3>
+        <Rectangle problemList={props.problemList} index={props.index} setProblemList={props.setProblemList} />
+      </>
+    )
   } else if (props.problemList[props.index].template == "SoundTag") {
     return (
       <>
@@ -341,7 +343,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
           label="主体"
           onChange={(e) => {
             const newProblems: any[] = [...props.problemList];
-            if(!newProblems[props.index].data) {
+            if (!newProblems[props.index].data) {
               newProblems[props.index].data = {};
             }
             newProblems[props.index].data.subject = (e.target.value);
@@ -353,7 +355,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
           label="对象"
           onChange={(e) => {
             const newProblems: any[] = [...props.problemList];
-            if(!newProblems[props.index].data) {
+            if (!newProblems[props.index].data) {
               newProblems[props.index].data = {};
             }
             newProblems[props.index].data.object = (e.target.value);
@@ -366,7 +368,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
           multiline
           onChange={(e) => {
             const newProblems: any[] = [...props.problemList];
-            if(!newProblems[props.index].data) {
+            if (!newProblems[props.index].data) {
               newProblems[props.index].data = {};
             }
             newProblems[props.index].data.relation = (e.target.value);
