@@ -40,6 +40,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import CurrencyYuanIcon from "@mui/icons-material/CurrencyYuan";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RankList from "../RankList";
+import { SketchOutlined, CrownOutlined } from "@ant-design/icons";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -309,6 +310,7 @@ const UserInfo = (props: UsersInfoProps) => {
                     <h2>
                       {info.username} <Divider type="vertical" />
                       <Tag color={mapLevel2Zh[info.level]["color"]}>
+                        {info.level==="gold"?<CrownOutlined style={{marginRight: 3}}/>:(info.level==="diamond"?<SketchOutlined style={{marginRight: 3}}/>:<></>)}
                         {mapLevel2Zh[info.level]["name"]}
                       </Tag>
                     </h2>

@@ -13,10 +13,10 @@ interface ProbelmProps {
 
 const Problem = (props: ProbelmProps) => {
   if (props.problem.template == "TextClassification") {
-    if (props.problem.chosen) {
+    if (props.problem.data) {
       const selected: string[] = [];
       for (let i = 0; i < props.problem.options.length; i++) {
-        if (props.problem.chosen[i]) {
+        if (props.problem.data[i]) {
           selected.push(props.problem.options[i]);
         }
       }
@@ -25,7 +25,7 @@ const Problem = (props: ProbelmProps) => {
           <h1 style={{ fontSize: "26px" }}>
             第{props.index + 1}/{props.total}题: {props.problem.description}
           </h1>
-          {props.problem.chosen.map((option: boolean, idx: number) => (
+          {props.problem.data.map((option: boolean, idx: number) => (
             <>
               <Checkbox key={idx} checked={option} disabled={true}>
                 {props.problem.options[idx]}
@@ -55,7 +55,7 @@ const Problem = (props: ProbelmProps) => {
       )
     }
   } else if (props.problem.template == "ImagesClassification") {
-    if (props.problem.chosen) {
+    if (props.problem.data) {
       return (<>
         <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
@@ -65,7 +65,7 @@ const Problem = (props: ProbelmProps) => {
             {props.problem.options.map((option: string, index: number) => (
               <Col key={index}>
                 <Checkbox
-                  checked={props.problem.chosen[index]}
+                  checked={props.problem.data[index]}
                   disabled={true}
                 >
                   <ImageFormatter>

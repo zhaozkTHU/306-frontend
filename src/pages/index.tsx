@@ -66,6 +66,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
       .then((response) => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
+        localStorage.setItem("user_id", response.data.user_id);
         props.setRole(response.data.role);
         router.push(`/${response.data.role}/info`);
         message.success("登录成功");
@@ -97,7 +98,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
 
-      <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
+      <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null} destroyOnClose>
         <Spin spinning={faceModalLoading}>
           <CameraButton
             fileName="face.jpg"

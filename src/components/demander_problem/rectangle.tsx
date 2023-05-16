@@ -1,4 +1,4 @@
-import { Button, Divider, Spin } from "antd";
+import { Spin } from "antd";
 import axios from "axios";
 import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
 
@@ -16,24 +16,24 @@ const Rectangle = (props: DottedProps) => {
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
   const [imageUrl, setImageUrl] = useState<string>("");
-
   const img = new Image();
+
+  useEffect(() => {
+    setLoading(true);
+  }, [props.index])
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     img.onload = () => {
       canvas.width = 400;
       canvas.height = 400 * img.height / img.width;
-      // ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       (props.problemList[props.index].data ? props.problemList[props.index].data : []).forEach((rect: any) => {
         ctx.lineWidth = 2;
         ctx.strokeRect(rect.x * canvas.width, rect.y * canvas.height, rect.width * canvas.width, rect.height * canvas.height);
       });
-      setLoading(false)
     };
-  }, [])
-
-  useEffect(() => {
     axios
       .get("/api/file", {
         responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
@@ -51,7 +51,21 @@ const Rectangle = (props: DottedProps) => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  },[props.index])
+
+  // 绘制所有的矩形
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    // 绘制所有的矩形
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#ff0000";
+    (props.problemList[props.index].data ? props.problemList[props.index].data : []).forEach((rect: any) => {
+      // rectangles.forEach((rect: any) => {
+      ctx.lineWidth = 2;
+      ctx.strokeRect(rect.x * canvas.width, rect.y * canvas.height, rect.width * canvas.width, rect.height * canvas.height);
+    });
+  }, [rectangles, props.problemList]);
 
   function handleMouseDown(event: any) {
     const { offsetX, offsetY } = event.nativeEvent;
@@ -94,53 +108,14 @@ const Rectangle = (props: DottedProps) => {
     setRectangles((i) => (!i));
   }
 
-  // 绘制所有的矩形
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    // 绘制所有的矩形
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#ff0000";
-    (props.problemList[props.index].data ? props.problemList[props.index].data : []).forEach((rect: any) => {
-      // rectangles.forEach((rect: any) => {
-      ctx.lineWidth = 2;
-      ctx.strokeRect(rect.x * canvas.width, rect.y * canvas.height, rect.width * canvas.width, rect.height * canvas.height);
-    });
-  }, [rectangles]);
-
   return (
       <div style={{
         position: "relative",
       }}>
-        <Button style={{
-          backgroundColor: "#3b5999",
-          color: "white"
-        }}
-          onClick={() => {
-            const newProblems = [...props.problemList]
-            newProblems[props.index].data.pop();
-            props.setProblemList(newProblems);
-            setRectangles((i) => (!i))
-          }}
-        >撤销</Button>
-        <Divider type="vertical"/>
-        <Button
-          style={{
-            backgroundColor: "#3b5999",
-            color: "white"
-          }}
-          onClick={() => {
-            const newProblems = [...props.problemList]
-            newProblems[props.index].data.length=0;
-            props.setProblemList(newProblems);
-            setRectangles((i) => (!i))
-            const canvas = canvasRef.current;
-            const ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-          }}
-        >清空</Button>
       <Spin spinning={loading} tip="图片加载中">
-        <img src={imageUrl} style={{ position: "relative", top: "0", left: "0", zIndex: "1", width: 400}} />
+        <img src={imageUrl} style={{ position: "relative", top: "0", left: "0", zIndex: "1", width: 400}} onLoad={() => {
+          setLoading(false);
+        }}/>
         <canvas
           ref={canvasRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}
           style={{ position: "absolute", top: "0", left: "0", zIndex: "2", backgroundColor: "transparent", width: 400,
