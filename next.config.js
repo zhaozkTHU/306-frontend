@@ -3,10 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: { unoptimized: true },
-  i18n: {
-    locales: ["zh-cn", "en"],
-    defaultLocale: "zh-cn",
-  },
 
   async rewrites() {
     return [{
