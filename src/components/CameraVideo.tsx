@@ -1,15 +1,23 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, use, useEffect } from "react";
 import { Button, Divider, Modal, message } from "antd";
+import { CameraOutlined } from "@mui/icons-material";
 
-interface CameraButtonProps {
+const CameraVideo: React.FC<{
   fileName: string;
   onFinish: (faceImage: File) => void;
-}
-
-const CameraButton: React.FC<CameraButtonProps> = (props) => {
-  const [open, setOpen] = useState(false);
+}> = (props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      const stream = videoRef.current?.srcObject as MediaStream;
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  });
 
   const handleOk = () => {
     const canvas = canvasRef.current;
@@ -25,11 +33,8 @@ const CameraButton: React.FC<CameraButtonProps> = (props) => {
         const file = new File([blob as Blob], props.fileName, { type: "image/png" });
         props.onFinish(file);
       });
-      setOpen(false);
     }
   };
-
-  const handleCancel = () => setOpen(false);
 
   const handleCapture = () => {
     const video = videoRef.current;
@@ -41,7 +46,6 @@ const CameraButton: React.FC<CameraButtonProps> = (props) => {
           video.srcObject = stream;
           video.play();
         }
-        setOpen(true);
       })
       .catch((err) => {
         console.error(err);
@@ -51,18 +55,15 @@ const CameraButton: React.FC<CameraButtonProps> = (props) => {
 
   return (
     <>
-      {/* <Button onClick={handleCapture}>拍摄图片</Button> */}
-      {/* <Modal title="拍摄图片" open={open} onOk={handleOk} onCancel={handleCancel}> */}
-      <video ref={videoRef} style={{ width: 400 }} />
+      <video ref={videoRef} style={{ display: cameraOpen ? undefined : "none" }} />
       <canvas ref={canvasRef} style={{ display: "none" }} />
       <Divider />
-      <Button onClick={handleCapture}>打开摄像头</Button>
+      <Button onClick={() => { handleCapture(); setCameraOpen(true); }}>打开摄像头</Button>
       <Divider type="vertical" />
       <Button onClick={handleOk}>拍照</Button>
-      {/* </Modal> */}
     </>
   );
+
 };
 
-export default CameraButton;
-export type { CameraButtonProps };
+export default CameraVideo;

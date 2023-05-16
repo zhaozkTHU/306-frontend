@@ -65,7 +65,7 @@ const downloadTemplate = (type: TaskInfo["template"], templates: TaskInfo["templ
   link.click();
 };
 
-const selectOptions: SelectProps["options"] = [
+const selectOptions: SelectProps<TaskInfo["template"]>["options"] = [
   { value: "TextClassification", label: "文字分类" },
   { value: "ImagesClassification", label: "图片分类" },
   { value: "FaceTag", label: "人脸骨骼打点" },
