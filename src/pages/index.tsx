@@ -15,7 +15,7 @@ import CryptoJS from "crypto-js";
 import Register from "@/components/register/register";
 import { request } from "@/utils/network";
 import FindPassword from "@/components/register/find-password";
-import CameraButton from "@/components/FaceLogin";
+import CameraButton from "@/components/CameraVideo";
 import axios from "axios";
 
 interface LoginScreenPorps {

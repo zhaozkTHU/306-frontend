@@ -62,8 +62,7 @@ const RankList: React.FC = () => {
           rankListData.my_rank && index === rankListData.my_rank - 1 ? "highlightrow" : ""
         }
       />
-      {/* <br /> */}
-      {rankListData.my_rank && rankListData.my_points && (
+      {rankListData.my_rank !== undefined && rankListData.my_points !== undefined && (
         <p>
           你的排名：{rankListData.my_rank}，积分：{rankListData.my_points}
         </p>
