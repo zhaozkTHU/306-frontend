@@ -13,6 +13,7 @@ interface CheckModelProps {
   is_sample: boolean;
   template: string;
   rate: number;
+  is_checking: boolean;
   setIsLabelerList: Dispatch<SetStateAction<boolean>>;
   setRefreshing: Dispatch<SetStateAction<boolean>>;
 }
@@ -73,7 +74,7 @@ const CheckModel = (props: CheckModelProps) => {
     })
       .then(() => {
         message.success("审核结果提交成功");
-        // props.setIsCheckModalOpen(false);
+        props.setIsLabelerList(true);
       })
       .catch((error) => {
         if (error.response) {
@@ -93,7 +94,7 @@ const CheckModel = (props: CheckModelProps) => {
    */
   return (
     <Spin spinning={refreshing}>
-      <ProCard split="vertical" style={{ height: "80vh" }}>
+      <ProCard split="vertical" style={{height: "80vh", minHeight: "500px"}}>
         <ProCard colSpan={"70%"}>
           <Divider>
             <h3>审核(下面的虚线内为题目区)</h3>
@@ -121,39 +122,31 @@ const CheckModel = (props: CheckModelProps) => {
               <Divider />
               <Grid container>
                 <Grid item xs>
-                  <Checkbox
-                    checked={checkResult[problemIndex]}
-                    onClick={() => {
-                      if (!checkResult[problemIndex]) {
-                        setPassedNumber((b) => b + 1);
-                        const temp: boolean[] = [];
-                        for (let i = 0; i < result.length; i++) {
-                          temp.push(checkResult[i]);
-                        }
-                        temp[problemIndex] = true;
-                        setCheckResult(temp);
+                  <Tooltip title={props.is_checking?"":"该标注方的标注已经审核过，无法再审核"}>
+                  <Checkbox checked={checkResult[problemIndex]} onClick={() => {
+                    if (!checkResult[problemIndex]) {
+                      setPassedNumber((b) => b + 1);
+                      const temp: boolean[] = [];
+                      for (let i = 0; i < result.length; i++) {
+                        temp.push(checkResult[i])
                       }
-                    }}
-                  >
-                    合格
-                  </Checkbox>
+                      temp[problemIndex] = true;
+                      setCheckResult(temp);
+                    }
+                  }} disabled={!props.is_checking}>合格</Checkbox>
                   <Divider type="vertical" />
-                  <Checkbox
-                    checked={!checkResult[problemIndex]}
-                    onClick={() => {
-                      if (checkResult[problemIndex]) {
-                        setPassedNumber((b) => b - 1);
-                        const temp: boolean[] = [];
-                        for (let i = 0; i < result.length; i++) {
-                          temp.push(checkResult[i]);
-                        }
-                        temp[problemIndex] = false;
-                        setCheckResult(temp);
+                  <Checkbox checked={!checkResult[problemIndex]} onClick={() => {
+                    if (checkResult[problemIndex]) {
+                      setPassedNumber((b) => b - 1);
+                      const temp: boolean[] = [];
+                      for (let i = 0; i < result.length; i++) {
+                        temp.push(checkResult[i])
                       }
-                    }}
-                  >
-                    不合格
-                  </Checkbox>
+                      temp[problemIndex] = false;
+                      setCheckResult(temp);
+                    }
+                  }} disabled={!props.is_checking}>不合格</Checkbox>
+                  </Tooltip>
                 </Grid>
                 <Grid>
                   <Tooltip title={problemIndex === 0 ? "已经是第一题了" : undefined}>
@@ -187,7 +180,9 @@ const CheckModel = (props: CheckModelProps) => {
           )}
           <Grid container>
             <Grid item xs>
+            <Tooltip title={props.is_checking?"":"该标注方的标注已经审核过，无法再审核"}>
               <Button
+                disabled={!props.is_checking}
                 onClick={() => {
                   setRefreshing(true);
                   postCheck(true);
@@ -201,6 +196,7 @@ const CheckModel = (props: CheckModelProps) => {
               </Button>
               <Divider type="vertical" />
               <Button
+                disabled={!props.is_checking}
                 style={{
                   backgroundColor: "#3b5999",
                   color: "white",
@@ -212,6 +208,7 @@ const CheckModel = (props: CheckModelProps) => {
               >
                 不合格
               </Button>
+              </Tooltip>
             </Grid>
             <Grid>
               <Button

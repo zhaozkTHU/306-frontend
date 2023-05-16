@@ -3,14 +3,12 @@ import store from "@/store";
 import { request } from "@/utils/network";
 import {
   Button,
-  Carousel,
+  Descriptions,
   Divider,
   Form,
   Image,
-  Input,
   InputNumber,
   Modal,
-  Row,
   Table,
   Tooltip,
   Upload,
@@ -28,6 +26,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import TextField from "@mui/material/TextField";
 import Problem from "../demander_problem/problem";
 import Grid from "@mui/material/Grid";
+import { transTime } from "@/utils/valid";
 
 interface LabelerTaskListProps {
   state: string;
@@ -39,10 +38,10 @@ interface LabelerTask {
   title: string;
   template: string;
   reward: number;
+  deadline: number;
   task_data: any[];
+  time: number;
 }
-
-const { Search } = Input;
 
 const LabelerTaskList = (props: LabelerTaskListProps) => {
   const [pageNumber, setPageNumber] = useState<number | null>(null);
@@ -52,6 +51,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [problemIndex, setProblemIndex] = useState<number>(0);
+  const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
 
   const [detail, setDetail] = useState<LabelerTask>({
     title: "",
@@ -60,11 +60,14 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
     task_data: [],
     task_id: 0,
     demander_id: 0,
+    deadline: 0,
+    time: 0,
   });
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
-
+  const [time, setTime] = useState<number>(0);
+  const [flag, setFlag] = useState<boolean>(false);
   useEffect(() => {
     request(`/api/${props.state}`, "GET")
       .then((response) => {
@@ -230,7 +233,6 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
           题目详情
         </Typography>
         <Divider></Divider>
-
         <>
           <Problem
             problem={detail.task_data[problemIndex]}
@@ -377,6 +379,25 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
             <Image alt="image" style={{ width: "100%" }} src={previewImage} />
           </Modal>
         </Form>
+      </Modal>
+      <Modal open={detailModalOpen} onCancel={() => { setDetailModalOpen(false) }} footer={null} destroyOnClose>
+        <Descriptions bordered column={4}>
+          <Descriptions.Item label="标题" span={4}>
+            {detail.title}
+          </Descriptions.Item>
+          <Descriptions.Item label="截止时间" span={4}>
+            {transTime(detail.deadline)}
+          </Descriptions.Item>
+          <Descriptions.Item label="模板" span={4}>
+            {mapEntemplate2Zhtemplate[detail.template]}
+          </Descriptions.Item>
+          <Descriptions.Item label="单题奖励" span={4}>
+            {detail.reward}
+          </Descriptions.Item>
+          <Descriptions.Item label="单题限时" span={4}>
+            {detail.time}秒
+          </Descriptions.Item>
+        </Descriptions>
       </Modal>
       <Table columns={columns} loading={refreshing || loading} dataSource={taskLists} />
     </>

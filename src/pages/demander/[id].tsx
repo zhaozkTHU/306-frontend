@@ -44,6 +44,7 @@ const TasktaskScreen = () => {
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
+  const [isChecking, setIsChecking] = useState<boolean>(false);
   const [task, setTask] = useState<DemanderTaskTableEntry>({
     task_id: -1,
     create_at: 0,
@@ -222,11 +223,12 @@ const TasktaskScreen = () => {
       render: (_, record) => {
         return (
           <>
-            <Tooltip title="处于待审核状态可以审核">
+            <Tooltip title="处于待审核状态可以审核，你也可以通过这里查看某个标注方的标注">
               <Button
                 type="link"
-                disabled={record.labeler_state !== 3}
+                disabled={record.labeler_state !== 3 && record.labeler_state !== 4 && record.labeler_state !== 5}
                 onClick={() => {
+                  setIsChecking(record.labeler_state === 3)
                   setLabelerId(record.labeler_id);
                   setIsSample(false);
                   setIsLabelerList(false);
@@ -256,6 +258,7 @@ const TasktaskScreen = () => {
                   </>
                 }
                 onConfirm={() => {
+                  setIsChecking(record.labeler_state === 3)
                   setLabelerId(record.labeler_id);
                   setIsSample(true);
                   setIsLabelerList(false);
@@ -341,7 +344,7 @@ const TasktaskScreen = () => {
                 return {
                   labeler_id: id,
                   labeler_state: task.labeler_state[idx],
-                  labeler_credits: task.labeler_credits[idx],
+                  labeler_credits: task.labeler_credits[idx]
                 };
               })}
               pagination={{ pageSize: 5 }}
@@ -357,6 +360,7 @@ const TasktaskScreen = () => {
               rate={slideValue}
               setIsLabelerList={setIsLabelerList}
               setRefreshing={setRefreshing}
+              is_checking={isChecking}
             />
           </>
         )}
@@ -368,6 +372,10 @@ const TasktaskScreen = () => {
           footer={null}
           destroyOnClose
         >
+          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+            举报
+          </Typography>
+          <Divider></Divider>
           <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
             举报
           </Typography>
@@ -434,16 +442,15 @@ const TasktaskScreen = () => {
             >
               发布举报
             </Button>
-
-            <Modal
-              open={previewOpen}
-              title={previewTitle}
-              footer={null}
-              onCancel={() => setPreviewOpen(false)}
-            >
-              <Image alt="image" style={{ width: "100%" }} src={previewImage} />
-            </Modal>
           </Form>
+        </Modal>
+        <Modal
+          open={previewOpen}
+          title={previewTitle}
+          footer={null}
+          onCancel={() => setPreviewOpen(false)}
+        >
+          <Image alt="image" style={{ width: "100%" }} src={previewImage} />
         </Modal>
       </Spin>
     </div>

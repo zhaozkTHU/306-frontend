@@ -12,6 +12,7 @@ interface CanvasImageProps {
 const colors: string[] = ["#FF0000", "#22ff00", "#d4ff00", "#00ccff"];
 
 const CanvasImage = (props: CanvasImageProps) => {
+  const [refreshing, setRefreshing] = useState<boolean>(true);
   const canvasRef = useRef<any>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   useEffect(() => {
@@ -27,39 +28,42 @@ const CanvasImage = (props: CanvasImageProps) => {
           ctx.strokeStyle = colors[i % 4];
           ctx.lineWidth = 2;
           ctx.strokeRect(
-            props.data[i].x,
-            props.data[i].y,
-            props.data[i].width,
-            props.data[i].height
+            props.data[i].x*canvas.width,
+            props.data[i].y*canvas.height,
+            props.data[i].width*canvas.width,
+            props.data[i].height*canvas.height
           );
         } else {
           ctx.beginPath();
-          ctx.arc(props.data[i].x, props.data[i].y, 3, 0, 2 * Math.PI);
+          ctx.arc(props.data[i].x*canvas.width, props.data[i].y*canvas.height, canvas.width/200, 0, 2 * Math.PI);
           ctx.fillStyle = "red";
           ctx.fill();
         }
       }
       const dataURL = canvas.toDataURL("image/png");
       setImageUrl(dataURL);
+      setRefreshing(false)
     };
-  }, []);
+  }, [refreshing]);
   return (
     <>
       <canvas width={90} ref={canvasRef} style={{ display: "none" }} />
-      {/* <ImageFormatter> */}
-      <Image
-        src={imageUrl}
-        // alt="图片加载中，长时间无反应请刷新"
-        width={"100%"}
-        height={"100%"}
-        style={{
-          objectFit: "contain",
-          objectPosition: "center center",
-        }}
-        alt="图片加载中"
-        loading="lazy"
-      />
-      {/* </ImageFormatter> */}
+      {refreshing ?
+        <Spin tip="图片加载中，请稍候..."/> :
+        <ImageFormatter>
+        <Image
+          src={imageUrl}
+          width={"100%"}
+          height={"100%"}
+          style={{
+            objectFit: "contain",
+            objectPosition: "center center",
+          }}
+          alt="图片加载失败"
+          loading="lazy"
+        />
+        </ImageFormatter>
+      }
     </>
   );
 };

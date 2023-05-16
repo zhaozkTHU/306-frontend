@@ -13,6 +13,7 @@ import {
   Tag,
   Divider,
   Form,
+  DatePicker,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { transTime } from "@/utils/valid";
@@ -24,6 +25,7 @@ import { request } from "../../utils/network";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import { TextField } from "@mui/material";
+import dayjs from "dayjs";
 
 export interface DemanderTaskTableEntry {
   task_id: number;
@@ -46,7 +48,7 @@ export interface DemanderTaskTableEntry {
 }
 
 interface DemanderTaskListProps {
-  type: string;
+  type: string | undefined;
 }
 
 const DemanderTaskList = (props: DemanderTaskListProps) => {
@@ -56,7 +58,26 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   const [tasks, setTasks] = useState<DemanderTaskTableEntry[]>([]);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [autoCheckingModalOpen, setAutoCheckingModalOpen] = useState<boolean>(false);
-
+  const [detail, setDetail] = useState<DemanderTaskTableEntry>({
+    task_id: -1,
+    create_at: 0,
+    deadline: 0,
+    title: "标题五个字",
+    state: [],
+    labeler_number: 0,
+    labeler_id: [],
+    template: "TextClassification",
+    labeler_state: [],
+    pass_check: false,
+    labeler_credits: [],
+    reward: 0,
+    time: 0,
+    distribute: "agent",
+    distribute_type: "order",
+    type: "event",
+    agent_username: "agent1",
+  });
+  const [redistributeModalOpen, setRedistributeModalOpen] = useState<boolean>(false);
   const auto_check = async (task_id: number, credits: number, accuracy: number) => {
     request("/api/get_agent", "POST", {
       task_id: task_id,
@@ -98,25 +119,28 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         setRefreshing(true);
       });
   };
-  const [detail, setDetail] = useState<DemanderTaskTableEntry>({
-    task_id: -1,
-    create_at: 0,
-    deadline: 0,
-    title: "标题五个字",
-    state: [],
-    labeler_number: 0,
-    labeler_id: [],
-    template: "模板五个字",
-    labeler_state: [],
-    pass_check: false,
-    labeler_credits: [],
-    reward: 0,
-    time: 0,
-    distribute: "agent",
-    distribute_type: "order",
-    type: "event",
-    agent_username: "agent1",
-  });
+
+  const postRedistribute = async (task_id: number, deadline: number, reward: number) => {
+    request("/api/demander/redistribute", "POST", {
+      task_id: task_id,
+      deadline: deadline,
+      reward: reward,
+    })
+      .then(() => {
+        message.success("重分发成功")
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`举报处理失败，${error.response.data.message}`);
+        } else {
+          message.error("举报处理失败，网络错误");
+        }
+      })
+      .finally(() => {
+        setLoading(false)
+        setRefreshing(true);
+      })
+  }
   const { Panel } = Collapse;
   const DemanderTaskTableColumns: ColumnsType<any> = [
     {
@@ -253,6 +277,17 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 自动审核
               </Button>
             </Tooltip>
+            <Tooltip title="过期任务可以重新分发">
+              <Button
+                type="link"
+                onClick={() => {
+                  setDetail(record);
+                  setRedistributeModalOpen(true);
+                }}
+              >
+                重分发
+              </Button>
+            </Tooltip>
           </>
         );
       },
@@ -279,12 +314,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             </Tag>
           </Space>
         );
-      },
+      }, 
     },
-  ];
+  ]
 
   useEffect(() => {
-    request(`/api/task${props.type}`, "GET")
+    request(`/api/task${props.type ? "?state=" + props.type : ""}`, "GET")
       .then((response) => {
         const newTasks = response.data.demander_tasks.map((task: any) => {
           return { ...task };
@@ -437,6 +472,12 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           <Descriptions.Item label="单题限时" span={1}>
             {detail.time}秒
           </Descriptions.Item>
+          <Descriptions.Item label="分发方式" span={1}>
+            {detail.labeler_number}
+          </Descriptions.Item>
+          <Descriptions.Item label="类型标签" span={1}>
+            {detail.reward}
+          </Descriptions.Item>
         </Descriptions>
         <h3>题目详情</h3>
         <Collapse>
@@ -444,6 +485,73 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             <UpdateTask taskId={detail.task_id} />
           </Panel>
         </Collapse>
+      </Modal>
+      <Modal open={redistributeModalOpen} footer={null} onCancel={() => { setRedistributeModalOpen(false) }} destroyOnClose>
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+          过期任务重分发
+        </Typography>
+        <Divider></Divider>
+        <Form
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={(values) => {
+            setLoading(true);
+            const deadline = (values.deadline as unknown as dayjs.Dayjs).valueOf();
+            postRedistribute(detail.task_id, deadline, values.reward);
+            setRedistributeModalOpen(false);
+          }}
+        >
+          <p>对于过期任务，如果现有的标注结果不能让您满意，您可以选择重新分发此任务</p>
+          <p>如果您认为是因为截止时间过早导致任务过期，您可以重新选择设置截止日期</p>
+          <Form.Item
+            name="deadline"
+            rules={[
+              { required: true, message: "不能为空" },
+            ]}
+          >
+            <DatePicker
+              inputReadOnly
+              showTime
+              disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
+            />
+          </Form.Item>
+          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置单题奖励</p>
+          <Form.Item
+            name="reward"
+            rules={[
+              { required: true, message: "不能为空" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (value < 0) {
+                    return Promise.reject(new Error("单题不能为负数"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <TextField
+              name="reward"
+              fullWidth
+              id="reward"
+              label="单题奖励"
+              autoFocus
+              type="number"
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              marginBottom: "5px",
+            }}
+          >
+            确认
+          </Button>
+        </Form>
       </Modal>
       <Table
         columns={DemanderTaskTableColumns}
