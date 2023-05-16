@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider } from 'antd';
 import { 
   SketchOutlined,
+  SketchCircleFilled,
+  ClockCircleFilled,
   CrownOutlined,
   QuestionCircleOutlined
 } from "@ant-design/icons";
+import styles from './vip.module.css';
 import axios from 'axios';
 import { mapLevel2Exp, mapLevel2Zh } from "@/const/interface"; // Importing your mappings
 
@@ -24,7 +27,6 @@ const MemberComponent = () => {
       points: 0,
     };
   });
-  const [Loading, setLoading] = useState(true);
   const [waitLoading, setWaitLoading] = useState(false);
   const [vipExpiry, setVipExpiry] = useState<number>(Date.now());
   const [timer, setTimer] = useState<string>("");
@@ -51,6 +53,8 @@ const MemberComponent = () => {
       intervalIdRef.current = setInterval(() => {
         const now = Date.now();
         const diffSec = Math.floor((vipExpiry - now) / 1000);
+        console.log('ddl:',new Date(vipExpiry));
+        console.log('Now:', new Date(Date.now()))
         console.log(`Time difference in seconds: ${diffSec}`); // 打印时间差，单位为秒
         if (now >= vipExpiry) {
           setTimer("流量包已不可用");
@@ -77,7 +81,8 @@ const MemberComponent = () => {
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
-        setVipExpiry(response.data.ddl_time * 1000);
+        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000));
+        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000)));
         setWaitLoading(false);
       })
       .catch((error) => {
@@ -122,7 +127,8 @@ const MemberComponent = () => {
     setWaitLoading(true);
     axios.post('/api/membership', {vip_time: vipTime}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
-        setVipExpiry(response.data.ddl_time * 1000);
+        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000));
+        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000)));
         setBuyTimeModal(false);
         setWaitLoading(false);
         message.success(`成功购买 ${vipTime}s 流量包`);
@@ -138,21 +144,36 @@ const MemberComponent = () => {
   const getLevelProgress = (level: string) => {
     return (accountInfo.exp / mapLevel2Exp[level]) * 100;
   };
-
-  // if(Loading){
-  //   return <Spin tip="Loading..."/>;
-  // }
+  const getColor = (level: string) => {
+    switch (level) {
+      case "bronze" || "silver":
+        return "#C0C0C0"; // 银色
+      case "gold":
+        return "#FFD700"; // 金色
+      default:
+        return "#000000"; // 默认颜色
+    }
+  };
+  
   return (
     <div>
-      <Tooltip title={timer}>
+      <Tooltip title={
+        <span>
+          <ClockCircleFilled /> {timer}
+        </span>
+      }>
         <Button
           type="text"
-          icon={(accountInfo.level === 'diamond') ? <SketchOutlined /> : <CrownOutlined />}
+          icon={(accountInfo.level === "diamond" || vipExpiry-Date.now()>=0) ? (
+            <SketchOutlined className={styles.rainbow} />
+          ) : (
+            <CrownOutlined style={{ color: getColor(accountInfo.level) }} />
+          )}
           onClick={() => (setShowModal(true), fetchAccountInfo())}
           style={{
             fontSize: "20px",
-            width: 80,
-            height: 80,
+            width: "80",
+            height: "12vh",
             color: "white",
           }}
         />
@@ -182,6 +203,9 @@ const MemberComponent = () => {
         <Modal onCancel={() => setHelpModal(false)} onOk={() => setHelpModal(false)} open={helpModal} title={"流量包"}>
           <p>
             不同的会员等级对应不同的流量限制，低等级会员购买流量包可以<b>暂时</b>获得<span style={{ color: "red" }}>钻石级别</span>流量限制
+          </p>
+          <p>
+            您当前的等级是: <b>{mapLevel2Zh[accountInfo.level].name}</b>
           </p>
           <p>
             目前提供三种时长的流量包: <b>15s</b>, <b>30s</b>, <b>60s</b>, 分别需要消耗 <b>5</b>, <b>9</b>, <b>15</b> 点数
