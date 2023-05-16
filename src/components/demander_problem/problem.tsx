@@ -20,104 +20,99 @@ const Problem = (props: ProbelmProps) => {
       }
     }
     return (
-    <div>
-      <h1 style={{fontSize: "26px"}}>
-        第{props.index + 1}/{props.total}题: {props.problem.description}
-      </h1>
-      {props.problem.chosen.map((option: boolean, idx: number) => (
-        <>
-        <Checkbox key={idx} checked={option} disabled={true}>
-          {props.problem.options[idx]}
-        </Checkbox>
-        <br/>
-        <br/>
-        </>
-      ))}
-      {/* <Checkbox.Group options={props.problem.options} value={selected} disabled={true} /> */}
-    </div>
-  )
+      <div>
+        <h1 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problem.description}
+        </h1>
+        {props.problem.chosen.map((option: boolean, idx: number) => (
+          <>
+            <Checkbox key={idx} checked={option} disabled={true}>
+              {props.problem.options[idx]}
+            </Checkbox>
+            <br />
+            <br />
+          </>
+        ))}
+        {/* <Checkbox.Group options={props.problem.options} value={selected} disabled={true} /> */}
+      </div>
+    );
   } else if (props.problem.template == "ImagesClassification") {
-    return (<>
-      <h3 style={{fontSize: "26px"}}>
-        第{props.index + 1}/{props.total}题: {props.problem.description}
-      </h3>
-      <Image.PreviewGroup>
-        <Row wrap={true}>
-          {props.problem.options.map((option: string, index: number) => (
-            <Col key={index}>
-              <Checkbox
-                checked={props.problem.chosen[index]}
-                disabled={true}
-              >
-                <ImageFormatter>
-                  <MyImage
-                    url={`${option}`}
-                    style={{
-                      objectFit: "contain",
-                      objectPosition: "center center",
-                    }}
-                    alt="图片加载中，若长时间无反应请刷新重试"
-                    height="100%"
-                    width="100%"
-                  />
-                </ImageFormatter>
-              </Checkbox>
-            </Col>
-          ))}
-        </Row>
-      </Image.PreviewGroup>
-    </>)
+    return (
+      <>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problem.description}
+        </h3>
+        <Image.PreviewGroup>
+          <Row wrap={true}>
+            {props.problem.options.map((option: string, index: number) => (
+              <Col key={index}>
+                <Checkbox checked={props.problem.chosen[index]} disabled={true}>
+                  <ImageFormatter>
+                    <MyImage
+                      url={`${option}`}
+                      style={{
+                        objectFit: "contain",
+                        objectPosition: "center center",
+                      }}
+                      alt="图片加载中，若长时间无反应请刷新重试"
+                      height="100%"
+                      width="100%"
+                    />
+                  </ImageFormatter>
+                </Checkbox>
+              </Col>
+            ))}
+          </Row>
+        </Image.PreviewGroup>
+      </>
+    );
   } else if (props.problem.template == "FaceTag") {
     return (
       <>
-        <h3 style={{fontSize: "26px"}}>
+        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
-        <CanvasImage
-          data={props.problem.data}
-          src={props.problem.url}
-          type="point"
-        />
+        <CanvasImage data={props.problem.data} src={props.problem.url} type="point" />
       </>
-    )
+    );
   } else if (props.problem.template == "ImageFrame") {
-    return (<>
-      <h3 style={{fontSize: "26px"}}>
-        第{props.index + 1}/{props.total}题: {props.problem.description}
-      </h3>
-      <CanvasImage
-        data={props.problem.data}
-        src={props.problem.url}
-        type="rectangle"
-      />
-    </>)
-  } else if (props.problem.template == "SoundTag") {
-    return (<>
-      <h3 style={{fontSize: "26px"}}>
-        第{props.index + 1}/{props.total}题: {props.problem.description}
-      </h3>
+    return (
       <>
-        <MyAudio url={props.problem.url} />
-        <Divider />
-        <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
-          {props.problem.choice.map((ch: any, idx: number) => (
-            <Radio value={idx} key={idx}>
-              <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
-              <Divider type="vertical" />
-              <>
-                {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
-                  ? `标注方输入: ${props.problem.data.input}`
-                  : "无输入"}
-              </>
-            </Radio>
-          ))}
-        </Radio.Group>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problem.description}
+        </h3>
+        <CanvasImage data={props.problem.data} src={props.problem.url} type="rectangle" />
       </>
-    </>)
+    );
+  } else if (props.problem.template == "SoundTag") {
+    return (
+      <>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problem.description}
+        </h3>
+        <>
+          <MyAudio url={props.problem.url} />
+          <Divider />
+          <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
+            {props.problem.choice.map((ch: any, idx: number) => (
+              <Radio value={idx} key={idx}>
+                <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
+                <Divider type="vertical" />
+                <>
+                  {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
+                    ? `标注方输入: ${props.problem.data.input}`
+                    : "无输入"}
+                </>
+              </Radio>
+            ))}
+          </Radio.Group>
+        </>
+      </>
+    );
   } else if (props.problem.template == "VideoTag") {
     return (
       <>
-        <h3 style={{fontSize: "26px"}}>
+        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -129,10 +124,7 @@ const Problem = (props: ProbelmProps) => {
             }}
           />
           <Divider />
-          <Radio.Group
-            value={props.problem.data.choiceIndex}
-            disabled={true}
-          >
+          <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
             {props.problem.choice.map((ch: any, idx: number) => (
               <Radio value={idx} key={idx}>
                 <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
@@ -146,11 +138,11 @@ const Problem = (props: ProbelmProps) => {
           </Radio.Group>
         </>
       </>
-    )
+    );
   } else if (props.problem.template == "TextReview") {
     return (
       <>
-        <h3 style={{fontSize: "26px"}}>
+        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -161,11 +153,11 @@ const Problem = (props: ProbelmProps) => {
           </Radio.Group>
         </>
       </>
-    )
+    );
   } else if (props.problem.template == "ImageReview") {
     return (
       <>
-        <h3 style={{fontSize: "26px"}}>
+        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -187,31 +179,33 @@ const Problem = (props: ProbelmProps) => {
           </Radio.Group>
         </>
       </>
-    )
+    );
   } else if (props.problem.template == "VideoReview") {
-    return (<>
-      <h3 style={{fontSize: "26px"}}>
-        第{props.index + 1}/{props.total}题: {props.problem.description}
-      </h3>
+    return (
       <>
-        <MyVideo
-          url={props.problem.url}
-          style={{
-            width: "300px",
-            height: "200px",
-          }}
-        />
-        <Divider />
-        <Radio.Group value={props.problem.data} disabled>
-          <Radio value={true}>合格</Radio>
-          <Radio value={false}>不合格</Radio>
-        </Radio.Group>
+        <h3 style={{ fontSize: "26px" }}>
+          第{props.index + 1}/{props.total}题: {props.problem.description}
+        </h3>
+        <>
+          <MyVideo
+            url={props.problem.url}
+            style={{
+              width: "300px",
+              height: "200px",
+            }}
+          />
+          <Divider />
+          <Radio.Group value={props.problem.data} disabled>
+            <Radio value={true}>合格</Radio>
+            <Radio value={false}>不合格</Radio>
+          </Radio.Group>
+        </>
       </>
-    </>)
+    );
   } else if (props.problem.template == "AudioReview") {
     return (
       <>
-        <h3 style={{fontSize: "26px"}}>
+        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <>
@@ -223,9 +217,9 @@ const Problem = (props: ProbelmProps) => {
           </Radio.Group>
         </>
       </>
-    )
+    );
   } else {
-    return <>Error Task Template</>
+    return <>Error Task Template</>;
   }
 };
 

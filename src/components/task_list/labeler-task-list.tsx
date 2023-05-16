@@ -192,14 +192,24 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       align: "center",
       render: (_, record) => (
         <>
-          <Button type="link" onClick={() => {
-            setDetail(record)
-            setReportModalOpen(true)
-          }}>举报</Button>
-          <Button type="link" onClick={() => {
-            setDetail(record)
-            setProblemsModalOpen(true)
-          }}>查看</Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setDetail(record);
+              setReportModalOpen(true);
+            }}
+          >
+            举报
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setDetail(record);
+              setProblemsModalOpen(true);
+            }}
+          >
+            查看
+          </Button>
         </>
       ),
     },
@@ -207,14 +217,26 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
 
   return (
     <>
-      <Modal open={problemsModalOpen} onCancel={() => { setProblemsModalOpen(false); setProblemIndex(0); }} footer={null} destroyOnClose>
+      <Modal
+        open={problemsModalOpen}
+        onCancel={() => {
+          setProblemsModalOpen(false);
+          setProblemIndex(0);
+        }}
+        footer={null}
+        destroyOnClose
+      >
         <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
           题目详情
         </Typography>
         <Divider></Divider>
 
         <>
-          <Problem problem={detail.task_data[problemIndex]} index={problemIndex} total={detail.task_data.length} />
+          <Problem
+            problem={detail.task_data[problemIndex]}
+            index={problemIndex}
+            total={detail.task_data.length}
+          />
           <Divider />
           <Grid container>
             <Grid item xs>
@@ -223,18 +245,22 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
                   disabled={problemIndex === 0}
                   onClick={() => {
                     // CarouselRef.current?.goTo(idx + 1, true);
-                    setProblemIndex((i) => (i - 1))
+                    setProblemIndex((i) => i - 1);
                   }}
                 >
                   上一题
                 </Button>
               </Tooltip>
               <Divider type="vertical" />
-              <Tooltip title={problemIndex === detail.task_data.length - 1 ? "已经是最后一题了" : undefined}>
+              <Tooltip
+                title={
+                  problemIndex === detail.task_data.length - 1 ? "已经是最后一题了" : undefined
+                }
+              >
                 <Button
                   disabled={problemIndex === detail.task_data.length - 1}
                   onClick={() => {
-                    setProblemIndex((i) => (i + 1))
+                    setProblemIndex((i) => i + 1);
                   }}
                 >
                   下一题
@@ -243,21 +269,28 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
               <Divider type="vertical" />
             </Grid>
             <Grid>
-              <InputNumber size="small" placeholder={`跳转至`}
+              <InputNumber
+                size="small"
+                placeholder={`跳转至`}
                 value={pageNumber}
                 onChange={(e) => {
-                  setPageNumber(e)
+                  setPageNumber(e);
                 }}
               />
-              <Button type="link" onClick={() => {
-                if (pageNumber !== null) {
-                  if (pageNumber <= detail.task_data.length && pageNumber >= 1) {
-                    setProblemIndex(pageNumber - 1);
-                  } else {
-                    message.warning(`请输入正确的题目序号1~${detail.task_data.length}`)
+              <Button
+                type="link"
+                onClick={() => {
+                  if (pageNumber !== null) {
+                    if (pageNumber <= detail.task_data.length && pageNumber >= 1) {
+                      setProblemIndex(pageNumber - 1);
+                    } else {
+                      message.warning(`请输入正确的题目序号1~${detail.task_data.length}`);
+                    }
                   }
-                }
-              }}>跳转至</Button>
+                }}
+              >
+                跳转至
+              </Button>
             </Grid>
           </Grid>
         </>

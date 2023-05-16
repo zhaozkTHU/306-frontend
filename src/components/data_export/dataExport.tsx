@@ -17,7 +17,7 @@ const DataExportCallback = async (taskId: number, merge: boolean) => {
     throw new Error((reason as any)?.data?.message);
   }
   if (value.data.code === 0) {
-    const jsonData = JSON.stringify(value.data.data);
+    const jsonData = JSON.stringify(value.data.tag_data);
     const blob = new Blob([jsonData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

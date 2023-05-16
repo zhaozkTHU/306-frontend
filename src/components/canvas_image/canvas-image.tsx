@@ -47,18 +47,18 @@ const CanvasImage = (props: CanvasImageProps) => {
     <>
       <canvas width={90} ref={canvasRef} style={{ display: "none" }} />
       {/* <ImageFormatter> */}
-        <Image
-          src={imageUrl}
-          // alt="图片加载中，长时间无反应请刷新"
-          width={"100%"}
-          height={"100%"}
-          style={{
-            objectFit: "contain",
-            objectPosition: "center center",
-          }}
-          alt="图片加载中"
-          loading="lazy"
-        />
+      <Image
+        src={imageUrl}
+        // alt="图片加载中，长时间无反应请刷新"
+        width={"100%"}
+        height={"100%"}
+        style={{
+          objectFit: "contain",
+          objectPosition: "center center",
+        }}
+        alt="图片加载中"
+        loading="lazy"
+      />
       {/* </ImageFormatter> */}
     </>
   );

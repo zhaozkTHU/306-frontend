@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, message } from "antd";
+import { Space, Table, message } from "antd";
 import type { ColumnsType } from "antd/lib/table";
 
 interface RankListData {
@@ -8,8 +8,8 @@ interface RankListData {
     username: string;
     points: string;
   }[];
-  my_rank: number;
-  my_points: number;
+  my_rank?: number;
+  my_points?: number;
 }
 
 const columns: ColumnsType<RankListData["rank_lists"][0]> = [
@@ -59,10 +59,15 @@ const RankList: React.FC = () => {
         pagination={false}
         bordered
         rowClassName={(_record, index) =>
-          index === rankListData.my_rank - 1 ? "highlightrow" : ""
+          rankListData.my_rank && index === rankListData.my_rank - 1 ? "highlightrow" : ""
         }
       />
-      你的排名：{rankListData.my_rank}，积分：{rankListData.my_points}
+      {/* <br /> */}
+      {rankListData.my_rank && rankListData.my_points && (
+        <p>
+          你的排名：{rankListData.my_rank}，积分：{rankListData.my_points}
+        </p>
+      )}
     </>
   );
 };
