@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider } from 'antd';
+import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider, Avatar } from 'antd';
 import { 
   SketchOutlined,
   SketchCircleFilled,
@@ -181,6 +181,15 @@ const MemberComponent = () => {
 
       {showModal && (
         <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
+          <Avatar
+            size={60}
+            style={{
+              backgroundColor: "rgb(243, 196, 41)",
+              fontSize: 35,
+            }}
+          >
+            {accountInfo.username[0]}
+          </Avatar>
           <h2>{accountInfo.username}</h2>
           <Tag color={mapLevel2Zh[accountInfo.level].color}>
             会员等级: {mapLevel2Zh[accountInfo.level].name}
