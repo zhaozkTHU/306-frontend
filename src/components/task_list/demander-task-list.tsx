@@ -465,8 +465,9 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           initialValues={{ remember: true }}
           onFinish={(values) => {
             setLoading(true);
-            postRedistribute(detail.task_id, values.deadline, values.reward);
-            setAutoCheckingModalOpen(false);
+            const deadline = (values.deadline as unknown as dayjs.Dayjs).valueOf();
+            postRedistribute(detail.task_id, deadline, values.reward);
+            setRedistributeModalOpen(false);
           }}
         >
           <p>对于过期任务，如果现有的标注结果不能让您满意，您可以选择重新分发此任务</p>
