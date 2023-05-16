@@ -442,7 +442,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
                       模板并按规范提交
                       <Collapse size="small" ghost >
                         <Collapse.Panel header="填写规范" key={1} >
-                        下载文件后，请不要修改excel文件的页的名字以及excel文件名，填入题目时，请不要出现空行。在上传时，请将所有相关文件打包成一个zip文件，文件名只能包含字母数字和下划线。
+                        下载文件后，请不要修改excel文件的页的名字以及excel文件名，填入题目时，请不要出现空行。在上传时
+                        ，请将所有相关文件打包成一个zip文件，文件名只能包含字母数字和下划线。
                         </Collapse.Panel>
                       </Collapse>
                     </>
