@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider, Avatar } from 'antd';
+import { Typography, Card,Statistic, Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider, Avatar, Row, Col } from 'antd';
 import { 
   SketchOutlined,
   SketchCircleFilled,
   ClockCircleFilled,
   CrownOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  UserOutlined,
+  HourglassTwoTone,
+  FieldTimeOutlined,
+  RocketOutlined,
+  ThunderboltOutlined,
+  StarFilled,
+  GoldOutlined
 } from "@ant-design/icons";
 import styles from './vip.module.css';
 import axios from 'axios';
@@ -40,6 +47,7 @@ const MemberComponent = () => {
   const [vipTime, setVipTime] = useState<number>(15);
   const token = localStorage.getItem("token");
   const { Option } = Select;
+  const { Title } = Typography;
 
   useEffect(() => {
     fetchAccountInfo();
@@ -57,8 +65,10 @@ const MemberComponent = () => {
         console.log('Now:', new Date(Date.now()))
         console.log(`Time difference in seconds: ${diffSec}`); // 打印时间差，单位为秒
         if (now >= vipExpiry) {
-          setTimer("流量包已不可用");
-          message.warning("流量包已过期");
+          setTimer(accountInfo.level === "diamond"?"永久享受最低流量限制":"流量包已不可用");
+          if (!(accountInfo.level === "diamond")) {
+            message.info("流量包已过期");
+          }
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
         } else {
           const diffSec = Math.floor((vipExpiry - now) / 1000);
@@ -159,7 +169,7 @@ const MemberComponent = () => {
     <div>
       <Tooltip title={
         <span>
-          <ClockCircleFilled /> {timer}
+          <FieldTimeOutlined /> {timer}
         </span>
       }>
         <Button
@@ -180,26 +190,84 @@ const MemberComponent = () => {
       </Tooltip>
 
       {showModal && (
-        <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
-          <Avatar
-            size={60}
-            style={{
-              backgroundColor: "rgb(243, 196, 41)",
-              fontSize: 35,
-            }}
-          >
-            {accountInfo.username[0]}
-          </Avatar>
-          <h2>{accountInfo.username}</h2>
-          <Tag color={mapLevel2Zh[accountInfo.level].color}>
-            会员等级: {mapLevel2Zh[accountInfo.level].name}
-          </Tag>
-          <p>点数: {accountInfo.points}</p>
-          <p>经验: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
-          <Space >
-            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyExpModal(true)}>购买经验</Button>
-            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyTimeModal(true)}>购买流量包</Button>
-          </Space>
+        <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null} width={600}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Space>
+            <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '24px' }}>
+              会员中心
+            </div>
+            {(accountInfo.level === "diamond" || vipExpiry-Date.now()>=0) ? (
+              <CrownOutlined className={styles.rainbow} style={{ fontSize: '30px' }} />
+              ) : (
+              <CrownOutlined style={{ color: getColor(accountInfo.level), fontSize: '30px' }} />
+            )}
+            </Space>
+          </div>
+          <Divider/>
+          <Row gutter={16} justify="space-around" style={{ display: 'flex', alignItems: 'center' }}>
+            <Col style={{ textAlign: 'center' }}>
+              <Avatar
+                size={60}
+                style={{
+                    backgroundColor: "rgb(243, 196, 41)",
+                    fontSize: 35,
+                }}
+              >
+                {accountInfo.username[0]}
+              </Avatar>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Space>
+                  <UserOutlined />
+                  <h2>{accountInfo.username}</h2>
+                  <Tag color={mapLevel2Zh[accountInfo.level].color}>
+                    {mapLevel2Zh[accountInfo.level].name}
+                  </Tag>
+                </Space> 
+              </div>
+            </Col>
+            <Col style={{ textAlign: 'center' }} span={8} >
+              <Statistic
+                title="点数余额"
+                value={accountInfo.points}
+                prefix={<GoldOutlined style={{ color: 'gold' }} />}
+              />
+              <Divider/>
+              <HourglassTwoTone /> {timer}
+            </Col>
+            <Col style={{ textAlign: 'center' }} span={8}>
+            <Progress
+              size={[100, 30]}
+              percent={getLevelProgress(accountInfo.level)}
+              type="circle"
+              strokeColor={{'0%': '#108ee9','100%': '#87d068'}}
+              format={(percent) => (
+                <>
+                  <div style={{ fontSize: '10px' }}>经验</div>
+                  <div>{percent?.toFixed(0)}%</div>
+                </>
+              )}
+            />
+            </Col>
+          </Row>
+          <Divider />
+          <Row justify="center">
+            <Space >
+              <Button 
+                disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} 
+                onClick={() => setBuyExpModal(true)}
+                icon={<RocketOutlined />}
+              >
+                兑换经验
+              </Button>
+              <Button 
+                disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} 
+                onClick={() => setBuyTimeModal(true)}
+                icon={<ThunderboltOutlined />}
+              >
+                开通流量包
+              </Button>
+            </Space>
+          </Row>
         </Modal>
       )}
 
@@ -223,7 +291,12 @@ const MemberComponent = () => {
       )}
 
       { buyTimeModal && (
-        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal} title={"购买流量包"}>
+        <Modal 
+          onCancel={() => setBuyTimeModal(false)} 
+          onOk={buyVipTime} 
+          open={buyTimeModal} 
+          title={"开通流量包"} 
+        >
           <Tooltip title="什么是流量包">
             <Button
               type="text"
