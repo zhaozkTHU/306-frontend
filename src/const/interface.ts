@@ -10,13 +10,13 @@ export interface Problem {
 
 export interface TextClassificationProblem extends Problem {
   options: string[];
-  chosen?: boolean[];
+  data?: boolean[];
 }
 
 export interface ImagesClassificationProblem extends Problem {
   /** 图片url */
   options: string[];
-  chosen?: boolean[];
+  data?: boolean[];
 }
 
 export interface FaceTagProblem extends Problem {
@@ -55,7 +55,7 @@ export interface TagProblem extends Problem {
 export interface TextTripleProblem extends Problem {
   description: string;
   text: string;
-  triple?: {
+  data?: {
     subject: string;
     object: string;
     relation: string;
@@ -170,21 +170,21 @@ export function isClassificationProblem(data: any): data is TextClassificationPr
   return (
     typeof data.description === "string" &&
     Array.isArray(data.options) &&
-    (data.chosen === undefined || Array.isArray(data.chosen))
+    (data.data === undefined || Array.isArray(data.data))
   );
 }
 export function isTextClassificationProblem(data: any): data is TextClassificationProblem {
   return (
     typeof data.description === "string" &&
     Array.isArray(data.options) &&
-    (data.chosen === undefined || Array.isArray(data.chosen))
+    (data.data === undefined || Array.isArray(data.data))
   );
 }
 export function isImagesClassificationProblem(data: any): data is TextClassificationProblem {
   return (
     typeof data.description === "string" &&
     Array.isArray(data.options) &&
-    (data.chosen === undefined || Array.isArray(data.chosen))
+    (data.data === undefined || Array.isArray(data.data))
   );
 }
 export function isTagProblem(data: any): data is TagProblem {

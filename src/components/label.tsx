@@ -64,7 +64,6 @@ const Label = (props: labelProps) => {
       const mytimer = timer ? JSON.parse(timer) : 0;
       if (mytimer < time) {
         newProblems[i].data = undefined;
-        newProblems[i].chosen = undefined;
       }
     }
     request("/api/submit", "POST", {
@@ -221,7 +220,7 @@ const Label = (props: labelProps) => {
                       }}
                       style={{
                         border: idx === problemIndex ? "solid rgb(32, 101, 221) 2px" : undefined,
-                        backgroundColor: tr(idx) < time ? "red" : ((problemList[idx].chosen || problemList[idx].data) ? "green" : "orange"),
+                        backgroundColor: tr(idx) < time ? "red" : (problemList[idx].data ? "green" : "orange"),
                         margin: 6
                       }}>
                       {idx + 1}

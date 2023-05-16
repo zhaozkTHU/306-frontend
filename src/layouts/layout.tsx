@@ -27,7 +27,7 @@ import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MemberComponent from "@/components/user_vip";
-import CameraButton from "@/components/FaceLogin";
+import CameraButton from "@/components/CameraVideo";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -289,7 +289,7 @@ const MyLayout = (props: MyLayoutProps) => {
                   <MenuItem
                     onClick={() => {
                       localStorage.removeItem("token");
-                      localStorage.removeItem("role");
+                      localStorage.removeItem("role")
                       router.push("/");
                     }}
                   >

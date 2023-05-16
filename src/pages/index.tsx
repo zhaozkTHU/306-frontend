@@ -98,7 +98,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         <Register setModalOpen={setIsRegisterModalOpen} CarouselRef={CarouselRef} />
       </Modal>
 
-      <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
+      <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null} destroyOnClose>
         <Spin spinning={faceModalLoading}>
           <CameraButton
             fileName="face.jpg"

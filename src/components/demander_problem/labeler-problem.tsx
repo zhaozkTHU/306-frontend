@@ -26,18 +26,18 @@ const LabelerProblem = (props: LabelerProblemProps) => {
           <>
             <Checkbox
               key={idx}
-              checked={props.problemList[props.index].chosen && props.problemList[props.index].chosen[idx]}
+              checked={props.problemList[props.index].data && props.problemList[props.index].data[idx]}
               onChange={(e) => {
                 const newProblems: any[] = [...props.problemList];
-                if (newProblems[props.index].chosen) {
-                  newProblems[props.index].chosen[idx] = (e.target.checked);
+                if (newProblems[props.index].data) {
+                  newProblems[props.index].data[idx] = (e.target.checked);
                 } else {
-                  newProblems[props.index].chosen = []
+                  newProblems[props.index].data = []
                   for (let i = 0; i < props.problemList[props.index].options.length; i++) {
                     if (i == idx) {
-                      newProblems[props.index].chosen.push(true);
+                      newProblems[props.index].data.push(true);
                     } else {
-                      newProblems[props.index].chosen.push(false);
+                      newProblems[props.index].data.push(false);
                     }
                   }
                 }
@@ -63,18 +63,18 @@ const LabelerProblem = (props: LabelerProblemProps) => {
           {props.problemList[props.index].options.map((option: string, idx: number) => (
             <Col key={idx}>
               <Checkbox
-                checked={props.problemList[props.index].chosen[idx]}
+                checked={props.problemList[props.index].data[idx]}
                 onChange={(e) => {
                   const newProblems: any[] = [...props.problemList];
-                  if (newProblems[props.index].chosen) {
-                    newProblems[props.index].chosen[idx] = (e.target.checked);
+                  if (newProblems[props.index].data) {
+                    newProblems[props.index].data[idx] = (e.target.checked);
                   } else {
-                    newProblems[props.index].chosen = []
+                    newProblems[props.index].data = []
                     for (let i = 0; i < props.problemList[props.index].options.length; i++) {
                       if (i == idx) {
-                        newProblems[props.index].chosen.push(true);
+                        newProblems[props.index].data.push(true);
                       } else {
-                        newProblems[props.index].chosen.push(false);
+                        newProblems[props.index].data.push(false);
                       }
                     }
                   }
