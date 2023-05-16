@@ -20,7 +20,7 @@ const UpdateTask: React.FC<{ taskId: number }> = (props) => {
     if (!router.isReady) return;
 
     axios
-      .get("/api/task", {
+      .get("/api/demander/task", {
         headers: {
           Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         },
