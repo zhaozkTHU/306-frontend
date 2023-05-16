@@ -57,8 +57,10 @@ const MemberComponent = () => {
         console.log('Now:', new Date(Date.now()))
         console.log(`Time difference in seconds: ${diffSec}`); // 打印时间差，单位为秒
         if (now >= vipExpiry) {
-          setTimer("流量包已不可用");
-          message.warning("流量包已过期");
+          setTimer(accountInfo.level === "diamond"?"永久享受最低流量限制":"流量包已不可用");
+          if (!(accountInfo.level === "diamond")) {
+            message.info("流量包已过期");
+          }
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
         } else {
           const diffSec = Math.floor((vipExpiry - now) / 1000);
@@ -194,7 +196,7 @@ const MemberComponent = () => {
           <Tag color={mapLevel2Zh[accountInfo.level].color}>
             会员等级: {mapLevel2Zh[accountInfo.level].name}
           </Tag>
-          <p>点数: {accountInfo.points}</p>
+          <p>点数:  {accountInfo.points}</p>
           <p>经验: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
           <Space >
             <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyExpModal(true)}>购买经验</Button>
