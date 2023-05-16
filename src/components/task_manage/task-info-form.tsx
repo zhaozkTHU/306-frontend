@@ -64,7 +64,7 @@ const downloadTemplate = (type: TaskInfo["template"], templates: TaskInfo["templ
   link.click();
 };
 
-const selectOptions: SelectProps["options"] = [
+const selectOptions: SelectProps<TaskInfo["template"]>["options"] = [
   { value: "TextClassification", label: "文字分类" },
   { value: "ImagesClassification", label: "图片分类" },
   { value: "FaceTag", label: "人脸骨骼打点" },
@@ -72,6 +72,7 @@ const selectOptions: SelectProps["options"] = [
   { value: "SoundTag", label: "语音标注" },
   { value: "VideoTag", label: "视频标注" },
   { value: "Custom", label: "自定义组合模板(仅支持批量上传)" },
+  { value: "TextTriple", label: "文字三元组" },
   {
     label: "审核",
     options: [
