@@ -151,7 +151,14 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       width: "25%",
       render: (text, record) => (
         <Tooltip title="点击此处查看标注者详情">
-          <Button type="link" onClick={() => { router.push(`/demander/${record.task_id}`) }}>{text}</Button>
+          <Button
+            type="link"
+            onClick={() => {
+              router.push(`/demander/${record.task_id}`);
+            }}
+          >
+            {text}
+          </Button>
         </Tooltip>
       ),
     },
@@ -202,9 +209,9 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
         return (
           <>
             {state.map((s: string, idx: number) => (
-              <Tooltip title={mapState2ColorChinese[s]['show']} key={idx}>
-                <Tag color={mapState2ColorChinese[s]['color']} >
-                  {mapState2ColorChinese[s]['description']}
+              <Tooltip title={mapState2ColorChinese[s]["show"]} key={idx}>
+                <Tag color={mapState2ColorChinese[s]["color"]}>
+                  {mapState2ColorChinese[s]["description"]}
                 </Tag>
               </Tooltip>
             ))}
@@ -286,6 +293,30 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
       },
     },
   ];
+
+  const LabelerTableColumns: ColumnsType<any> = [
+    {
+      title: "标注者编号",
+      dataIndex: "labeler_id",
+      key: "labeler_id",
+      align: "center",
+    },
+    {
+      title: "标注者状态",
+      dataIndex: "labeler_state",
+      key: "labeler_state",
+      align: "center",
+      render: (state) => {
+        return (
+          <Space size={[0, 8]} wrap>
+            <Tag color={mapState2ColorChinese[state].color}>
+              {mapState2ColorChinese[state].description}
+            </Tag>
+          </Space>
+        );
+      }, 
+    },
+  ]
 
   useEffect(() => {
     request(`/api/task${props.type ? "?state=" + props.type : ""}`, "GET")

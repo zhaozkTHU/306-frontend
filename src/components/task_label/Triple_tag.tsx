@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Checkbox, message, Modal, Steps, Divider, Space, Spin } from "antd";
+import { Button, message, Modal, Steps, Divider, Space, Spin, Input, Form } from "antd";
 import {
   SaveOutlined,
   UploadOutlined,
@@ -7,42 +7,44 @@ import {
   LeftCircleOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { TaskInfo, isClassificationProblem } from "@/const/interface";
-import MyImage from "../my-img";
+import { TaskInfo, isTextTripleProblem, TextTripleProblem } from "@/const/interface";
 
-interface ClassificationProblem {
-  description: string;
-  options: string[];
-  chosen?: boolean[];
-}
-
-const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
+const TripleComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
-    // keep current pro id
     const storedCurrentProblemIndex = localStorage.getItem(
       `currentProblemIndex-${taskInfo.task_id}`
     );
     return storedCurrentProblemIndex ? JSON.parse(storedCurrentProblemIndex) : 0;
   });
-  // while re-render, get current saved answer & upload status from localstorage
-  const [chosenOptions, setChosenOptions] = useState<boolean[]>(() => {
-    const storedChosenOptions = localStorage.getItem(
-      `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`
-    );
-    return storedChosenOptions ? JSON.parse(storedChosenOptions) : [];
+
+  const [triple, setTriple] = useState<{ subject: string; object: string; relation: string }>(
+    () => {
+      const storedTriple = localStorage.getItem(
+        `triple-${taskInfo.task_id}-${currentProblemIndex}`
+      );
+      return storedTriple ? JSON.parse(storedTriple) : { subject: "", object: "", relation: "" };
+    }
+  );
+  const [tripleStatus, setTripleStatus] = useState<{
+    subject: string;
+    object: string;
+    relation: string;
+  }>(() => {
+    return { subject: "", object: "", relation: "" };
   });
   const [uploadCompleted, setUploadCompleted] = useState<boolean>(() => {
-    // whether finished upload
     const storedUploadCompleted = localStorage.getItem(`uploadCompleted-${taskInfo.task_id}`);
     return storedUploadCompleted ? JSON.parse(storedUploadCompleted) : false;
   });
-  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isClassificationProblem);
-  // while re-render, get the answer from localstorage
-  const [chosenOptionsAll, setChosenOptionsAll] = useState<Array<boolean[]>>(() => {
-    const storedChosenOptionsAll = localStorage.getItem(`chosenOptionsAll-${taskInfo.task_id}`);
-    return storedChosenOptionsAll
-      ? JSON.parse(storedChosenOptionsAll)
-      : filteredTaskData.map((problem) => problem.options.map(() => false));
+  const filteredTaskData = (taskInfo.task_data as Array<any>).filter(isTextTripleProblem);
+
+  const [tripleAll, setTripleAll] = useState<
+    Array<{ subject: string; object: string; relation: string }>
+  >(() => {
+    const storedTripleAll = localStorage.getItem(`tripleAll-${taskInfo.task_id}`);
+    return storedTripleAll
+      ? JSON.parse(storedTripleAll)
+      : filteredTaskData.map(() => ({ subject: "", object: "", relation: "" }));
   });
   const [savedProblems, setSavedProblems] = useState<boolean[]>(() => {
     const storedSavedProblems = localStorage.getItem(`savedProblems-${taskInfo.task_id}`);
@@ -59,29 +61,28 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   const [loading, setLoading] = useState(false); // using while upload
   const [timeRemaining, setTimeRemaining] = useState(taskInfo.deadline - Date.now());
 
-  const currentProblem = filteredTaskData[currentProblemIndex] as ClassificationProblem;
+  const currentProblem = filteredTaskData[currentProblemIndex] as TextTripleProblem;
   const { Step } = Steps;
   const completedProblemsCount = savedProblems.filter((saved) => saved).length;
   const totalProblemsCount = filteredTaskData.length;
 
   // save cur prob id to localstorage
   useEffect(() => {
-    // 存储 currentProblemIndex 到 localStorage
     localStorage.setItem(
       `currentProblemIndex-${taskInfo.task_id}`,
       JSON.stringify(currentProblemIndex)
     );
   }, [currentProblemIndex]);
-  // save answers into localstorage
+
   useEffect(() => {
-    localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
-  }, [chosenOptionsAll]);
+    localStorage.setItem(`tripleAll-${taskInfo.task_id}`, JSON.stringify(tripleAll));
+  }, [tripleAll]);
   useEffect(() => {
     localStorage.setItem(
-      `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`,
-      JSON.stringify(chosenOptions)
+      `triple-${taskInfo.task_id}-${currentProblemIndex}`,
+      JSON.stringify(triple)
     );
-  }, [chosenOptions]);
+  }, [triple]);
   useEffect(() => {
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
   }, [savedProblems]);
@@ -91,7 +92,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       setTimer((prevTimer: number) => prevTimer + 1);
     }, 1000); // 每1000毫秒（1秒）更新一次
     return () => {
-      // 清除intervalId以避免内存泄漏
       clearInterval(interval);
     };
   }, [currentProblemIndex]);
@@ -102,7 +102,6 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       JSON.stringify(timer)
     );
   }, [timer]);
-  // task ddl count
   useEffect(() => {
     const countdown = setInterval(() => {
       const remainingTime = taskInfo.deadline - Date.now();
@@ -131,27 +130,40 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     localStorage.setItem(lastSaveKey, JSON.stringify(timer));
 
     setCurrentProblemIndex(index);
-    setChosenOptions(filteredTaskData[index].chosen || []);
-    const storedChosenOptions = localStorage.getItem(`chosenOptions-${taskInfo.task_id}-${index}`);
-    setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
+    setTriple(filteredTaskData[index].triple || { subject: "", object: "", relation: "" });
+    const storedTriple = localStorage.getItem(`triple-${taskInfo.task_id}-${index}`);
+    setTriple(storedTriple ? JSON.parse(storedTriple) : { subject: "", object: "", relation: "" });
 
     const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${index}`);
     setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
   };
 
-  const handleCheckboxChange = (index: number) => (e: any) => {
-    setChosenOptions((prevState) => {
-      const newState = [...prevState];
-      newState[index] = e.target.checked;
-      return newState;
-    });
-    setChosenOptionsAll((prevState) => {
-      const newState = [...prevState];
-      newState[currentProblemIndex][index] = e.target.checked;
-      return newState.map((problemOptions) =>
-        problemOptions.map((option) => (option === null ? false : option))
-      );
-    });
+  const handleSubjectChange = (e: any) => {
+    if (currentProblem.text.includes(e.target.value)) {
+      setTriple((prev) => ({
+        subject: e.target.value,
+        object: prev.object,
+        relation: prev.relation,
+      }));
+      setTripleStatus({ subject: "", object: "", relation: "" });
+    } else {
+      setTripleStatus({ subject: "error", object: "", relation: "" });
+    }
+  };
+  const handleObjectChange = (e: any) => {
+    if (currentProblem.text.includes(e.target.value)) {
+      setTriple((prev) => ({
+        subject: prev.subject,
+        object: e.target.value,
+        relation: prev.relation,
+      }));
+      setTripleStatus({ subject: "", object: "", relation: "" });
+    } else {
+      setTripleStatus({ subject: "", object: "error", relation: "" });
+    }
+  };
+  const handleRelationChange = (e: any) => {
+    setTriple((prev) => ({ subject: prev.subject, object: prev.object, relation: e.target.value }));
   };
 
   const handleSave = () => {
@@ -161,25 +173,19 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       message.warning("tagging too fast!");
       return;
     }
-    const newTaskData = [...filteredTaskData]; // chosen not chosen
-    const modifiedchosenOptions = chosenOptions.map((option) => (option === null ? false : option));
-    if (modifiedchosenOptions.length < newTaskData[currentProblemIndex].options.length) {
-      const remainingOptions =
-        newTaskData[currentProblemIndex].options.length - modifiedchosenOptions.length;
-      for (let i = 0; i < remainingOptions; i++) {
-        modifiedchosenOptions.push(false);
-      }
-    }
-    newTaskData[currentProblemIndex].chosen = modifiedchosenOptions;
-    setChosenOptionsAll(newTaskData.map((problem) => problem.chosen || []));
-    localStorage.setItem(`chosenOptionsAll-${taskInfo.task_id}`, JSON.stringify(chosenOptionsAll));
+    const newTaskData = [...filteredTaskData]; // chosen not chosen TripleAll
+    newTaskData[currentProblemIndex].triple = triple;
+    setTripleAll(
+      newTaskData.map((problem) => problem.triple || { subject: "", object: "", relation: "" })
+    );
+    localStorage.setItem(`tripleAll-${taskInfo.task_id}`, JSON.stringify(tripleAll));
     const newSavedProblems = [...savedProblems];
     newSavedProblems[currentProblemIndex] = true;
     setSavedProblems(newSavedProblems);
     localStorage.setItem(`savedProblems-${taskInfo.task_id}`, JSON.stringify(savedProblems));
     localStorage.setItem(
-      `chosenOptions-${taskInfo.task_id}-${currentProblemIndex}`,
-      JSON.stringify(chosenOptions)
+      `triple-${taskInfo.task_id}-${currentProblemIndex}`,
+      JSON.stringify(triple)
     );
 
     message.success("Saved!");
@@ -216,17 +222,14 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
       return;
     }
 
-    const modifiedchosenOptionsAll = chosenOptionsAll.map((problem) =>
-      problem.map((option) => (option === null ? false : option))
-    );
     const tag_data = {
       tag_style: taskInfo.template,
       tag_time: Date.now(),
       tags: filteredTaskData.map((problem, problemIndex) => ({
         template: taskInfo.template,
         description: problem.description,
-        options: problem.options,
-        chosen: modifiedchosenOptionsAll[problemIndex].slice(0, problem.options.length),
+        text: problem.text,
+        triple: tripleAll[problemIndex],
       })),
     };
 
@@ -275,12 +278,16 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
       setCurrentProblemIndex((prevState: number) => {
         const newIndex = prevState - 1;
-        const newChosenOptions = filteredTaskData[newIndex].chosen || [];
-        setChosenOptions(newChosenOptions);
-        const storedChosenOptions = localStorage.getItem(
-          `chosenOptions-${taskInfo.task_id}-${newIndex}`
+        const newTriple = filteredTaskData[newIndex].triple || {
+          subject: "",
+          object: "",
+          relation: "",
+        };
+        setTriple(newTriple);
+        const storedTriple = localStorage.getItem(`triple-${taskInfo.task_id}-${newIndex}`);
+        setTriple(
+          storedTriple ? JSON.parse(storedTriple) : { subject: "", object: "", relation: "" }
         );
-        setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
         const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
@@ -312,12 +319,16 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
 
       setCurrentProblemIndex((prevState: number) => {
         const newIndex = prevState + 1;
-        const newchosenOptions = filteredTaskData[newIndex].chosen || [];
-        setChosenOptions(newchosenOptions);
-        const storedChosenOptions = localStorage.getItem(
-          `chosenOptions-${taskInfo.task_id}-${newIndex}`
+        const newTriple = filteredTaskData[newIndex].triple || {
+          subject: "",
+          object: "",
+          relation: "",
+        };
+        setTriple(newTriple);
+        const storedTriple = localStorage.getItem(`triple-${taskInfo.task_id}-${newIndex}`);
+        setTriple(
+          storedTriple ? JSON.parse(storedTriple) : { subject: "", object: "", relation: "" }
         );
-        setChosenOptions(storedChosenOptions ? JSON.parse(storedChosenOptions) : []);
 
         const storedTimer = localStorage.getItem(`lastSaveTime-${taskInfo.task_id}-${newIndex}`);
         setTimer(storedTimer ? JSON.parse(storedTimer) : 0);
@@ -332,7 +343,7 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
     console.log("Loading...");
     return <Spin tip="Loading..." />;
   }
-  if (taskInfo.template === "TextClassification" || taskInfo.template === "ImagesClassification") {
+  if (taskInfo.template === "TextTriple") {
     return (
       <div>
         <Steps current={currentProblemIndex}>
@@ -365,16 +376,49 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
         </div>
         <Divider />
         <div>{currentProblem && currentProblem.description}</div>
-        {currentProblem &&
-          currentProblem.options.map((option, index) => (
-            <Checkbox
-              key={index}
-              checked={chosenOptions[index]}
-              onChange={handleCheckboxChange(index)}
-            >
-              {taskInfo.template === "ImagesClassification" ? <MyImage url={option} /> : option}
-            </Checkbox>
-          ))}
+        <Divider />
+        <div>{currentProblem && currentProblem.text}</div>
+        <Form>
+          <Form.Item
+            validateStatus={tripleStatus.subject === "error" ? "error" : ""}
+            help={tripleStatus.subject === "error" ? "主体字符串未在给定字符串中出现" : ""}
+          >
+            <Input
+              style={{ marginLeft: 8 }}
+              value={triple.subject || ""}
+              onChange={handleSubjectChange}
+              placeholder="请输入主体"
+              allowClear
+              maxLength={20}
+              disabled={!(currentProblem && currentProblem.text)}
+            />
+          </Form.Item>
+          <Form.Item
+            validateStatus={tripleStatus.object === "error" ? "error" : ""}
+            help={tripleStatus.object === "error" ? "对象字符串未在给定字符串中出现" : ""}
+          >
+            <Input
+              style={{ marginLeft: 8 }}
+              value={triple.object || ""}
+              onChange={handleObjectChange}
+              placeholder="请输入对象"
+              allowClear
+              maxLength={20}
+              disabled={!(currentProblem && currentProblem.text)}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Input
+              style={{ marginLeft: 8 }}
+              value={triple.relation || ""}
+              onChange={handleRelationChange}
+              placeholder="请输入关系"
+              allowClear
+              maxLength={20}
+            />
+          </Form.Item>
+        </Form>
+
         <Divider />
         <div>
           <Space>
@@ -417,4 +461,4 @@ const ClassificationComponent: React.FC<TaskInfo> = (taskInfo) => {
   }
 };
 
-export default ClassificationComponent;
+export default TripleComponent;

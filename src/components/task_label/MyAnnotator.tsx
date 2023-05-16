@@ -20,7 +20,10 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
   const currentAnnotationRef = useRef<Annotation | null>(null);
   const annotationsRef = useRef<Annotation[]>(props.initialAnnotations ?? []);
 
-  const [annotations, setAnnotations] = useState<Annotation[]>(props.initialAnnotations ?? []);
+  const [annotations, setAnnotations] = useState<Annotation[]>(() => {
+    const newAnnotations = props.initialAnnotations ?? [];
+    return newAnnotations;
+  });
   const [currentAnnotation, setCurrentAnnotation] = useState<Annotation | null>(null);
   const [tools, setTools] = useState<string>(props.tools);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,11 +43,22 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
     left: 0,
     zIndex: 1,
   };
-  useEffect(() => { // clear the canvas when the URL changes(change problem)
+  useEffect(() => {
+    // clear the canvas when the URL changes(change problem)
     // Clear the annotations and the canvas when the URL changes
     clearAnnotations();
   }, [props.src]);
-
+  useEffect(() => {
+    console.log("init", props.initialAnnotations);
+    setAnnotations(props.initialAnnotations ?? []);
+    annotationsRef.current = props.initialAnnotations ?? [];
+    drawAnnotations();
+  }, [props.src]);
+  useEffect(() => {
+    console.log("first init", props.initialAnnotations);
+    setAnnotations(props.initialAnnotations ?? []);
+    drawAnnotations();
+  }, []);
   const drawAnnotations = () => {
     if (!canvasRef.current) {
       return;
@@ -161,9 +175,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         props.onChange(newAnnotations);
         return newAnnotations;
       });
-      
-    } 
-    else if (props.tools === "rectangle") {
+    } else if (props.tools === "rectangle") {
       isDrawingRef.current = true;
       currentAnnotationRef.current = {
         x: x,
@@ -316,6 +328,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
       canvasRef.current.width = size.width;
       canvasRef.current.height = size.height;
       console.log("width: ", size.width, "height: ", size.height);
+      drawAnnotations();
     }
   };
 
@@ -332,7 +345,7 @@ const ImageAnnotation = (props: ImageAnnotationProps) => {
         height="100%"
         width="100%"
       />
-      <canvas ref={canvasRef} style={{ ...annotationOverlayStyle /*border:"solid"*/ }} />
+      <canvas ref={canvasRef} style={{ ...annotationOverlayStyle, border: "solid" }} />
       <Divider />
       <div style={toolbarStyle}>
         <Radio.Group value={props.tools} disabled={true} buttonStyle="solid">

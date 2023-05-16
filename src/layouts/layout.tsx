@@ -25,6 +25,7 @@ import { MenuItem } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
+import MemberComponent from "@/components/user_vip";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -158,25 +159,12 @@ const MyLayout = (props: MyLayoutProps) => {
       >
         <div
           style={{
-            height: 70,
-            background: "rgba(255, 255, 255, 0.2)",
-            marginTop: "5px"
-          }}
-        >
-          <img src={"/logo/logo.png"} alt={"logo加载失败"} width={"100%"} height={"auto"}/>
-        </div>
-        <div style={{ height: "5%" }} />
-        <AntMenu
-          style={{
-            border: "none",
+            height: "100%",
+            zIndex: 9,
           }}
           theme="light"
-          defaultSelectedKeys={[router.pathname]}
-          mode="inline"
-          items={mapRole2Menu[props.role]}
-          onSelect={(e) => {
-            router.push(`${e.key}`);
-          }}
+          // collapsedWidth="0"
+          width={"17%"}
         />
       </Sider>
       <Layout className="site-layout" style={{
@@ -315,6 +303,9 @@ const MyLayout = (props: MyLayoutProps) => {
           style={{
             backgroundColor: "#ffffff",
           }}
+          width={"17%"}
+          theme="light"
+          // collapsedWidth="0"
         >
           <div
             style={{
@@ -326,19 +317,185 @@ const MyLayout = (props: MyLayoutProps) => {
               overflow: "auto"
             }}
           >
-            {props.children}
+            <img src={"/logo/logo.png"} alt={"logo加载失败"} width={"100%"} height={"auto"} />
           </div>
-          {/* <Breadcrumb style={{ margin: '16px 0' }}>
+          <div style={{ height: "5%" }} />
+          <AntMenu
+            style={{
+              border: "none",
+            }}
+            theme="light"
+            defaultSelectedKeys={[router.pathname]}
+            mode="inline"
+            items={mapRole2Menu[props.role]}
+            onSelect={(e) => {
+              router.push(`${e.key}`);
+            }}
+          />
+        </Sider>
+        <Layout
+          className="site-layout"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100vh",
+          }}
+        >
+          <Header
+            style={{
+              padding: 0,
+              background: "#3b5999",
+              height: "12vh",
+              width: "100%",
+              position: "sticky",
+              top: 0,
+              zIndex: 3,
+              boxShadow: "3px 3px 5px #00000038",
+            }}
+          >
+            <Row>
+              <Col span={8}>
+                <Button
+                  type="text"
+                  icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                  onClick={() => {
+                    setCollapsed((i) => !i);
+                  }}
+                  style={{
+                    fontSize: "25px",
+                    width: 80,
+                    height: "12vh",
+                    color: "white",
+                  }}
+                />
+              </Col>
+              <Col span={8}></Col>
+              <Col span={2}>
+                <MemberComponent />
+              </Col>
+              <Col span={2}>
+                <Button
+                  type="text"
+                  icon={<BellFilled />}
+                  style={{
+                    fontSize: "20px",
+                    // width: 80,
+                    height: "12vh",
+                    color: "white",
+                  }}
+                />
+              </Col>
+              <Col span={2}>
+                <Button
+                  type="text"
+                  onClick={(event) => {
+                    setAnchorEl(event.currentTarget);
+                  }}
+                  style={{
+                    fontSize: "25px",
+                    width: "12vh",
+                    height: 80,
+                  }}
+                  size="large"
+                  aria-controls={open ? "account-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                >
+                  <Avatar
+                    size="large"
+                    style={{
+                      backgroundColor: "rgb(33, 204, 73)",
+                    }}
+                    shape="square"
+                  >
+                    {mapRole2En[props.role]}
+                  </Avatar>
+                </Button>
+                <Menu
+                  open={open}
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  onClose={() => {
+                    setAnchorEl(null);
+                  }}
+                  onClick={() => {
+                    setAnchorEl(null);
+                  }}
+                  transformOrigin={{ horizontal: "left", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                      mt: 1.5,
+                      "& .MuiAvatar-root": {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      "&:before": {
+                        content: '""',
+                        display: "block",
+                        position: "absolute",
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: "background.paper",
+                        transform: "translateY(-50%) rotate(45deg)",
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      localStorage.clear();
+                      router.push("/");
+                    }}
+                  >
+                    <Logout />
+                    退出登录
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      router.push(`/${props.role}/info`);
+                    }}
+                  >
+                    <PersonOutlineOutlinedIcon />
+                    查看信息
+                  </MenuItem>
+                </Menu>
+              </Col>
+            </Row>
+          </Header>
+          <Content
+            style={{
+              backgroundColor: "#ffffff",
+              flex: 1,
+            }}
+          >
+            <div
+              style={{
+                padding: "20px",
+                borderRadius: "10px",
+                position: "relative",
+              }}
+            >
+              {props.children}
+            </div>
+            {/* <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>User</Breadcrumb.Item>
                         <Breadcrumb.Item>Bill</Breadcrumb.Item>
                     </Breadcrumb>
           <div style={{ padding: 24, minHeight: 360, background: colorBgContainer }}>
                         Bill is a cat.
                     </div> */}
-        </Content>
+        </Content> 
         <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
       </Layout>
-    </Layout>
     </Spin>
   );
 };

@@ -122,6 +122,7 @@ const Problem = (props: ProbelmProps) => {
     return (
       <>
         <h3 style={{ fontSize: "26px" }}>
+        <h3 style={{ fontSize: "26px" }}>
           第{props.index + 1}/{props.total}题: {props.problem.description}
         </h3>
         <CanvasImage
@@ -130,7 +131,7 @@ const Problem = (props: ProbelmProps) => {
           type="point"
         />
       </>
-    )
+    );
   } else if (props.problem.template == "ImageFrame") {
     return (<>
       <h3 style={{ fontSize: "26px" }}>
@@ -270,7 +271,7 @@ const Problem = (props: ProbelmProps) => {
           </Radio.Group>
         </>
       </>
-    )
+    );
   } else if (props.problem.template == "ImageReview") {
     return (
       <>
@@ -296,7 +297,7 @@ const Problem = (props: ProbelmProps) => {
           </Radio.Group>
         </>
       </>
-    )
+    );
   } else if (props.problem.template == "VideoReview") {
     return (<>
       <h3 style={{ fontSize: "26px" }}>
@@ -346,7 +347,7 @@ const Problem = (props: ProbelmProps) => {
       </>
     )
   } else {
-    return <>Error Task Template</>
+    return <>Error Task Template</>;
   }
 };
 
