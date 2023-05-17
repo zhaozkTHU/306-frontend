@@ -28,7 +28,6 @@ const Register = (props: RegisterProps) => {
   const [refrshing, setRefreshing] = useState<boolean>(false);
   const [isVerifyDisabled, setIsVerifyDisabled] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(60);
-  // const CarouselRef = useRef<any>(null);
   useEffect(() => {
     if (!isVerifyDisabled) {
       return;
@@ -356,7 +355,8 @@ const Register = (props: RegisterProps) => {
                   注册
                 </Button>
                 <Grid container>
-                  <Grid item xs></Grid>
+                  <Grid item xs>
+                  </Grid>
                   <Grid item>
                     <Button
                       type="link"
@@ -501,7 +501,6 @@ const Register = (props: RegisterProps) => {
                 </Button>
                 <Grid container>
                   <Grid item xs>
-                    <p></p>
                   </Grid>
                   <Grid item>
                     <Button

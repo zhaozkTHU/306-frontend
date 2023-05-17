@@ -282,7 +282,7 @@ const AdministratorCheckTask = () => {
             <Descriptions.Item label="模板" span={1}>
               {mapEntemplate2Zhtemplate[taskDetail.template]}
             </Descriptions.Item>
-            <Descriptions.Item label="单题奖励" span={1}>
+            <Descriptions.Item label="任务奖励" span={1}>
               {taskDetail.reward}
             </Descriptions.Item>
             <Descriptions.Item label="单题限时" span={1}>

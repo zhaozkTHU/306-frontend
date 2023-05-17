@@ -154,6 +154,7 @@ const Problem = (props: ProbelmProps) => {
             <Divider />
             <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
               {props.problem.choice.map((ch: any, idx: number) => (
+                <>
                 <Radio value={idx} key={idx}>
                   <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
                   <Divider type="vertical" />
@@ -163,6 +164,8 @@ const Problem = (props: ProbelmProps) => {
                       : "无输入"}
                   </>
                 </Radio>
+                <br/>
+                </> 
               ))}
             </Radio.Group>
           </>

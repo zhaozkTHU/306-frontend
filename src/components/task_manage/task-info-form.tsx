@@ -365,7 +365,7 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             </Col>
           </Space>
         </Row>
-        {template === "Custom" && (
+        {/* {template === "Custom" && (
           <Form.Item
             label="模板组合"
             name="templates"
@@ -379,7 +379,7 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
               onChange={(v) => console.log(v)}
             />
           </Form.Item>
-        )}
+        )} */}
         {!batch && (
           <Form.List name="task_data">
             {(dataFields, { add: dataAdd, remove: dataRemove }) => (

@@ -118,7 +118,7 @@ const Test = () => {
                     <Descriptions.Item label="任务模板" span={4}>
                       {mapEntemplate2Zhtemplate[newInfo.template]}
                     </Descriptions.Item>
-                    <Descriptions.Item label="单题奖励" span={2}>
+                    <Descriptions.Item label="任务奖励" span={2}>
                       {newInfo.reward}
                     </Descriptions.Item>
                     <Descriptions.Item label="单题限时" span={2}>
@@ -177,7 +177,7 @@ const Test = () => {
                     <Descriptions.Item label="任务模板" span={4}>
                       {mapEntemplate2Zhtemplate[labelInfo.template]}
                     </Descriptions.Item>
-                    <Descriptions.Item label="单题奖励" span={2}>
+                    <Descriptions.Item label="任务奖励" span={2}>
                       {labelInfo.reward}
                     </Descriptions.Item>
                     <Descriptions.Item label="单题限时" span={2}>

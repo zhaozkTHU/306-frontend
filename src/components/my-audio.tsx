@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Typography } from "antd";
+import { Spin, Typography } from "antd";
 
 const { Paragraph } = Typography;
 
@@ -12,7 +12,7 @@ interface MyAudioProps {
 
 const MyAudio = (props: MyAudioProps) => {
   const [audioUrl, setAudioUrl] = useState<string>("");
-
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     axios
       .get("/api/file", {
@@ -29,10 +29,17 @@ const MyAudio = (props: MyAudioProps) => {
       })
       .catch((error) => {
         console.error(error);
-      });
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   }, [props.url]);
 
-  return <audio src={audioUrl} controls={props.controls ?? true} />;
+  return (
+    <Spin spinning={loading} tip="音频加载中">
+      <audio src={audioUrl} controls={props.controls ?? true} style={{width: "100%"}}/>
+    </Spin>
+  );
 };
 
 export default MyAudio;

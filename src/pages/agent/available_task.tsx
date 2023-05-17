@@ -189,7 +189,7 @@ const AgentAvailableTask = () => {
           <Descriptions.Item label="要求标注方人数" span={2}>
             {detail.labeler_number}
           </Descriptions.Item>
-          <Descriptions.Item label="单题奖励" span={2}>
+          <Descriptions.Item label="任务奖励" span={2}>
             {detail.reward}
           </Descriptions.Item>
           <Descriptions.Item label="单题限时" span={2}>
