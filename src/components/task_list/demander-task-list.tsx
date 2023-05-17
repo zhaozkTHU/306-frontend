@@ -467,7 +467,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           <Descriptions.Item label="要求标注方人数" span={2}>
             {detail.labeler_number}
           </Descriptions.Item>
-          <Descriptions.Item label="单题奖励" span={2}>
+          <Descriptions.Item label="任务奖励" span={2}>
             {detail.reward}
           </Descriptions.Item>
           <Descriptions.Item label="单题限时" span={2}>
@@ -516,7 +516,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
             />
           </Form.Item>
-          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置单题奖励</p>
+          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置任务奖励</p>
           <Form.Item
             name="reward"
             rules={[
@@ -524,7 +524,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (value < 0) {
-                    return Promise.reject(new Error("单题不能为负数"));
+                    return Promise.reject(new Error("奖励不能为负数"));
                   }
                   return Promise.resolve();
                 },
@@ -535,7 +535,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               name="reward"
               fullWidth
               id="reward"
-              label="单题奖励"
+              label="任务奖励"
               autoFocus
               type="number"
             />

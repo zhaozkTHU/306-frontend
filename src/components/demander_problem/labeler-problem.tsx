@@ -42,7 +42,6 @@ const LabelerProblem = (props: LabelerProblemProps) => {
                   }
                 }
                 props.setProblemList(newProblems)
-                console.log(props.problemList)
               }}
             >
               {option}
@@ -63,7 +62,7 @@ const LabelerProblem = (props: LabelerProblemProps) => {
           {props.problemList[props.index].options.map((option: string, idx: number) => (
             <Col key={idx}>
               <Checkbox
-                checked={props.problemList[props.index].data[idx]}
+                checked={props.problemList[props.index].data && props.problemList[props.index].data[idx]}
                 onChange={(e) => {
                   const newProblems: any[] = [...props.problemList];
                   if (newProblems[props.index].data) {

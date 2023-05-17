@@ -167,7 +167,7 @@ const Label = (props: labelProps) => {
                 <Divider type="vertical" />
                 <Tooltip title="点击此处点击此处撤销上一次的标注，仅对框选和打点有效">
                   <Button onClick={() => {
-                    if(problemList[problemIndex].data){
+                    if((problemList[problemIndex].template==="FaceTag"||problemList[problemIndex].template==="ImageFrame")&&problemList[problemIndex].data){
                       const newProblems = [...problemList]
                       newProblems[problemIndex].data.pop();
                       setProblemList(newProblems);
@@ -179,7 +179,7 @@ const Label = (props: labelProps) => {
                 <Divider type="vertical" />
                 <Tooltip title="点击此处点击此处清空标注，仅对框选和打点有效">
                   <Button onClick={() => {
-                    if(problemList[problemIndex].data){
+                    if((problemList[problemIndex].template==="FaceTag"||problemList[problemIndex].template==="ImageFrame")&&problemList[problemIndex].data){
                       const newProblems = [...problemList]
                       newProblems[problemIndex].data.length=0;
                       setProblemList(newProblems);
@@ -220,7 +220,7 @@ const Label = (props: labelProps) => {
                       }}
                       style={{
                         border: idx === problemIndex ? "solid rgb(32, 101, 221) 2px" : undefined,
-                        backgroundColor: tr(idx) < time ? "red" : (problemList[idx].data ? "green" : "orange"),
+                        backgroundColor: tr(idx) < time ? "red" : (problemList[idx].data!==undefined ? "green" : "orange"),
                         margin: 6
                       }}>
                       {idx + 1}

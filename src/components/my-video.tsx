@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Typography } from "antd";
+import { Spin, Typography } from "antd";
 
 const { Paragraph } = Typography;
 
@@ -13,7 +13,7 @@ interface MyVideoProps {
 
 const MyVideo = (props: MyVideoProps) => {
   const [videoUrl, setVideoUrl] = useState<string>("");
-
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     axios
       .get("/api/file", {
@@ -30,16 +30,21 @@ const MyVideo = (props: MyVideoProps) => {
       })
       .catch((error) => {
         console.error(error);
-      });
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   }, [props.url]);
 
   return (
-    <video
-      src={videoUrl}
-      controls={props.controls ?? true}
-      poster={props.poster}
-      style={props.style}
-    />
+    <Spin spinning={loading} tip="视频加载中">
+      <video
+        src={videoUrl}
+        controls={props.controls ?? true}
+        poster={props.poster}
+        style={{...props.style, width:"100%"}}
+      />
+    </Spin>
   );
 };
 

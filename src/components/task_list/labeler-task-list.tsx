@@ -182,7 +182,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
       render: (template) => mapEntemplate2Zhtemplate[template],
     },
     {
-      title: "单题奖励",
+      title: "任务奖励",
       dataIndex: "reward",
       key: "reward",
       align: "center",
@@ -391,7 +391,7 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
           <Descriptions.Item label="模板" span={4}>
             {mapEntemplate2Zhtemplate[detail.template]}
           </Descriptions.Item>
-          <Descriptions.Item label="单题奖励" span={4}>
+          <Descriptions.Item label="任务奖励" span={4}>
             {detail.reward}
           </Descriptions.Item>
           <Descriptions.Item label="单题限时" span={4}>
