@@ -113,6 +113,11 @@ const MemberComponent = () => {
     });
   };
   const handleConfirmedBuyExperience = () => {
+    if(exchangeValue <= 0 || !(exchangeValue === 100 || exchangeValue === 200 || exchangeValue === 500)) {
+      message.error(`不合法的经验包大小: ${exchangeValue} Exp`);
+      return;
+    }
+    setWaitLoading(true);
     axios
       .post(
         "/api/exp",
@@ -122,11 +127,14 @@ const MemberComponent = () => {
       .then((response) => {
         setAccountInfo(response.data);
         setBuyExpModal(false);
+        setWaitLoading(false);
         fetchAccountInfo();
         message.success("经验兑换成功");
       })
       .catch((error) => {
         console.error(error);
+        message.error(`兑换失败: ${error.message}`);
+        setWaitLoading(false);
       });
   };
 
@@ -202,6 +210,7 @@ const MemberComponent = () => {
 
       {showModal && (
         <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null} width={600}>
+          <Spin spinning={waitLoading}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Space>
             <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '24px' }}>
@@ -264,7 +273,7 @@ const MemberComponent = () => {
           <Row justify="center">
             <Space >
               {/* <InputNumber min={1} max={accountInfo && accountInfo.points} onChange={value => setExchangeValue(value || 0)} /> */}
-              {(waitLoading) ? <Spin tip="Waitng..."/> :
+              {/* {(waitLoading) ? <Spin tip="Waitng..."/> : */}
               <Select
                 value={exchangeValue}
                 onChange={(value: number) => setExchangeValue(value)}
@@ -279,7 +288,7 @@ const MemberComponent = () => {
                 <Option value={500} disabled={accountInfo && accountInfo.points < 500}>
                   500 Exp 包
                 </Option>
-              </Select>}
+              </Select>
               <Button 
                 disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} 
                 onClick={buyExperience}
@@ -300,7 +309,6 @@ const MemberComponent = () => {
           <Divider/>
           <Row justify="center">
             <Space>
-              {(waitLoading) ? <Spin tip="Waitng..."/> :
               <Select
                 value={vipTime}
                 onChange={(value: number) => setVipTime(value)}
@@ -315,7 +323,7 @@ const MemberComponent = () => {
                 <Option value={60} disabled={accountInfo && accountInfo.points < 15}>
                   60s 流量包
                 </Option>
-              </Select>}
+              </Select>
               <Button 
                 disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} 
                 onClick={buyVipTime}
@@ -333,6 +341,7 @@ const MemberComponent = () => {
               </Tooltip>
             </Space>
           </Row>
+          </Spin>
         </Modal>
       )}
 
