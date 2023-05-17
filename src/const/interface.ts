@@ -312,6 +312,7 @@ export const mapTag2Zh: Entag2Zh = {
 };
 
 export interface Announcement {
+  announce_id?: number;
   admin_name: string;
   key: boolean;
   label: Label;

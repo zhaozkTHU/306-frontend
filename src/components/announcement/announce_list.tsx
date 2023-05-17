@@ -5,8 +5,11 @@ import { Announcement, Label, mapLabel } from "@/const/interface";
 
 const { Title } = Typography;
 const { Option } = Select;
+interface AnnouncementListProps {
+    isAdmin: boolean;
+}
 
-export const AnnouncementList = () => {
+export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) => {
     const sampleAnnouncements = [
         {
           admin_name: 'Admin1',
@@ -78,6 +81,26 @@ export const AnnouncementList = () => {
     setOpen(false);
   };
 
+  const handleEdit = async (record: Announcement) => {
+    try {
+      await axios.post("/announcement", { id: record.key, announcement: record });
+      // 在这里，我假设公告的 ID 存储在 key 属性中。
+      // 在请求成功后，你可能需要刷新数据。
+    } catch (error) {
+      // 处理错误
+    }
+  };
+  
+  const handleDelete = async (record: Announcement) => {
+    try {
+      await axios.post("/delete_announce", { id: record.key });
+      // 在请求成功后，你可能需要刷新数据。
+    } catch (error) {
+      // 处理错误
+    }
+  };
+  
+
   const columns = [
     {
       title: "Title",
@@ -112,6 +135,18 @@ export const AnnouncementList = () => {
       dataIndex: "time",
       key: "time",
     },
+    {
+        title: "Actions",
+        key: "actions",
+        render: (text: string, record: Announcement) => (
+          isAdmin && (
+            <Space size="middle">
+              <a onClick={() => handleEdit(record)}>修改</a>
+              <a onClick={() => handleDelete(record)}>删除</a>
+            </Space>
+          )
+        ),
+      },
   ];
 
   let filteredData = data;
