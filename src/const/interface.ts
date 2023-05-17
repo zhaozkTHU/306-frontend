@@ -94,8 +94,6 @@ export interface TaskInfo {
     | "VideoReview"
     | "AudioReview"
     | "Custom";
-  /** 仅在`template`为`Custom`时非空 */
-  templates?: string[];
   reward: number;
   time: number;
   labeler_number: number;
