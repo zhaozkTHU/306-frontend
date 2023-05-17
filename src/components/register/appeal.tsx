@@ -52,7 +52,7 @@ const Appeal = (props: AppealProps) => {
   };
 
   const postAppeal = async(username: string, email: string, description: string, captcha: string) => {
-    request("/api/reset_password", "POST", {
+    request("/api/appeal", "POST", {
       username: username,
       email: email,
       description: description,

@@ -106,7 +106,7 @@ const CheckModel = (props: CheckModelProps) => {
               <div
                 style={{
                   overflowY: "auto",
-                  height: "36vh",
+                  height: "37vh",
                   border: checkResult[problemIndex]
                     ? "dotted rgb(33, 198, 39)"
                     : "dotted rgb(221, 180, 32)",
@@ -241,7 +241,7 @@ const CheckModel = (props: CheckModelProps) => {
           </Row>
           <Divider />
           <Divider>各题情况</Divider>
-          <div style={{ overflowY: "auto", height: "40vh" }}>
+          <div style={{ overflowY: "auto", height: "45vh" }}>
             <Row>
               {result.map((_, idx) => (
                 <Col key={idx}>

@@ -101,7 +101,10 @@ export default function LoginScreen(props: LoginScreenPorps) {
       </Modal>
 
       <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null} destroyOnClose>
-        <Spin spinning={faceModalLoading}>
+        <Spin spinning={faceModalLoading} tip="图片上传中，请稍候">
+          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+            脸部识别登录
+          </Typography>
           <CameraButton
             fileName="face.jpg"
             onFinish={(faceImg) => {
@@ -137,7 +140,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
         footer={null}
         destroyOnClose
       >
-        <Appeal setrefreshing={(setRefreshing)}/>
+        <Appeal setrefreshing={(setRefreshing)} />
       </Modal>
 
       <Grid container component="main" sx={{ height: "100vh" }}>
