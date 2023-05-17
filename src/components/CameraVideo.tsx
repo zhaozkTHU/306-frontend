@@ -10,7 +10,6 @@ const CameraVideo: React.FC<{
   const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
-    console.log("close")
     const video = videoRef.current;
     const constraints: MediaStreamConstraints = { audio: false, video: true };
     navigator.mediaDevices
@@ -25,10 +24,17 @@ const CameraVideo: React.FC<{
         console.error(err);
         message.error("获取摄像头失败");
       });
-      return () => {
-        (videoRef.current?.srcObject as MediaStream)?.getTracks().forEach((track) => track.stop());
-      }  
-  })
+    return () => {
+      const stream = videoRef.current?.srcObject as MediaStream;
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+        videoRef.current.src = "";
+      }
+    };
+  });
 
   const handleOk = () => {
     const canvas = canvasRef.current;
