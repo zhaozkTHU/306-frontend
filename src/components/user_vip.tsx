@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider, Avatar } from 'antd';
+import { Typography, Card,Statistic, Button, Modal, Progress, message, InputNumber, Tag, Space, Tooltip, Spin, Select, Divider, Avatar, Row, Col } from 'antd';
 import { 
   SketchOutlined,
   SketchCircleFilled,
   ClockCircleFilled,
   CrownOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
+  UserOutlined,
+  HourglassTwoTone,
+  FieldTimeOutlined,
+  RocketOutlined,
+  ThunderboltOutlined,
+  StarFilled,
+  GoldOutlined
 } from "@ant-design/icons";
 import styles from './vip.module.css';
 import axios from 'axios';
@@ -33,13 +40,15 @@ const MemberComponent = () => {
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null); // Using ref to hold the intervalId
 
   const [showModal, setShowModal] = useState(false);
-  const [helpModal, setHelpModal] = useState(false); 
+  const [helpModal_1, setHelpModal_1] = useState(false); 
+  const [helpModal_2, setHelpModal_2] = useState(false); 
   const [buyExpModal, setBuyExpModal] = useState(false);
   const [buyTimeModal, setBuyTimeModal] = useState(false);
-  const [exchangeValue, setExchangeValue] = useState(0);
+  const [exchangeValue, setExchangeValue] = useState<number>(100);
   const [vipTime, setVipTime] = useState<number>(15);
   const token = localStorage.getItem("token");
   const { Option } = Select;
+  const { Title } = Typography;
 
   useEffect(() => {
     fetchAccountInfo();
@@ -57,8 +66,10 @@ const MemberComponent = () => {
         console.log('Now:', new Date(Date.now()))
         console.log(`Time difference in seconds: ${diffSec}`); // 打印时间差，单位为秒
         if (now >= vipExpiry) {
-          setTimer("流量包已不可用");
-          message.warning("流量包已过期");
+          setTimer(accountInfo.level === "diamond"?"永久享受最低流量限制":"流量包已不可用");
+          if (!(accountInfo.level === "diamond")) {
+            message.info("流量包已过期");
+          }
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
         } else {
           const diffSec = Math.floor((vipExpiry - now) / 1000);
@@ -92,6 +103,21 @@ const MemberComponent = () => {
       });
   };
   const buyExperience = () => {
+    Modal.confirm({
+      title: "确认兑换",
+      content: `确定要兑换 ${exchangeValue} 点经验吗？`,
+      onOk: handleConfirmedBuyExperience,
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
+    });
+  };
+  const handleConfirmedBuyExperience = () => {
+    if(exchangeValue <= 0 || !(exchangeValue === 100 || exchangeValue === 200 || exchangeValue === 500)) {
+      message.error(`不合法的经验包大小: ${exchangeValue} Exp`);
+      return;
+    }
+    setWaitLoading(true);
     axios
       .post(
         "/api/exp",
@@ -101,18 +127,21 @@ const MemberComponent = () => {
       .then((response) => {
         setAccountInfo(response.data);
         setBuyExpModal(false);
+        setWaitLoading(false);
         fetchAccountInfo();
-        message.success("经验购买成功");
+        message.success("经验兑换成功");
       })
       .catch((error) => {
         console.error(error);
+        message.error(`兑换失败: ${error.message}`);
+        setWaitLoading(false);
       });
   };
 
   const buyVipTime = () => {
     Modal.confirm({
-      title: "确认购买",
-      content: `确定要购买 ${vipTime}s 流量包吗？`,
+      title: "确认开通",
+      content: `确定要开通 ${vipTime}s 流量包吗？`,
       onOk: handleConfirmedBuyVipTime,
       onCancel: () => {
         Modal.destroyAll(); // 关闭所有弹窗
@@ -159,7 +188,7 @@ const MemberComponent = () => {
     <div>
       <Tooltip title={
         <span>
-          <ClockCircleFilled /> {timer}
+          <FieldTimeOutlined /> {timer}
         </span>
       }>
         <Button
@@ -180,36 +209,158 @@ const MemberComponent = () => {
       </Tooltip>
 
       {showModal && (
-        <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null}>
-          <Avatar
-            size={60}
-            style={{
-              backgroundColor: "rgb(243, 196, 41)",
-              fontSize: 35,
-            }}
-          >
-            {accountInfo.username[0]}
-          </Avatar>
-          <h2>{accountInfo.username}</h2>
-          <Tag color={mapLevel2Zh[accountInfo.level].color}>
-            会员等级: {mapLevel2Zh[accountInfo.level].name}
-          </Tag>
-          <p>点数: {accountInfo.points}</p>
-          <p>经验: <Progress size="small" percent={getLevelProgress(accountInfo.level)} type="circle" /></p>
-          <Space >
-            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyExpModal(true)}>购买经验</Button>
-            <Button disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} onClick={() => setBuyTimeModal(true)}>购买流量包</Button>
-          </Space>
+        <Modal open={showModal} onCancel={() => setShowModal(false)} footer={null} width={600}>
+          <Spin spinning={waitLoading}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Space>
+            <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '24px' }}>
+              会员中心
+            </div>
+            {(accountInfo.level === "diamond" || vipExpiry-Date.now()>=0) ? (
+              <CrownOutlined className={styles.rainbow} style={{ fontSize: '30px' }} />
+              ) : (
+              <CrownOutlined style={{ color: getColor(accountInfo.level), fontSize: '30px' }} />
+            )}
+            </Space>
+          </div>
+          <Divider/>
+          <Row gutter={16} justify="space-around" style={{ display: 'flex', alignItems: 'center' }}>
+            <Col style={{ textAlign: 'center' }}>
+              <Avatar
+                size={60}
+                style={{
+                    backgroundColor: "rgb(243, 196, 41)",
+                    fontSize: 35,
+                }}
+              >
+                {accountInfo.username[0]}
+              </Avatar>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Space>
+                  <UserOutlined />
+                  <h2>{accountInfo.username}</h2>
+                  <Tag color={mapLevel2Zh[accountInfo.level].color}>
+                    {mapLevel2Zh[accountInfo.level].name}
+                  </Tag>
+                </Space> 
+              </div>
+            </Col>
+            <Col style={{ textAlign: 'center' }} span={8} >
+              <Statistic
+                title="点数余额"
+                value={accountInfo.points}
+                prefix={<GoldOutlined style={{ color: 'gold' }} />}
+              />
+              <Divider/>
+              <HourglassTwoTone /> {timer}
+            </Col>
+            <Col style={{ textAlign: 'center' }} span={8}>
+            <Progress
+              size={[100, 30]}
+              percent={getLevelProgress(accountInfo.level)}
+              type="circle"
+              strokeColor={{'0%': '#108ee9','100%': '#87d068'}}
+              format={(percent) => (
+                <>
+                  <div style={{ fontSize: '10px' }}>经验</div>
+                  <div>{percent?.toFixed(0)}%</div>
+                </>
+              )}
+            />
+            </Col>
+          </Row>
+          <Divider />
+          <Row justify="center">
+            <Space >
+              {/* <InputNumber min={1} max={accountInfo && accountInfo.points} onChange={value => setExchangeValue(value || 0)} /> */}
+              {/* {(waitLoading) ? <Spin tip="Waitng..."/> : */}
+              <Select
+                value={exchangeValue}
+                onChange={(value: number) => setExchangeValue(value)}
+                placeholder="选择经验包大小"
+              >
+                <Option value={100} disabled={accountInfo && accountInfo.points < 100}>
+                  100 Exp 包
+                </Option>
+                <Option value={200} disabled={accountInfo && accountInfo.points < 200}>
+                  200 Exp 包
+                </Option>
+                <Option value={500} disabled={accountInfo && accountInfo.points < 500}>
+                  500 Exp 包
+                </Option>
+              </Select>
+              <Button 
+                disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} 
+                onClick={buyExperience}
+                icon={<RocketOutlined />}
+              >
+                兑换经验包
+              </Button>
+              <Tooltip title="什么是经验包">
+                <Button
+                  type="text"
+                  size="small"
+                  onClick={() => {setHelpModal_1(true);}}
+                  icon={<QuestionCircleOutlined />}
+                />
+              </Tooltip>
+            </Space>
+          </Row>
+          <Divider/>
+          <Row justify="center">
+            <Space>
+              <Select
+                value={vipTime}
+                onChange={(value: number) => setVipTime(value)}
+                placeholder="选择流量包时长"
+              >
+                <Option value={15} disabled={accountInfo && accountInfo.points < 5}>
+                  15s 流量包
+                </Option>
+                <Option value={30} disabled={accountInfo && accountInfo.points < 9}>
+                  30s 流量包
+                </Option>
+                <Option value={60} disabled={accountInfo && accountInfo.points < 15}>
+                  60s 流量包
+                </Option>
+              </Select>
+              <Button 
+                disabled={accountInfo && (accountInfo.points <= 0 || accountInfo.level === "Diamond")} 
+                onClick={buyVipTime}
+                icon={<ThunderboltOutlined />}
+              >
+                开通流量包
+              </Button>
+              <Tooltip title="什么是流量包">
+                <Button
+                  type="text"
+                  size="small"
+                  onClick={() => {setHelpModal_2(true);}}
+                  icon={<QuestionCircleOutlined />}
+                />
+              </Tooltip>
+            </Space>
+          </Row>
+          </Spin>
         </Modal>
       )}
 
-      { buyExpModal && (
-        <Modal onCancel={() => setBuyExpModal(false)} onOk={buyExperience} open={buyExpModal} title="购买经验">
-          <InputNumber min={1} max={accountInfo && accountInfo.points} onChange={value => setExchangeValue(value || 0)} />
+      { helpModal_1 && (
+        <Modal onCancel={() => setHelpModal_1(false)} open={helpModal_1} title={"流量包"} footer={null}>
+          <p>
+            各会员等级升级所需经验<b>不同</b>，会员等级提升可以<b>永久享受</b>流量限制降低
+          </p>
+          <p>
+            您当前的等级是: <b>{mapLevel2Zh[accountInfo.level].name}</b>, 还需要 <span style={{ color: "red" }}>{mapLevel2Exp[accountInfo.level]-accountInfo.exp}</span> Exp 才能升级
+          </p>
+          <p>
+            目前提供三种大小的经验包: <b>100 Exp</b>, <b>200 Exp</b>, <b>500 Exp</b>, 经验和点数<span style={{ color: "red" }}>1:1</span>兑换
+          </p>
         </Modal>
       )}
-      { helpModal && buyTimeModal && (
-        <Modal onCancel={() => setHelpModal(false)} onOk={() => setHelpModal(false)} open={helpModal} title={"流量包"}>
+
+      { helpModal_2 && (
+        <Modal onCancel={() => setHelpModal_2(false)} open={helpModal_2} title={"流量包"} footer={null}>
           <p>
             不同的会员等级对应不同的流量限制，低等级会员购买流量包可以<b>暂时</b>获得<span style={{ color: "red" }}>钻石级别</span>流量限制
           </p>
@@ -220,38 +371,7 @@ const MemberComponent = () => {
             目前提供三种时长的流量包: <b>15s</b>, <b>30s</b>, <b>60s</b>, 分别需要消耗 <b>5</b>, <b>9</b>, <b>15</b> 点数
           </p>
         </Modal>
-      )}
-
-      { buyTimeModal && (
-        <Modal onCancel={() => setBuyTimeModal(false)} onOk={buyVipTime} open={buyTimeModal} title={"购买流量包"}>
-          <Tooltip title="什么是流量包">
-            <Button
-              type="text"
-              size="small"
-              onClick={() => {
-                setHelpModal(true);
-              }}
-              icon={<QuestionCircleOutlined />}
-            />
-          </Tooltip>
-          {(waitLoading) ? <Spin tip="Waitng..."/> :
-          <Select
-            value={vipTime}
-            onChange={(value: number) => setVipTime(value)}
-            placeholder="选择流量包时长"
-          >
-            <Option value={15} disabled={accountInfo && accountInfo.points < 5}>
-              15s 流量包
-            </Option>
-            <Option value={30} disabled={accountInfo && accountInfo.points < 9}>
-              30s 流量包
-            </Option>
-            <Option value={60} disabled={accountInfo && accountInfo.points < 15}>
-              60s 流量包
-            </Option>
-          </Select>}
-        </Modal>
-      )}
+      )} 
     </div>
   );
 };

@@ -49,6 +49,7 @@ const getBase64 = (file: File): Promise<string> =>
   });
 
 const downloadTemplate = (type: TaskInfo["template"], templates: TaskInfo["templates"]) => {
+  console.log(type, templates);
   if (type === undefined) {
     message.error("请先选择模板");
     return;
@@ -59,10 +60,12 @@ const downloadTemplate = (type: TaskInfo["template"], templates: TaskInfo["templ
     link.download = `${value}.xlsx`;
     link.click();
   });
-  const link = document.createElement("a");
-  link.href = `/template/${type}.xlsx`;
-  link.download = `${type}.xlsx`;
-  link.click();
+  if (type !== "Custom") {
+    const link = document.createElement("a");
+    link.href = `/template/${type}.xlsx`;
+    link.download = `${type}.xlsx`;
+    link.click();
+  }
 };
 
 const selectOptions: SelectProps<TaskInfo["template"]>["options"] = [
@@ -136,13 +139,13 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
         deadline: dayjs(props.taskInfo.deadline) as any,
         batch_file: props.taskInfo.batch_file
           ? ([
-              {
-                uid: 1,
-                name: props.taskInfo.batch_file,
-                status: "done",
-                url: props.taskInfo.batch_file,
-              },
-            ] as any)
+            {
+              uid: 1,
+              name: props.taskInfo.batch_file,
+              status: "done",
+              url: props.taskInfo.batch_file,
+            },
+          ] as any)
           : undefined,
       });
     }
@@ -372,7 +375,7 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
               mode="multiple"
               allowClear
               placeholder="选择模板组合"
-              options={selectOptions}
+              options={selectOptions.filter((option) => option.value !== "Custom")}
               onChange={(v) => console.log(v)}
             />
           </Form.Item>
@@ -442,8 +445,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
                       模板并按规范提交
                       <Collapse size="small" ghost >
                         <Collapse.Panel header="填写规范" key={1} >
-                        下载文件后，请不要修改excel文件的页的名字以及excel文件名，填入题目时，请不要出现空行。在上传时
-                        ，请将所有相关文件打包成一个zip文件，文件名只能包含字母数字和下划线。
+                          下载文件后，请不要修改excel文件的页的名字以及excel文件名，填入题目时，请不要出现空行。在上传时
+                          ，请将所有相关文件打包成一个zip文件，文件名只能包含字母数字和下划线。
                         </Collapse.Panel>
                       </Collapse>
                     </>
