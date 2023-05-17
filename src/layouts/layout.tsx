@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useRouter } from "next/router";
 import {
   QuestionCircleOutlined,
@@ -18,7 +18,7 @@ import {
   ClockCircleOutlined,
   PartitionOutlined
 } from "@ant-design/icons";
-import { Col, MenuProps, Row, Spin } from "antd";
+import { Col, MenuProps, Modal, Row, Spin, message } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
 import Menu from "@mui/material/Menu";
 import { MenuItem } from "@mui/material";
@@ -26,6 +26,8 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
 import MemberComponent from "@/components/user_vip";
+import CameraVideo from "@/components/CameraVideo";
+import axios from "axios";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -99,6 +101,7 @@ const MyLayout = (props: MyLayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [pageHead, setPageHead] = useState<string>("用户信息");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [faceModalOpen, setFaceModalOpen] = useState<boolean>(false);
   const open = Boolean(anchorEl);
   const {
     token: { colorBgContainer },
@@ -339,6 +342,32 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
           </Content>
+
+          <Modal open={faceModalOpen} onCancel={() => setFaceModalOpen(false)} >
+            <CameraVideo
+              fileName="face.jpg"
+              onFinish={(file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                axios.post("/api/user/face", formData,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    }
+                  }
+                )
+                  .then(() => {
+                    message.success("上传成功");
+                  })
+                  .catch((err) => {
+                    console.error(err);
+                    message.error(err?.response?.data?.message);
+                  });
+              }}
+            />
+          </Modal>
+          <Button type="link" onClick={() => setFaceModalOpen(true)} >人脸上传</Button>
+          
           <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
         </Layout>
       </Layout>
