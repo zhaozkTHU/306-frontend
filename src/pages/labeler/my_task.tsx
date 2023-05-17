@@ -2,7 +2,7 @@ import { mapEntemplate2Zhtemplate } from "@/const/interface";
 import { downLoadZip, request } from "@/utils/network";
 import { transTime } from "@/utils/valid";
 import { ProCard } from "@ant-design/pro-components"
-import { Button, Descriptions, Divider, Result, Spin, Tooltip, Upload, message } from "antd";
+import { Button, Descriptions, Divider, Form, Result, Spin, Tooltip, Upload, message } from "antd";
 import { useEffect, useState } from "react"
 import Label from "../../components/label";
 import { InboxOutlined } from "@ant-design/icons";
@@ -50,11 +50,7 @@ const Test = () => {
                   const problems = response.data.task.task_data;
                   if (res.data.answer.length !== 0) {
                     for (let i = 0; i < problems.length; i++) {
-                      if (problems[i].template === "TextClassification" || problems[i].template === "ImagesClassification") {
-                        problems[i].chosen = res.data.answer[i].chosen
-                      } else {
                         problems[i].data = res.data.answer[i].data
-                      }
                     }
                   }
                   setProblemList(problems);
@@ -92,6 +88,27 @@ const Test = () => {
         setRefreshing(true);
       })
   }
+
+  const postBatch = async(answer: string) => {
+    request("/api/batch_load", "POST", {
+      answer: answer
+    })
+    .then(() => {
+      message.success("批量标注结果提交成功")
+    })
+    .catch((error) => {
+      if (error.response) {
+        message.error(`上传失败，${error.response.data.message}`);
+      } else {
+        message.error("上传失败，网络错误");
+      }
+    })
+    .finally(() => {
+      setLoading(false);
+      setRefreshing(true);
+    })
+  }
+
   return (
     labeling ?
       (<Label setLabeling={setLabeling} problemList={problemList} task_id={labelInfo.task_id} template={labelInfo.template}
@@ -188,26 +205,67 @@ const Test = () => {
                     </Descriptions.Item>
                   </Descriptions>
                   <Divider />
-                  <Dragger
-                    action="/api/batch_load"
-                    headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
-                    maxCount={1}
-                  >
-                    <p className="ant-upload-drag-icon">
-                      <InboxOutlined />
-                    </p>
-                    <p className="ant-upload-text">将你带标注的Excel文件在这里上传</p>
-                  </Dragger>
-                  <br />
-                  <Button size="large" style={{
-                    backgroundColor: "#3b5999",
-                    color: "white"
-                  }}
-                    block
-                    onClick={() => {
-                      setLabeling(true)
+                  <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={(values) => {
+                      // console.log(values.batch_file[0].response.url);
+                      setLoading(true);
+                      postBatch(values.batch_file[0].response.url);
                     }}
-                  >开始逐题标注</Button>
+                    autoComplete="off"
+                  >
+                    <Form.Item
+                      name="batch_file"
+                      valuePropName="fileList"
+                      getValueFromEvent={(e) => e?.fileList}
+                      rules={[{ required: true, message: "请上传压缩包" }]}
+                    >
+                      <Dragger
+                        action="/api/file"
+                        headers={{ Authorization: `Bearer ${localStorage.getItem("token")}` }}
+                        maxCount={1}
+                        beforeUpload={() => {
+                          setLoading(true);
+                          return true;
+                        }}
+                        onChange={(info) => {
+                          if (info.file.status === "done") {
+                            setLoading(false);
+                            message.success("上传成功");
+                          } else if (info.file.status === "error") {
+                            setLoading(false);
+                            message.error("上传失败");
+                          }
+                        }}
+                      >
+                        <p className="ant-upload-drag-icon">
+                          <InboxOutlined />
+                        </p>
+                        <p className="ant-upload-text">将你带标注的Excel文件在这里上传</p>
+                      </Dragger>
+                    </Form.Item>
+                    <Form.Item>
+                      <Button style={{
+                        backgroundColor: "#3b5999",
+                        color: "white"
+                      }} size="large"
+                        type="primary"
+                        htmlType="submit"
+                      >
+                        上传批量标注数据
+                      </Button>
+                      <Divider type="vertical" />
+                      <Button size="large" style={{
+                        backgroundColor: "#3b5999",
+                        color: "white"
+                      }}
+                        onClick={() => {
+                          setLabeling(true)
+                        }}
+                      >开始逐题标注</Button>
+                    </Form.Item>
+                  </Form>
                 </>
                 :
                 <Result

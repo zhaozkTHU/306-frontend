@@ -79,7 +79,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   });
   const [redistributeModalOpen, setRedistributeModalOpen] = useState<boolean>(false);
   const auto_check = async (task_id: number, credits: number, accuracy: number) => {
-    request("/api/get_agent", "POST", {
+    request("/api/demander/auto_check", "POST", {
       task_id: task_id,
       credits: credits,
       accuracy: accuracy,
@@ -315,7 +315,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             </Tag>
           </Space>
         );
-      }, 
+      },
     },
   ]
 
@@ -474,10 +474,10 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             {detail.time}秒
           </Descriptions.Item>
           <Descriptions.Item label="分发方式" span={2}>
-            {detail.distribute==="system"?(detail.distribute_type==="order"?"系统-顺序分发":"系统-智能分发"):("中介: " + detail.agent_username)}
+            {detail.distribute === "system" ? (detail.distribute_type === "order" ? "系统-顺序分发" : "系统-智能分发") : ("中介: " + detail.agent_username)}
           </Descriptions.Item>
           <Descriptions.Item label="类型标签" span={2}>
-          <Tag color="cyan">{detail.type ? mapTag2Zh[detail.type] : "暂无标签"}</Tag>
+            <Tag color="cyan">{detail.type ? mapTag2Zh[detail.type] : "暂无标签"}</Tag>
           </Descriptions.Item>
         </Descriptions>
         <h3>题目详情</h3>
