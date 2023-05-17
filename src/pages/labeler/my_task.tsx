@@ -50,7 +50,7 @@ const Test = () => {
                   const problems = response.data.task.task_data;
                   if (res.data.answer.length !== 0) {
                     for (let i = 0; i < problems.length; i++) {
-                        problems[i].data = res.data.answer[i].data
+                      problems[i].data = res.data.answer[i].data
                     }
                   }
                   setProblemList(problems);
@@ -89,24 +89,24 @@ const Test = () => {
       })
   }
 
-  const postBatch = async(answer: string) => {
+  const postBatch = async (answer: string) => {
     request("/api/batch_load", "POST", {
       answer: answer
     })
-    .then(() => {
-      message.success("批量标注结果提交成功")
-    })
-    .catch((error) => {
-      if (error.response) {
-        message.error(`上传失败，${error.response.data.message}`);
-      } else {
-        message.error("上传失败，网络错误");
-      }
-    })
-    .finally(() => {
-      setLoading(false);
-      setRefreshing(true);
-    })
+      .then(() => {
+        message.success("批量标注结果提交成功")
+      })
+      .catch((error) => {
+        if (error.response) {
+          message.error(`上传失败，${error.response.data.message}`);
+        } else {
+          message.error("上传失败，网络错误");
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+        setRefreshing(true);
+      })
   }
 
   return (
