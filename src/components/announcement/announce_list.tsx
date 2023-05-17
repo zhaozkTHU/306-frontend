@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Table, Select, Input, Space, Typography, Modal, Tag } from "antd";
+import { Table, Checkbox, Select, Input, Space, Typography, Modal, Tag, message, Button } from "antd";
 import axios from "axios";
 import { Announcement, Label, mapLabel } from "@/const/interface";
 
 const { Title } = Typography;
 const { Option } = Select;
+const { TextArea } = Input;
 interface AnnouncementListProps {
     isAdmin: boolean;
 }
@@ -43,63 +44,194 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
           time: Date.now() - 300000,
           title: '其他公告',
         },
-      ];
+    ];
       
-  const [data, setData] = useState<Array<Announcement>>(sampleAnnouncements);
+  const [data, setData] = useState<Array<Announcement>>(sampleAnnouncements); // list
+  const [loading, setLoading] = useState<boolean>(false);
+  const [editable, setEditable] = useState<boolean>(false);
+  const [currentAnnouncement, setCurrentAnnouncement] = useState<Announcement>(() => {
+    return ({
+      admin_name: '',
+      key: false,
+      label: Label.Other,
+      text: '',
+      time: Date.now(),
+      title: '',
+    });
+  });
+  const [newAnnouncement, setNewAnnouncement] = useState<Announcement>(() => {
+    return ({
+      admin_name: '',
+      key: false,
+      label: Label.Other,
+      text: '',
+      time: Date.now(),
+      title: '',
+    });
+  });
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [sortKey, setSortKey] = useState("time");
   const [label, setLabel] = useState<Label>(Label.All);
   const [open, setOpen] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [isNewAnnouncementModalOpen, setIsNewAnnouncementModalOpen] = useState(false); // New modal open state
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const result = await axios("GET/api/announcement");
-//       setData(result.data);
-//     };
-//     fetchData();
-//   }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => { // 获取最新列表
+    const token = localStorage.getItem("token");
+    setLoading(true);
+    axios
+      .get(
+        "/api/announcement",
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((response) => {
+        setData(response.data);
+        message.success("更新公告列表");
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("获取公告列表更新失败");
+        setLoading(false);
+      });
+  };
+
+  const handleUpload = () => { // 上传新创建公告
+    Modal.confirm({
+      title: "确认发布新公告",
+      content: "你确定要发布新公告吗？",
+      onOk: handleConfirmedUpload,
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
+    });
+  };
+  const handleConfirmedUpload = async () => {
+    const token = localStorage.getItem("token");
+    setLoading(true);
+    axios
+      .post(
+        "/api/announcement",
+        newAnnouncement,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        message.success("已发布！");
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("发布失败");
+        setLoading(false);
+      });
+  };
+
+  const handleDelete = () => { // 删除任务
+    Modal.confirm({
+      title: "确认删除",
+      content: "确认要删除该公告吗?",
+      onOk: handleConfirmedDelete,
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
+    });
+  };
+  const handleConfirmedDelete = async () => {
+    const token = localStorage.getItem("token");
+    setLoading(true);
+    axios
+      .delete(
+        "/api/announcement", { 
+            headers: { 
+                Authorization: `Bearer ${token}` 
+            },
+            params: { 
+                announce_id: currentAnnouncement.announce_id
+            },
+        }
+      )
+      .then(() => {
+        message.success("已上传！");
+        setLoading(false);
+        fetchData();
+        setEditable(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("提交数据失败");
+        setLoading(false);
+      });
+  };
+  const handleChange = () => { // 删除任务
+    Modal.confirm({
+      title: "确认更改",
+      content: "确认要更改公告吗?",
+      onOk: handleConfirmedChange,
+      onCancel: () => {
+        Modal.destroyAll(); // 关闭所有弹窗
+      },
+    });
+  };
+  const handleConfirmedChange = async () => {
+    const token = localStorage.getItem("token");
+    setLoading(true);
+    axios
+      .put(
+        "/api/announcement", {
+            announcement_id: currentAnnouncement.announce_id,
+            announcement: currentAnnouncement
+        },
+        { headers: { Authorization: `Bearer ${token}` }},
+      )
+      .then(() => {
+        message.success("已修改！");
+        setLoading(false);
+        fetchData();
+        setEditable(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("修改失败");
+        setLoading(false);
+      });
+  };
+  const handleNewAnnouncementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewAnnouncement({ ...newAnnouncement, [e.target.name]: e.target.value }); // Update new announcement content
+  };
+  const handleNewAnnouncementModalOpen = () => {
+    setIsNewAnnouncementModalOpen(true); // Open new announcement modal
+  };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-
   const handleSortKeyChange = (value: string) => {
     setSortKey(value);
   };
-
   const handleLabelChange = (value: Label) => {
     setLabel(value);
   };
-
-  const handleTitleClick = (text: string) => {
-    setModalText(text);
+  const handleTitleClick = (record: Announcement) => {
+    setCurrentAnnouncement(record);
     setOpen(true);
   };
-
   const handleModalClose = () => {
     setOpen(false);
   };
 
-  const handleEdit = async (record: Announcement) => {
-    try {
-      await axios.post("/announcement", { id: record.key, announcement: record });
-      // 在这里，我假设公告的 ID 存储在 key 属性中。
-      // 在请求成功后，你可能需要刷新数据。
-    } catch (error) {
-      // 处理错误
+  const handleEdit = () => {
+    if (isAdmin) {
+        if(editable) setEditable(false);
+        else setEditable(true);
+    } else {
+      message.error("没有管理员权限不得修改公告");
     }
   };
-  
-  const handleDelete = async (record: Announcement) => {
-    try {
-      await axios.post("/delete_announce", { id: record.key });
-      // 在请求成功后，你可能需要刷新数据。
-    } catch (error) {
-      // 处理错误
-    }
-  };
-  
 
   const columns = [
     {
@@ -108,8 +240,8 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
       key: "title",
       render: (text: string, record: Announcement) => (
         <Title
-          level={4}
-          onClick={() => handleTitleClick(record.text)}
+          level={record.key ? 4 : 5}
+          onClick={() => handleTitleClick(record)}
           style={{ color: record.key ? "red" : "black", cursor: "pointer" }}
         >
           {text}
@@ -135,22 +267,9 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
       dataIndex: "time",
       key: "time",
     },
-    {
-        title: "Actions",
-        key: "actions",
-        render: (text: string, record: Announcement) => (
-          isAdmin && (
-            <Space size="middle">
-              <a onClick={() => handleEdit(record)}>修改</a>
-              <a onClick={() => handleDelete(record)}>删除</a>
-            </Space>
-          )
-        ),
-      },
   ];
 
   let filteredData = data;
-
   if (searchTerm) {
     filteredData = filteredData.filter(
       (announcement) =>
@@ -158,11 +277,9 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
         announcement.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
-
   if (label !== "all") {
     filteredData = filteredData.filter((announcement) => announcement.label === label);
   }
-
   filteredData.sort((a, b) => {
     if (sortKey === "key") {
       return a.key === b.key ? 0 : a.key ? -1 : 1;
@@ -186,16 +303,87 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
           <Option value={Label.Update}>更新公告</Option>
           <Option value={Label.Other}>其他公告</Option>
         </Select>
+        <Button onClick={()=>fetchData()}>获取最新公告列表</Button>
+        {isAdmin && (<Button onClick={handleNewAnnouncementModalOpen}>新建公告</Button>)}
       </Space>
       <Table dataSource={filteredData} columns={columns} rowKey="time" />
       <Modal
-        title="Announcement Text"
+        title={"公告内容"}
         open={open}
-        onOk={handleModalClose}
-        onCancel={handleModalClose}
+        onOk={()=>(handleModalClose(),setEditable(false))}
+        onCancel={()=>(handleModalClose(),setEditable(false))}
       >
-        <p>{modalText}</p>
+        <Input
+          value={currentAnnouncement?.title}
+          showCount
+          onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, title: e.target.value})}
+          maxLength={20}
+          disabled={!editable}
+        />
+        <TextArea
+          value={currentAnnouncement?.text}
+          showCount
+          onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, text: e.target.value})}
+          maxLength={1000}
+          autoSize={{ minRows: 3, maxRows: 5 }}
+          disabled={!editable}
+        />
+        {isAdmin && (
+          <>
+            <Button onClick={handleEdit}>{editable ? "退出修改模式":"进入修改模式"}</Button>
+            {editable && (
+              <>
+                <Button onClick={handleChange}>上传修改</Button>
+                <Button onClick={handleDelete}>删除公告</Button>
+              </>
+            )}
+          </>
+        )}
       </Modal>
+      <Modal
+          title="新建公告"
+          open={isNewAnnouncementModalOpen}
+          onOk={handleConfirmedUpload}
+          onCancel={() => setIsNewAnnouncementModalOpen(false)}
+        >
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Title level={5}>标题</Title>
+            <Input
+              name="title"
+              showCount
+              value={newAnnouncement.title}
+              maxLength={20}
+              onChange={handleNewAnnouncementChange}
+            />
+            <Title level={5}>内容</Title>
+            <TextArea
+                name="text"
+                showCount
+                value={newAnnouncement.text}
+                maxLength={1000}
+                autoSize={{ minRows: 3, maxRows: 5 }}
+                onChange={(e) => setNewAnnouncement({...newAnnouncement, text: e.target.value})}
+            />
+            <Title level={5}>是否关键</Title>
+            <Checkbox
+                name="key"
+                checked={newAnnouncement.key}
+                onChange={(e) => setNewAnnouncement({...newAnnouncement, key: e.target.checked })}
+            >
+                是否关键
+            </Checkbox>
+            <Title level={5}>标签</Title>
+            <Select
+                value={newAnnouncement.label}
+                onChange={(value) => setNewAnnouncement({...newAnnouncement, label: value })}
+            >
+                <Option value="block">封禁公告</Option>
+                <Option value="maintain">维护公告</Option>
+                <Option value="other">其他公告</Option>
+                <Option value="update">更新公告</Option>
+            </Select>
+          </Space>
+        </Modal>
     </Space>
   );
 };
