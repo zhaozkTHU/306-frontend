@@ -17,6 +17,7 @@ import { request } from "@/utils/network";
 import FindPassword from "@/components/register/find-password";
 import CameraButton from "@/components/CameraVideo";
 import axios from "axios";
+import Appeal from "@/components/register/appeal";
 
 interface LoginScreenPorps {
   setRole: Dispatch<SetStateAction<string | null>>;
@@ -29,6 +30,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [faceModal, setFaceModal] = useState(false);
   const [faceModalLoading, setFaceModalLoading] = useState(false);
+  const [AppealModalOpen, setAppealModalOpen] = useState<boolean>(false);
   const CarouselRef = useRef<any>(null);
 
   const faceLogin = (faceImg: File): Promise<void> =>
@@ -125,6 +127,19 @@ export default function LoginScreen(props: LoginScreenPorps) {
         <FindPassword setrefreshing={setRefreshing} />
       </Modal>
 
+      <Modal
+        open={AppealModalOpen}
+        onCancel={() => {
+          if (!refreshing) {
+            setAppealModalOpen(false);
+          }
+        }}
+        footer={null}
+        destroyOnClose
+      >
+        <Appeal setrefreshing={(setRefreshing)}/>
+      </Modal>
+
       <Grid container component="main" sx={{ height: "100vh" }}>
         <Grid
           item
@@ -205,7 +220,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                 name="password"
                 rules={[
                   { required: true, message: "密码不能为空" },
-                  ({}) => ({
+                  ({ }) => ({
                     validator(_, value) {
                       if (
                         !value ||
@@ -273,10 +288,20 @@ export default function LoginScreen(props: LoginScreenPorps) {
                   <Button
                     type="link"
                     onClick={() => {
+                      setAppealModalOpen(true);
+                    }}
+                  >
+                    申诉
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    type="link"
+                    onClick={() => {
                       setIsRegisterModalOpen(true);
                     }}
                   >
-                    注册、验证与申诉
+                    注册验证
                   </Button>
                 </Grid>
               </Grid>
