@@ -117,6 +117,7 @@ const CheckModel = (props: CheckModelProps) => {
                   problem={result[problemIndex]}
                   index={problemIndex}
                   total={result.length}
+                  key={problemIndex}
                 />
               </div>
               <Divider />

@@ -20,7 +20,7 @@ import { transTime } from "@/utils/valid";
 import { Table } from "antd/lib";
 import DataExportCallback from "@/components/data_export/dataExport";
 import UpdateTask from "../task_manage/update-task";
-import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
+import { mapEntemplate2Zhtemplate, mapState2ColorChinese, mapTag2Zh } from "@/const/interface";
 import { request } from "../../utils/network";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
@@ -245,6 +245,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
                 okText="是"
                 cancelText="否"
                 description="是否归并数据后导出?"
+                placement="bottom"
                 onConfirm={() => {
                   DataExportCallback(record.task_id, true);
                 }}
@@ -463,20 +464,20 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               ))}
             </Space>
           </Descriptions.Item>
-          <Descriptions.Item label="要求标注方人数" span={1}>
+          <Descriptions.Item label="要求标注方人数" span={2}>
             {detail.labeler_number}
           </Descriptions.Item>
-          <Descriptions.Item label="单题奖励" span={1}>
+          <Descriptions.Item label="任务奖励" span={2}>
             {detail.reward}
           </Descriptions.Item>
-          <Descriptions.Item label="单题限时" span={1}>
+          <Descriptions.Item label="单题限时" span={2}>
             {detail.time}秒
           </Descriptions.Item>
-          <Descriptions.Item label="分发方式" span={1}>
-            {detail.labeler_number}
+          <Descriptions.Item label="分发方式" span={2}>
+            {detail.distribute==="system"?(detail.distribute_type==="order"?"系统-顺序分发":"系统-智能分发"):("中介: " + detail.agent_username)}
           </Descriptions.Item>
-          <Descriptions.Item label="类型标签" span={1}>
-            {detail.reward}
+          <Descriptions.Item label="类型标签" span={2}>
+          <Tag color="cyan">{detail.type ? mapTag2Zh[detail.type] : "暂无标签"}</Tag>
           </Descriptions.Item>
         </Descriptions>
         <h3>题目详情</h3>
@@ -515,7 +516,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
             />
           </Form.Item>
-          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置单题奖励</p>
+          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置任务奖励</p>
           <Form.Item
             name="reward"
             rules={[
@@ -523,7 +524,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (value < 0) {
-                    return Promise.reject(new Error("单题不能为负数"));
+                    return Promise.reject(new Error("奖励不能为负数"));
                   }
                   return Promise.resolve();
                 },
@@ -534,7 +535,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               name="reward"
               fullWidth
               id="reward"
-              label="单题奖励"
+              label="任务奖励"
               autoFocus
               type="number"
             />

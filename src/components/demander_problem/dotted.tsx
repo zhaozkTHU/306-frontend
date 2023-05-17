@@ -14,8 +14,9 @@ const Dotted = (props: DottedProps) => {
   const canvasRef = useRef<any>(null);
   const [flag, setFlag] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>("");
-
   const img = new Image();
+
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -24,15 +25,13 @@ const Dotted = (props: DottedProps) => {
       canvas.height = 400 * img.height / img.width;
       for (const marker of props.problemList[props.index].data ? props.problemList[props.index].data : []) {
         ctx.beginPath();
-        ctx.arc(marker.x * canvas.width, marker.y * canvas.height, canvas.width/200, 0, 2 * Math.PI);
+        ctx.arc(marker.x * canvas.width, marker.y * canvas.height, canvas.width / 200, 0, 2 * Math.PI);
         ctx.fillStyle = "red";
         ctx.fill();
       }
       setLoading(false);
     };
-  }, [])
 
-  useEffect(() => {
     axios
       .get("/api/file", {
         responseType: "arraybuffer", // 将响应数据解析为 ArrayBuffer 类型
@@ -50,7 +49,20 @@ const Dotted = (props: DottedProps) => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [props.index])
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const marker of props.problemList[props.index].data ? props.problemList[props.index].data : []) {
+      ctx.beginPath();
+      ctx.arc(marker.x * canvas.width, marker.y * canvas.height, canvas.width / 200, 0, 2 * Math.PI);
+      ctx.fillStyle = "red";
+      ctx.fill();
+    }
+    console.log(props.problemList[props.index].data)
+  }, [flag, props.problemList])
 
   const handleMouseUp = (event: any) => {
     const canvas = canvasRef.current;
@@ -72,49 +84,10 @@ const Dotted = (props: DottedProps) => {
     };
   }, []);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const marker of props.problemList[props.index].data ? props.problemList[props.index].data : []) {
-      ctx.beginPath();
-      ctx.arc(marker.x*canvas.width, marker.y*canvas.height, canvas.width/200, 0, 2 * Math.PI);
-      ctx.fillStyle = "red";
-      ctx.fill();
-    }
-  }, [flag])
-
   return (
     <div style={{
       position: "relative",
     }}>
-      <Button style={{
-        backgroundColor: "#3b5999",
-        color: "white"
-      }}
-        onClick={() => {
-          const newProblems = [...props.problemList]
-          newProblems[props.index].data.pop();
-          props.setProblemList(newProblems);
-          setFlag((i) => (!i))
-        }}
-      >撤销</Button>
-      <Divider type="vertical" />
-      <Button
-        style={{
-          backgroundColor: "#3b5999",
-          color: "white"
-        }}
-        onClick={() => {
-          const newProblems = [...props.problemList]
-          newProblems[props.index].data.length = 0;
-          props.setProblemList(newProblems);
-          setFlag((i) => (!i))
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext("2d");
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }}
-      >清空</Button>
       <Spin spinning={loading} tip={"图片加载中"}>
         <img src={imageUrl} style={{ position: "relative", top: "0", left: "0", zIndex: "1", width: 400 }} />
         <canvas

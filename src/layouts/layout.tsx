@@ -16,7 +16,8 @@ import {
   MenuFoldOutlined,
   BellFilled,
   ClockCircleOutlined,
-  PartitionOutlined
+  PartitionOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
 import { Col, MenuProps, Modal, Row, Spin, message } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
@@ -25,6 +26,7 @@ import { MenuItem } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MemberComponent from "@/components/user_vip";
 import CameraVideo from "@/components/CameraVideo";
 import axios from "axios";
@@ -70,10 +72,12 @@ const labelerItems: MenuItem[] = [
 ];
 
 const administratorItems: MenuItem[] = [
-  getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
-  getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
+  getItem("需求方权限审核", "/administrator/check_demander", <TeamOutlined />),
+  getItem("发布任务审核", "/administrator/check_task", <QuestionCircleOutlined />),
   getItem("用户账号管理", "/administrator/account", <ReconciliationOutlined />),
+  getItem("任务与标注查询", "/administrator/query", <SearchOutlined />),
   getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
+  getItem("申诉管理", "/administrator/appeal", <OrderedListOutlined />),
   getItem("个人信息", "/administrator/info", <UserOutlined />),
 ];
 
@@ -103,6 +107,8 @@ const MyLayout = (props: MyLayoutProps) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [faceModalOpen, setFaceModalOpen] = useState<boolean>(false);
   const open = Boolean(anchorEl);
+  const [faceModal, setFaceModal] = useState<boolean>(false);
+  const [faceModalLoading, setFaceModalLoading] = useState<boolean>(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -219,21 +225,8 @@ const MyLayout = (props: MyLayoutProps) => {
               </Col>
               <Col span={12}></Col>
               <Col span={2}>
-                <MemberComponent />
+                <MemberComponent/>
               </Col>
-
-              {/* <Col span={2}>
-                <Button
-                  type="text"
-                  icon={<BellFilled />}
-                  style={{
-                    fontSize: "20px",
-                    // width: 80,
-                    height: "12vh",
-                    color: "white",
-                  }}
-                />
-              </Col> */}
               <Col span={2}>
                 <Button
                   type="text"
@@ -300,7 +293,8 @@ const MyLayout = (props: MyLayoutProps) => {
                 >
                   <MenuItem
                     onClick={() => {
-                      localStorage.clear();
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("role")
                       router.push("/");
                     }}
                   >
@@ -314,6 +308,14 @@ const MyLayout = (props: MyLayoutProps) => {
                   >
                     <PersonOutlineOutlinedIcon />
                     查看信息
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setFaceModal(true);
+                    }}
+                  >
+                    <SentimentSatisfiedAltIcon />
+                    上传人脸
                   </MenuItem>
                 </Menu>
               </Col>

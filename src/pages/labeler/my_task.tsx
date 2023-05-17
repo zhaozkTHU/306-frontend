@@ -41,11 +41,11 @@ const Test = () => {
       })
       .finally(() => {
         request("/api/labeling", "GET")
-          .then((response) => {
+          .then(async (response) => {
             if (response.data.task) {
               setLabelInfo(response.data.task)
               setHasLabeling(true)
-              request("/api/temp_save", "GET")
+              await request("/api/temp_save", "GET")
                 .then((res) => {
                   const problems = response.data.task.task_data;
                   if (res.data.answer.length !== 0) {
@@ -118,7 +118,7 @@ const Test = () => {
                     <Descriptions.Item label="任务模板" span={4}>
                       {mapEntemplate2Zhtemplate[newInfo.template]}
                     </Descriptions.Item>
-                    <Descriptions.Item label="单题奖励" span={2}>
+                    <Descriptions.Item label="任务奖励" span={2}>
                       {newInfo.reward}
                     </Descriptions.Item>
                     <Descriptions.Item label="单题限时" span={2}>
@@ -170,14 +170,14 @@ const Test = () => {
                       <Tooltip title="点击此处下载题目文件">
                         <Button type="link" onClick={() => {
                           setLoading(true);
-                          downLoadZip(newInfo.batch_file.slice(0, -4) + "_clean.zip", setLoading)
+                          downLoadZip(labelInfo.batch_file.slice(0, -4) + "_clean.zip", setLoading)
                         }}>{labelInfo.title}</Button>
                       </Tooltip>
                     </Descriptions.Item>
                     <Descriptions.Item label="任务模板" span={4}>
                       {mapEntemplate2Zhtemplate[labelInfo.template]}
                     </Descriptions.Item>
-                    <Descriptions.Item label="单题奖励" span={2}>
+                    <Descriptions.Item label="任务奖励" span={2}>
                       {labelInfo.reward}
                     </Descriptions.Item>
                     <Descriptions.Item label="单题限时" span={2}>
