@@ -165,7 +165,6 @@ export default function LoginScreen(props: LoginScreenPorps) {
                 const hashPassword = CryptoJS.SHA256(values.password).toString();
                 login({ username: values.username, hashPassword: hashPassword });
               }}
-              // onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
               <Form.Item
@@ -265,7 +264,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                     忘记密码?
                   </Button>
                 </Grid>
-                <Grid item xs>
+                <Grid item>
                   <Button type="link" onClick={() => setFaceModal(true)}>
                     人脸验证登录
                   </Button>
@@ -277,7 +276,7 @@ export default function LoginScreen(props: LoginScreenPorps) {
                       setIsRegisterModalOpen(true);
                     }}
                   >
-                    注册或验证
+                    注册、验证与申诉
                   </Button>
                 </Grid>
               </Grid>
