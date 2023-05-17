@@ -29,7 +29,7 @@ const Appeal = (props: AppealProps) => {
   }, [isVerifyDisabled, timeLeft]);
 
   const getVeriCode = async (_email: string) => {
-    request("/api/vericode_for_reset", "POST", {
+    request("/api/vericode_for_appeal", "POST", {
       email: _email,
     })
       .then(() => {

@@ -71,11 +71,12 @@ const labelerItems: MenuItem[] = [
 ];
 
 const administratorItems: MenuItem[] = [
-  getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
-  getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
+  getItem("需求方权限审核", "/administrator/check_demander", <TeamOutlined />),
+  getItem("发布任务审核", "/administrator/check_task", <QuestionCircleOutlined />),
   getItem("用户账号管理", "/administrator/account", <ReconciliationOutlined />),
   getItem("任务与标注查询", "/administrator/query", <SearchOutlined />),
   getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
+  getItem("申诉管理", "/administrator/appeal", <OrderedListOutlined />),
   getItem("个人信息", "/administrator/info", <UserOutlined />),
 ];
 
