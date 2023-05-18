@@ -1,4 +1,4 @@
-import { Button, Space, Table, message } from "antd";
+import { Button, Table, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -40,46 +40,25 @@ const AdminAppeal = () => {
       title: "操作",
       dataIndex: "appeal_id",
       render: (appeal_id: number, _, index) => (
-        <Space>
-          <Button
-            type="link"
-            onClick={() => {
-              setLoading(true);
-              axios.post(
-                "/api/admin/appeal",
-                { appeal_id, pass: true },
-                { headers: { Authorization: localStorage.getItem("token") } }
-              )
-                .then(() => message.success("操作成功"))
-                .catch((err: AxiosError) => {
-                  message.error((err.response?.data as any).message);
-                })
-                .finally(() => { setLoading(false); setAppealData(appealData.splice(index, 1)); });
-            }}
-            loading={loading}
-          >
-            通过
-          </Button>
-          <Button
-            type="link"
-            onClick={() => {
-              setLoading(true);
-              axios.post(
-                "/api/admin/appeal",
-                { appeal_id, pass: false },
-                { headers: { Authorization: localStorage.getItem("token") } }
-              )
-                .then(() => message.success("操作成功"))
-                .catch((err: AxiosError) => {
-                  message.error((err.response?.data as any).message);
-                })
-                .finally(() => { setLoading(false); setAppealData(appealData.splice(index, 1)); });
-            }}
-            loading={loading}
-          >
-            不通过
-          </Button>
-        </Space>
+        <Button
+          type="link"
+          onClick={() => {
+            setLoading(true);
+            axios.post(
+              "/api/admin/appeal",
+              { appeal_id },
+              { headers: { Authorization: localStorage.getItem("token") } }
+            )
+              .then(() => message.success("操作成功"))
+              .catch((err: AxiosError) => {
+                message.error((err.response?.data as any).message);
+              })
+              .finally(() => { setLoading(false); setAppealData(appealData.splice(index, 1)); });
+          }}
+          loading={loading}
+        >
+          删除
+        </Button>
       )
     }
   ];
