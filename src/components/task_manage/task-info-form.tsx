@@ -18,6 +18,7 @@ import {
   Switch,
   Radio,
   Collapse,
+  Tooltip,
 } from "antd";
 import type { UploadFile, SelectProps } from "antd";
 import dayjs from "dayjs";
@@ -39,6 +40,7 @@ import { Modal } from "antd/lib";
 import axios from "axios";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { clear } from "./deleteList";
+import { HelpOutline } from "@mui/icons-material";
 
 const getBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -48,24 +50,16 @@ const getBase64 = (file: File): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-const downloadTemplate = (type: TaskInfo["template"], templates: TaskInfo["templates"]) => {
-  console.log(type, templates);
+const downloadTemplate = (type: TaskInfo["template"]) => {
+  console.log(type);
   if (type === undefined) {
     message.error("请先选择模板");
     return;
   }
-  templates?.forEach((value) => {
-    const link = document.createElement("a");
-    link.href = `/template/${value}.xlsx`;
-    link.download = `${value}.xlsx`;
-    link.click();
-  });
-  if (type !== "Custom") {
-    const link = document.createElement("a");
-    link.href = `/template/${type}.xlsx`;
-    link.download = `${type}.xlsx`;
-    link.click();
-  }
+  const link = document.createElement("a");
+  link.href = `/template/${type}.xlsx`;
+  link.download = `${type}.xlsx`;
+  link.click();
 };
 
 const selectOptions: SelectProps<TaskInfo["template"]>["options"] = [
@@ -109,6 +103,7 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
   const [previewImage, setPreviewImage] = useState("");
   const [agentList, setAgentList] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [infoModal, setInfoModal] = useState(false);
   const [form] = Form.useForm<TaskInfo>();
   const batch = Form.useWatch("batch", form);
   const template = Form.useWatch("template", form);
@@ -365,21 +360,6 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             </Col>
           </Space>
         </Row>
-        {/* {template === "Custom" && (
-          <Form.Item
-            label="模板组合"
-            name="templates"
-            rules={[{ required: true, message: "请选择模板组合" }]}
-          >
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="选择模板组合"
-              options={selectOptions.filter((option) => option.value !== "Custom")}
-              onChange={(v) => console.log(v)}
-            />
-          </Form.Item>
-        )} */}
         {!batch && (
           <Form.List name="task_data">
             {(dataFields, { add: dataAdd, remove: dataRemove }) => (
@@ -430,6 +410,11 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
         )}
         {batch && (
           <>
+            <Modal open={infoModal} footer={<Button onClick={() => setInfoModal(false)}>确认</Button>}>
+              下载文件后，请不要修改excel文件的页的名字以及excel文件名，填入题目时，请不要出现空行。在上传时
+              ，请将所有相关文件打包成一个zip文件，文件名只能包含字母数字和下划线。<br />
+              请不要修改所有的sheet名或文件名，如果为自定义模板，直接删除不需要的sheet即可。
+            </Modal>
             <Row>
               <Col span={12}>
                 <Alert
@@ -438,23 +423,25 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
                       请
                       <Button
                         type="link"
-                        onClick={() => downloadTemplate(template, form.getFieldValue("templates"))}
+                        onClick={() => downloadTemplate(template)}
                       >
                         下载
                       </Button>
                       模板并按规范提交
-                      <Collapse size="small" ghost >
-                        <Collapse.Panel header="填写规范" key={1} >
-                          下载文件后，请不要修改excel文件的页的名字以及excel文件名，填入题目时，请不要出现空行。在上传时
-                          ，请将所有相关文件打包成一个zip文件，文件名只能包含字母数字和下划线。
-                        </Collapse.Panel>
-                      </Collapse>
                     </>
                   }
                   type="info"
                   showIcon
                 />
               </Col>
+              <Tooltip title="提交规范及模板使用方法">
+                <Button
+                  type="text"
+                  size="small"
+                  onClick={() => setInfoModal(true)}
+                  icon={<HelpOutline />}
+                />
+              </Tooltip>
             </Row>
             <br />
             <Row>
