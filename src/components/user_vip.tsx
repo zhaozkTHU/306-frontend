@@ -68,7 +68,7 @@ const MemberComponent = () => {
         if (now >= vipExpiry) {
           setTimer(accountInfo.level === "diamond"?"永久享受最低流量限制":"流量包已不可用");
           if (!(accountInfo.level === "diamond")) {
-            message.info("流量包已过期");
+            // message.info("流量包已过期");
           }
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
         } else {
