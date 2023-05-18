@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Checkbox, Select, Input, Space, Typography, Modal, Tag, message, Button } from "antd";
+import { Table, Checkbox, Select, Input, Space, Typography, Modal, Tag, message, Button, Divider, Spin } from "antd";
 import axios from "axios";
 import { Announcement, Label, mapLabel } from "@/const/interface";
 
@@ -46,7 +46,7 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
         },
     ];
       
-  const [data, setData] = useState<Array<Announcement>>(sampleAnnouncements); // list
+  const [data, setData] = useState<Array<Announcement>>([]); // list
   const [loading, setLoading] = useState<boolean>(false);
   const [editable, setEditable] = useState<boolean>(false);
   const [currentAnnouncement, setCurrentAnnouncement] = useState<Announcement>(() => {
@@ -90,7 +90,7 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((response) => {
-        setData(response.data);
+        setData(response.data.announce_list);
         message.success("更新公告列表");
         setLoading(false);
       })
@@ -116,12 +116,21 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
     setLoading(true);
     axios
       .post(
-        "/api/announcement",
+        "/api/announcement", 
         newAnnouncement,
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then(() => {
         message.success("已发布！");
+        setNewAnnouncement({
+          admin_name: '',
+          key: false,
+          label: Label.Other,
+          text: '',
+          time: Date.now(),
+          title: '',
+        });
+        fetchData();
         setLoading(false);
       })
       .catch((error) => {
@@ -147,12 +156,12 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
     axios
       .delete(
         "/api/announcement", { 
-            headers: { 
-                Authorization: `Bearer ${token}` 
-            },
-            params: { 
-                announce_id: currentAnnouncement.announce_id
-            },
+          headers: { 
+              Authorization: `Bearer ${token}` 
+          },
+          params: { 
+              announce_id: currentAnnouncement.announce_id
+          },
         }
       )
       .then(() => {
@@ -183,8 +192,13 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
     axios
       .put(
         "/api/announcement", {
-            announcement_id: currentAnnouncement.announce_id,
-            announcement: currentAnnouncement
+            title:currentAnnouncement.title,
+            announce_id: currentAnnouncement.announce_id,
+            text: currentAnnouncement.text,
+            admin_name: currentAnnouncement.admin_name,
+            label: currentAnnouncement.label,
+            key: currentAnnouncement.key,
+            time: Date.now()
         },
         { headers: { Authorization: `Bearer ${token}` }},
       )
@@ -266,6 +280,12 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
       title: "Time",
       dataIndex: "time",
       key: "time",
+      render: (timestamp: number) => {
+        // Create a new Date object from the timestamp
+        const date = new Date(timestamp);
+        // Convert the date object to a human-readable string
+        return date.toLocaleString();
+      }
     },
   ];
 
@@ -282,9 +302,9 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
   }
   filteredData.sort((a, b) => {
     if (sortKey === "key") {
-      return a.key === b.key ? 0 : a.key ? -1 : 1;
+      return (b.key?1:0)- (a.key?1:0);
     } else {
-      return b.time - a.time;
+      return new Date(b.time).getTime() - new Date(a.time).getTime();
     }
   });
 
@@ -312,6 +332,7 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
         open={open}
         onOk={()=>(handleModalClose(),setEditable(false))}
         onCancel={()=>(handleModalClose(),setEditable(false))}
+        footer={null}
       >
         <Space direction="vertical" style={{ width: "100%" }}>
           <Input
@@ -320,15 +341,26 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
             onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, title: e.target.value})}
             maxLength={20}
             disabled={!editable}
-            />
-        <TextArea
-          value={currentAnnouncement?.text}
-          showCount
-          onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, text: e.target.value})}
-          maxLength={1000}
-          autoSize={{ minRows: 3, maxRows: 5 }}
-          disabled={!editable}
-        />
+          />
+          <TextArea
+            value={currentAnnouncement?.text}
+            showCount
+            onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, text: e.target.value})}
+            maxLength={1000}
+            autoSize={{ minRows: 3, maxRows: 5 }}
+            disabled={!editable}
+          />
+          <Title level={5}>发布者</Title>
+          <Input
+            value={currentAnnouncement?.admin_name}
+            showCount
+            onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, admin_name: e.target.value})}
+            maxLength={20}
+            disabled={!editable}
+          />
+        </Space>
+        <Divider />
+        <Space>
         {isAdmin && (
           <>
             <Button onClick={handleEdit}>{editable ? "退出修改模式":"进入修改模式"}</Button>
@@ -339,15 +371,23 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
               </>
             )}
           </>
-        )}  
-        </Space>
+        )}
+        </Space>  
       </Modal>
       
-      <Modal
+      <Spin spinning={loading}>
+        <Modal
           title="新建公告"
           open={isNewAnnouncementModalOpen}
-          onOk={handleConfirmedUpload}
-          onCancel={() => setIsNewAnnouncementModalOpen(false)}
+          onOk={handleUpload}
+          onCancel={() => (setIsNewAnnouncementModalOpen(false), setNewAnnouncement({
+            admin_name: '',
+            key: false,
+            label: Label.Other,
+            text: '',
+            time: Date.now(),
+            title: '',
+          }))}
         >
           <Space direction="vertical" style={{ width: "100%" }}>
             <Title level={5}>标题</Title>
@@ -367,13 +407,21 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
                 autoSize={{ minRows: 3, maxRows: 5 }}
                 onChange={(e) => setNewAnnouncement({...newAnnouncement, text: e.target.value})}
             />
-            <Title level={5}>是否关键</Title>
+            <Title level={5}>发布者</Title>
+            <Input
+              name="admin_name"
+              showCount
+              value={newAnnouncement.admin_name}
+              maxLength={20}
+              onChange={handleNewAnnouncementChange}
+            />
+            <Title level={5}>是否为重要公告</Title>
             <Checkbox
                 name="key"
                 checked={newAnnouncement.key}
                 onChange={(e) => setNewAnnouncement({...newAnnouncement, key: e.target.checked })}
             >
-                是否关键
+                重要
             </Checkbox>
             <Title level={5}>标签</Title>
             <Select
@@ -387,6 +435,7 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
             </Select>
           </Space>
         </Modal>
+      </Spin>
     </Space>
   );
 };
