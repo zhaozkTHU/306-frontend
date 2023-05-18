@@ -1,8 +1,9 @@
 import { ColumnsType } from "antd/es/table";
-import { Button, Descriptions, Divider, Modal, Table, Tag, message } from "antd";
+import { Button, Descriptions, Divider, Modal, Table, Tag, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import { downLoadZip, request } from "@/utils/network";
 import { mapEntemplate2Zhtemplate, mapState2ColorChinese } from "@/const/interface";
+import { transTime } from "@/utils/valid";
 
 interface task {
   title: string;
@@ -13,7 +14,7 @@ interface task {
   template: string;
   demander_id: number;
   labeler_id: number[];
-  labeler_state: string[];
+  labeler_state: number[];
   state: string;
 }
 
@@ -34,6 +35,7 @@ const AgentDistributedTask = () => {
     state: "labeling",
   });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
+  const [labelerModalOpen, setLabelerModalOpen] = useState<boolean>(false);
   useEffect(() => {
     request("/api/agent/distributed", "GET")
       .then((response) => {
@@ -100,7 +102,16 @@ const AgentDistributedTask = () => {
               setDetailModalOpen(true);
             }}
           >
-            查看
+            详情
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setDetail(record);
+              setLabelerModalOpen(true);
+            }}
+          >
+            标注者
           </Button>
         </>
       ),
@@ -118,6 +129,13 @@ const AgentDistributedTask = () => {
       dataIndex: "state",
       key: "state",
       align: "center",
+      render: (state) => (
+        <Tooltip title={mapState2ColorChinese[state].show}>
+          <Tag color={mapState2ColorChinese[state].color}>
+            {mapState2ColorChinese[state].description}
+          </Tag>
+        </Tooltip>
+      )
     },
   ];
   return (
@@ -136,10 +154,10 @@ const AgentDistributedTask = () => {
             {detail.title}
           </Descriptions.Item>
           <Descriptions.Item label="创建时间" span={4}>
-            {detail.create_at}
+            {transTime(detail.create_at)}
           </Descriptions.Item>
           <Descriptions.Item label="截止时间" span={4}>
-            {detail.deadline}
+            {transTime(detail.deadline)}
           </Descriptions.Item>
           <Descriptions.Item label="奖励" span={2}>
             {detail.reward}
@@ -154,6 +172,9 @@ const AgentDistributedTask = () => {
             {mapEntemplate2Zhtemplate[detail.template]}
           </Descriptions.Item>
         </Descriptions>
+      </Modal>
+      <Modal open={labelerModalOpen} footer={null} onCancel={() => { setLabelerModalOpen(false) }}>
+        <h3 style={{ textAlign: "center" }}>标注者详情</h3>
         <Table
           columns={LabelerTableColumn}
           dataSource={detail.labeler_id.map((id: number, idx: number) => {
@@ -162,10 +183,10 @@ const AgentDistributedTask = () => {
               state: detail.labeler_state[idx],
             };
           })}
-          pagination={{ pageSize: 2 }}
+          pagination={{ pageSize: 5 }}
         />
       </Modal>
-      <Table columns={TaskListColumns} loading={refreshing || loading} dataSource={[detail]} />
+      <Table columns={TaskListColumns} loading={refreshing || loading} dataSource={taskList} />
     </>
   );
 };

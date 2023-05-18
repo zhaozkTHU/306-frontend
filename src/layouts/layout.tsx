@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useRouter } from "next/router";
 import {
   QuestionCircleOutlined,
@@ -19,16 +19,18 @@ import {
   PartitionOutlined,
   NotificationOutlined
 } from "@ant-design/icons";
-import { Col, MenuProps, Modal, Row, Spin } from "antd";
+import { Col, Divider, MenuProps, Modal, Row, Spin, message } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
 import Menu from "@mui/material/Menu";
-import { MenuItem } from "@mui/material";
+import { MenuItem, Typography } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MemberComponent from "@/components/user_vip";
-import CameraButton from "@/components/CameraVideo";
+import CameraVideo from "@/components/CameraVideo";
+import axios from "axios";
+import { request } from "@/utils/network";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -77,7 +79,9 @@ const administratorItems: MenuItem[] = [
   getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
   getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
   getItem("用户账号管理", "/administrator/account", <ReconciliationOutlined />),
+  getItem("任务与标注查询", "/administrator/query", <SearchOutlined />),
   getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
+  getItem("申诉管理", "/administrator/appeal", <OrderedListOutlined />),
   getItem("个人信息", "/administrator/info", <UserOutlined />),
 ];
 
@@ -107,11 +111,26 @@ const MyLayout = (props: MyLayoutProps) => {
   const [pageHead, setPageHead] = useState<string>("用户信息");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [loading, setLoading] = useState<boolean>(false);
   const [faceModal, setFaceModal] = useState<boolean>(false);
   const [faceModalLoading, setFaceModalLoading] = useState<boolean>(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const postFace = async(data: FormData) => {
+    request("/api/user/face", "POST", data)
+    .then(() => {
+      message.success("上传成功");
+    })
+    .catch((err) => {
+      console.error(err);
+      message.error(err?.response?.data?.message);
+    })
+    .finally(() => {
+      setLoading(false);
+    })
+  }
 
   if (
     props.role !== "demander" &&
@@ -137,7 +156,7 @@ const MyLayout = (props: MyLayoutProps) => {
     );
   }
   return (
-    <Spin spinning={!router.isReady}>
+    <Spin spinning={!router.isReady||loading}>
       <Layout style={{ minHeight: "100vh" }}>
         {/* 
         Sider that take up the room so that the Content
@@ -344,17 +363,21 @@ const MyLayout = (props: MyLayoutProps) => {
                         Bill is a cat.
                     </div> */}
           </Content>
+
           <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
-            <Spin spinning={faceModalLoading}>
-              <CameraButton
-                fileName="face.jpg"
-                onFinish={(faceImg) => {
-                  // setFaceModalLoading(true);
-                  // alert("vrf")
-                  //   .then(() => setFaceModal(false))
-                  //   .finally(() => setFaceModalLoading(false));
-                }}
-              />
+            <Spin spinning={loading} tip="脸部图片上传中">
+              <Typography component="h1" variant="h5" style={{textAlign: "center"}}>
+                脸部图片上传
+              </Typography>
+            <CameraVideo
+              fileName="face.jpg"
+              onFinish={(file) => {
+                setLoading(true);
+                const formData = new FormData();
+                formData.append("file", file);
+                postFace(formData);
+              }}
+            />
             </Spin>
           </Modal>
           <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>

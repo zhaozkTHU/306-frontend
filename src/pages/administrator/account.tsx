@@ -1,5 +1,6 @@
 import { mapLevel2Zh, mapRole2En } from "@/const/interface";
 import { request } from "@/utils/network";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import {
   Button,
@@ -9,9 +10,7 @@ import {
   Modal,
   Divider,
   Descriptions,
-  Input,
-  Space,
-  InputRef,
+  Form,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
@@ -44,6 +43,7 @@ const AdministratorAccount = () => {
     is_vip: false,
   });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
+  const [blockModalOpen, setBlockModalOpen] = useState<boolean>(false);
   useEffect(() => {
     request("/api/administrator/user_info", "GET")
       .then((response) => {
@@ -60,10 +60,12 @@ const AdministratorAccount = () => {
         setRefreshing(false);
       });
   }, [refreshing]);
-  const block = async (username: string, block: boolean) => {
+  const block = async (username: string, block: boolean, time: number|undefined, description: string|undefined) => {
     request("/api/block_account", "POST", {
       username: username,
       block: block,
+      time: time,
+      description: description
     })
       .then(() => {
         message.success(`${block ? "封禁" : "解封"}成功`);
@@ -168,8 +170,8 @@ const AdministratorAccount = () => {
             <Button
               type="link"
               onClick={() => {
-                setLoading(true);
-                block(record.username, true);
+                setBlockModalOpen(true);
+                setDetail(record)
               }}
               disabled={record.is_blocked}
             >
@@ -179,7 +181,7 @@ const AdministratorAccount = () => {
               type="link"
               onClick={() => {
                 setLoading(true);
-                block(record.username, false);
+                block(record.username, false, undefined, undefined);
               }}
               disabled={!record.is_blocked}
             >
@@ -228,6 +230,72 @@ const AdministratorAccount = () => {
             {detail.is_vip ? "有" : "无"}
           </Descriptions.Item>
         </Descriptions>
+      </Modal>
+      <Modal open={blockModalOpen} onCancel={() => { setBlockModalOpen(false) }} footer={null} destroyOnClose>
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+          封禁账号
+        </Typography>
+        <Divider />
+        <Form
+          name="basic"
+          initialValues={{ remember: true }}
+          onFinish={(values) => {
+            setLoading(true);
+            block(detail.username, true, values.time, values.description);
+            setBlockModalOpen(false);
+          }}
+          autoComplete="off"
+        >
+          <p>作为管理员，您可以在某个账号严重违反规范时对其进行封禁</p>
+          <p>你需要设置封禁天数，若要无限期封禁请将天数设为0</p>
+          <Form.Item
+            name="time"
+            rules={[
+              { required: true, message: "不能为空" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (value < 0) {
+                    return Promise.reject(new Error("封禁天数不能为负数"));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <TextField
+              name="time"
+              fullWidth
+              id="time"
+              label="封禁时长(分钟)"
+              autoFocus
+              type="number"
+            />
+          </Form.Item>
+          <p>管理员需要对封禁情况进行说明以便用户更好的规范自己的行为</p>
+          <Form.Item name="description" rules={[{ required: true, message: "说明不能为空" }]}>
+            <TextField
+              name="description"
+              fullWidth
+              id="description"
+              label="情况说明"
+              autoFocus
+              type="description"
+              multiline
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            size="large"
+            style={{
+              backgroundColor: "#3b5999",
+              marginBottom: "5px",
+            }}
+          >
+            确认
+          </Button>
+        </Form>
       </Modal>
       <Table
         columns={userListColumns}

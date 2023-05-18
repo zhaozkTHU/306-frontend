@@ -75,7 +75,7 @@ const Problem = (props: ProbelmProps) => {
                         objectFit: "contain",
                         objectPosition: "center center",
                       }}
-                      alt="图片加载中，若长时间无反应请刷新重试"
+                      alt="图片加载失败，请刷新重试"
                       height="100%"
                       width="100%"
                     />
@@ -105,7 +105,7 @@ const Problem = (props: ProbelmProps) => {
                         objectFit: "contain",
                         objectPosition: "center center",
                       }}
-                      alt="图片加载中，若长时间无反应请刷新重试"
+                      alt="图片加载失败，请刷新重试"
                       height="100%"
                       width="100%"
                     />
@@ -154,15 +154,18 @@ const Problem = (props: ProbelmProps) => {
             <Divider />
             <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
               {props.problem.choice.map((ch: any, idx: number) => (
-                <Radio value={idx} key={idx}>
-                  <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
-                  <Divider type="vertical" />
-                  <>
-                    {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
-                      ? `标注方输入: ${props.problem.data.input}`
-                      : "无输入"}
-                  </>
-                </Radio>
+                <>
+                  <Radio value={idx} key={idx}>
+                    <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
+                    <Divider type="vertical" />
+                    <>
+                      {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
+                        ? `标注方输入: ${props.problem.data.input}`
+                        : "无输入"}
+                    </>
+                  </Radio>
+                  <br />
+                </>
               ))}
             </Radio.Group>
           </>
@@ -178,13 +181,16 @@ const Problem = (props: ProbelmProps) => {
             <Divider />
             <Radio.Group disabled={true}>
               {props.problem.choice.map((ch: any, idx: number) => (
-                <Radio value={idx} key={idx}>
-                  <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
-                  <Divider type="vertical" />
-                  <>
-                    无输入
-                  </>
-                </Radio>
+                <>
+                  <Radio value={idx} key={idx}>
+                    <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
+                    <Divider type="vertical" />
+                    <>
+                      无输入
+                    </>
+                  </Radio>
+                  <br />
+                </>
               ))}
             </Radio.Group>
           </>
@@ -192,7 +198,7 @@ const Problem = (props: ProbelmProps) => {
       )
     }
   } else if (props.problem.template == "VideoTag") {
-    if (props.problem.template) {
+    if (props.problem.data) {
       return (
         <>
           <h3 style={{ fontSize: "26px" }}>
@@ -207,19 +213,20 @@ const Problem = (props: ProbelmProps) => {
               }}
             />
             <Divider />
-            <Radio.Group
-              value={props.problem.data.choiceIndex}
-              disabled={true}
-            >
+            <Radio.Group value={props.problem.data.choiceIndex} disabled={true}>
               {props.problem.choice.map((ch: any, idx: number) => (
-                <Radio value={idx} key={idx}>
-                  <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
-                  <p>
-                    {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
-                      ? `标注方输入: ${props.problem.data.input}`
-                      : "无输入"}
-                  </p>
-                </Radio>
+                <>
+                  <Radio value={idx} key={idx}>
+                    <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
+                    <Divider type="vertical" />
+                    <>
+                      {ch.needInput && props.problem.data && props.problem.data.choiceIndex === idx
+                        ? `标注方输入: ${props.problem.data.input}`
+                        : "无输入"}
+                    </>
+                  </Radio>
+                  <br />
+                </>
               ))}
             </Radio.Group>
           </>
@@ -240,16 +247,18 @@ const Problem = (props: ProbelmProps) => {
               }}
             />
             <Divider />
-            <Radio.Group
-              disabled={true}
-            >
+            <Radio.Group disabled={true}>
               {props.problem.choice.map((ch: any, idx: number) => (
-                <Radio value={idx} key={idx}>
-                  <p>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</p>
-                  <p>
-                    无输入
-                  </p>
-                </Radio>
+                <>
+                  <Radio value={idx} key={idx}>
+                    <>{`${ch.text}    ${ch.needInput ? "(该选项需要输入)" : "(该选项无需输入)"}`}</>
+                    <Divider type="vertical" />
+                    <>
+                      无输入
+                    </>
+                  </Radio>
+                  <br />
+                </>
               ))}
             </Radio.Group>
           </>

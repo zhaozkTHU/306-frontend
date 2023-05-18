@@ -79,7 +79,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
   });
   const [redistributeModalOpen, setRedistributeModalOpen] = useState<boolean>(false);
   const auto_check = async (task_id: number, credits: number, accuracy: number) => {
-    request("/api/get_agent", "POST", {
+    request("/api/demander/auto_check", "POST", {
       task_id: task_id,
       credits: credits,
       accuracy: accuracy,
@@ -315,7 +315,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
             </Tag>
           </Space>
         );
-      }, 
+      },
     },
   ]
 
@@ -467,17 +467,17 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
           <Descriptions.Item label="要求标注方人数" span={2}>
             {detail.labeler_number}
           </Descriptions.Item>
-          <Descriptions.Item label="单题奖励" span={2}>
+          <Descriptions.Item label="任务奖励" span={2}>
             {detail.reward}
           </Descriptions.Item>
           <Descriptions.Item label="单题限时" span={2}>
             {detail.time}秒
           </Descriptions.Item>
           <Descriptions.Item label="分发方式" span={2}>
-            {detail.distribute==="system"?(detail.distribute_type==="order"?"系统-顺序分发":"系统-智能分发"):("中介: " + detail.agent_username)}
+            {detail.distribute === "system" ? (detail.distribute_type === "order" ? "系统-顺序分发" : "系统-智能分发") : ("中介: " + detail.agent_username)}
           </Descriptions.Item>
           <Descriptions.Item label="类型标签" span={2}>
-          <Tag color="cyan">{detail.type ? mapTag2Zh[detail.type] : "暂无标签"}</Tag>
+            <Tag color="cyan">{detail.type ? mapTag2Zh[detail.type] : "暂无标签"}</Tag>
           </Descriptions.Item>
         </Descriptions>
         <h3>题目详情</h3>
@@ -516,7 +516,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
             />
           </Form.Item>
-          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置单题奖励</p>
+          <p>如果您认为是给出的标注奖励不够吸引人，可以重新设置任务奖励</p>
           <Form.Item
             name="reward"
             rules={[
@@ -524,7 +524,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (value < 0) {
-                    return Promise.reject(new Error("单题不能为负数"));
+                    return Promise.reject(new Error("奖励不能为负数"));
                   }
                   return Promise.resolve();
                 },
@@ -535,7 +535,7 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
               name="reward"
               fullWidth
               id="reward"
-              label="单题奖励"
+              label="任务奖励"
               autoFocus
               type="number"
             />

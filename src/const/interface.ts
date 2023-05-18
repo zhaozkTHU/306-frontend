@@ -38,6 +38,16 @@ export interface ImageFrameProblem extends Problem {
   }[];
 }
 
+export interface ImageLineProblem extends Problem {
+  url: string;
+  data?: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  }[];
+}
+
 export interface TagProblem extends Problem {
   url: string;
   /** 有些选项需要标注方填写 */
@@ -93,8 +103,6 @@ export interface TaskInfo {
     | "VideoReview"
     | "AudioReview"
     | "Custom";
-  /** 仅在`template`为`Custom`时非空 */
-  templates?: string[];
   reward: number;
   time: number;
   labeler_number: number;

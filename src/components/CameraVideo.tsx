@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Divider, message } from "antd";
+import { Button, Card, Divider, message } from "antd";
 
 const CameraVideo: React.FC<{
   fileName: string;
@@ -10,7 +10,6 @@ const CameraVideo: React.FC<{
   const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
-    console.log("close")
     const video = videoRef.current;
     const constraints: MediaStreamConstraints = { audio: false, video: true };
     navigator.mediaDevices
@@ -25,10 +24,17 @@ const CameraVideo: React.FC<{
         console.error(err);
         message.error("获取摄像头失败");
       });
-      return () => {
-        (videoRef.current?.srcObject as MediaStream)?.getTracks().forEach((track) => track.stop());
-      }  
-  })
+    return () => {
+      const stream = videoRef.current?.srcObject as MediaStream;
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+        videoRef.current.src = "";
+      }
+    };
+  });
 
   const handleOk = () => {
     const canvas = canvasRef.current;
@@ -49,11 +55,17 @@ const CameraVideo: React.FC<{
 
   return (
     <>
-      <video ref={videoRef} style={{ display: cameraOpen ? undefined : "none" }} />
+      <Card>
+      <video ref={videoRef} style={{width: "100%", borderRadius: 20}} />
+      </Card>
       <canvas ref={canvasRef} style={{ display: "none" }} />
-      <Divider />
-      <Divider type="vertical" />
-      <Button onClick={handleOk}>拍照</Button>
+      <Button onClick={handleOk} size="large" block
+        style={{
+          backgroundColor: "#3b5999",
+          color: "white",
+          marginTop: 5
+        }}
+      >捕获</Button>
     </>
   );
 
