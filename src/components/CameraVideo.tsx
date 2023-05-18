@@ -12,7 +12,8 @@ const CameraVideo: React.FC<{
   useEffect(() => {
     const video = videoRef.current;
     const constraints: MediaStreamConstraints = { audio: false, video: true };
-    navigator.mediaDevices
+    if(navigator.mediaDevices) {
+      navigator.mediaDevices
       .getUserMedia(constraints)
       .then((stream) => {
         if (video) {
@@ -24,6 +25,10 @@ const CameraVideo: React.FC<{
         console.error(err);
         message.error("获取摄像头失败");
       });
+    } else {
+      message.warning("为保证安全，请使用https建立安全连接");
+    }
+   
     return () => {
       const stream = videoRef.current?.srcObject as MediaStream;
       if (stream) {

@@ -51,6 +51,13 @@ const Test = () => {
                   if (res.data.answer.length !== 0) {
                     for (let i = 0; i < problems.length; i++) {
                       problems[i].data = res.data.answer[i].data
+                      if(res.data.answer[i].data!==undefined) {
+                        console.log(localStorage.getItem("user_id"))
+                        console.log(response.data.task.task_id)
+                        console.log(i)
+                        console.log(response.data.task.time+2)
+                        localStorage.setItem(`${localStorage.getItem("user_id")}-${response.data.task.task_id}-${i}`, response.data.task.time+2)
+                      }
                     }
                   }
                   setProblemList(problems);

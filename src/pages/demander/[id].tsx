@@ -307,7 +307,7 @@ const TasktaskScreen = () => {
             <Tooltip title="你可以对不合格的标注方进行举报">
               <Button
                 type="link"
-                disabled={record.state !== 5}
+                disabled={record.labeler_state !== 5}
                 onClick={() => {
                   setLabelerId(record.labeler_id);
                   setReportModalOpen(true);
@@ -372,10 +372,6 @@ const TasktaskScreen = () => {
           footer={null}
           destroyOnClose
         >
-          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-            举报
-          </Typography>
-          <Divider></Divider>
           <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
             举报
           </Typography>
