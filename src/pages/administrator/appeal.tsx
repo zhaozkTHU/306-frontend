@@ -49,11 +49,14 @@ const AdminAppeal = () => {
               { appeal_id },
               { headers: { Authorization: localStorage.getItem("token") } }
             )
-              .then(() => message.success("操作成功"))
+              .then(() => {
+                message.success("操作成功");
+                setAppealData(appealData.splice(index, 1));
+              })
               .catch((err: AxiosError) => {
                 message.error((err.response?.data as any).message);
               })
-              .finally(() => { setLoading(false); setAppealData(appealData.splice(index, 1)); });
+              .finally(() => { setLoading(false); });
           }}
           loading={loading}
         >
