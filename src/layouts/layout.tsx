@@ -17,7 +17,8 @@ import {
   BellFilled,
   ClockCircleOutlined,
   PartitionOutlined,
-  NotificationOutlined
+  NotificationOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
 import { Col, Divider, MenuProps, Modal, Row, Spin, message } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
