@@ -36,6 +36,7 @@ const MemberComponent = () => {
   });
   const [waitLoading, setWaitLoading] = useState(false);
   const [vipExpiry, setVipExpiry] = useState<number>(Date.now());
+  const [isExpired, setIsExpired] = useState<boolean>(false); 
   const [timer, setTimer] = useState<string>("");
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null); // Using ref to hold the intervalId
 
@@ -68,7 +69,10 @@ const MemberComponent = () => {
         if (now >= vipExpiry) {
           setTimer(accountInfo.level === "diamond"?"永久享受最低流量限制":"流量包已不可用");
           if (!(accountInfo.level === "diamond")) {
-            // message.info("流量包已过期");
+            if(!isExpired) { // check if the package was not expired, but now it is
+              setIsExpired(true); // set it as expired
+              message.info("流量包已过期"); // only show the message when it first expired
+            }
           }
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
         } else {
@@ -77,6 +81,9 @@ const MemberComponent = () => {
           const minutes = Math.floor((diffSec % 3600) / 60);
           const seconds = diffSec % 60;
           setTimer(`${hours}h ${minutes}m ${seconds}s`);
+          if(isExpired) { // if it was expired, but now it is not, update the state
+            setIsExpired(false);
+          }
         }
       }, 1000);
     }
@@ -85,15 +92,15 @@ const MemberComponent = () => {
         clearInterval(intervalIdRef.current);
       }
     };
-  }, [vipExpiry]);
+  }, [vipExpiry, isExpired]);
 
   const fetchAccountInfo = () => {
     setWaitLoading(true);
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
-        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000));
-        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000)));
+        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000));
+        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000)));
         setWaitLoading(false);
       })
       .catch((error) => {
@@ -156,8 +163,8 @@ const MemberComponent = () => {
     setWaitLoading(true);
     axios.post('/api/membership', {vip_time: vipTime}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
-        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000));
-        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000)));
+        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000));
+        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000)));
         setBuyTimeModal(false);
         setWaitLoading(false);
         message.success(`成功购买 ${vipTime}s 流量包`);
