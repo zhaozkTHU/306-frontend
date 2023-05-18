@@ -1,4 +1,4 @@
-import { Button, Table, message } from "antd";
+import { Button, Spin, Table, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -12,13 +12,16 @@ interface AppealData {
 const AdminAppeal = () => {
   const [appealData, setAppealData] = useState<AppealData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
   useEffect(() => {
+    setLoadingData(true);
     axios.get("/api/admin/appeal", { headers: { Authorization: localStorage.getItem("token") } })
       .then((res) => setAppealData(res.data.data))
       .catch((err: AxiosError) => {
         message.error((err.response?.data as any).message);
-      });
-  });
+      })
+      .finally(() => { setLoadingData(false); });
+  }, []);
 
   const columns: ColumnsType<AppealData> = [
     // {
@@ -67,7 +70,9 @@ const AdminAppeal = () => {
   ];
 
   return (
-    <Table columns={columns} dataSource={appealData} />
+    <Spin spinning={loadingData}>
+      <Table columns={columns} dataSource={appealData} />
+    </Spin>
   );
 };
 
