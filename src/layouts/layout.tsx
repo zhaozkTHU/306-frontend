@@ -19,10 +19,10 @@ import {
   PartitionOutlined,
   SearchOutlined
 } from "@ant-design/icons";
-import { Col, MenuProps, Modal, Row, Spin, message } from "antd";
+import { Col, Divider, MenuProps, Modal, Row, Spin, message } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
 import Menu from "@mui/material/Menu";
-import { MenuItem } from "@mui/material";
+import { MenuItem, Typography } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Logout from "@mui/icons-material/Logout";
 import { mapRole2En } from "@/const/interface";
@@ -30,6 +30,7 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import MemberComponent from "@/components/user_vip";
 import CameraVideo from "@/components/CameraVideo";
 import axios from "axios";
+import { request } from "@/utils/network";
 
 const { Header, Content, Sider, Footer } = Layout;
 
@@ -105,13 +106,27 @@ const MyLayout = (props: MyLayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [pageHead, setPageHead] = useState<string>("用户信息");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [faceModalOpen, setFaceModalOpen] = useState<boolean>(false);
   const open = Boolean(anchorEl);
+  const [loading, setLoading] = useState<boolean>(false);
   const [faceModal, setFaceModal] = useState<boolean>(false);
   const [faceModalLoading, setFaceModalLoading] = useState<boolean>(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const postFace = async(data: FormData) => {
+    request("/api/user/face", "POST", data)
+    .then(() => {
+      message.success("上传成功");
+    })
+    .catch((err) => {
+      console.error(err);
+      message.error(err?.response?.data?.message);
+    })
+    .finally(() => {
+      setLoading(false);
+    })
+  }
 
   if (
     props.role !== "demander" &&
@@ -137,7 +152,7 @@ const MyLayout = (props: MyLayoutProps) => {
     );
   }
   return (
-    <Spin spinning={!router.isReady}>
+    <Spin spinning={!router.isReady||loading}>
       <Layout style={{ minHeight: "100vh" }}>
         {/* 
         Sider that take up the room so that the Content
@@ -345,31 +360,22 @@ const MyLayout = (props: MyLayoutProps) => {
                     </div> */}
           </Content>
 
-          <Modal open={faceModalOpen} onCancel={() => setFaceModalOpen(false)} >
+          <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
+            <Spin spinning={loading} tip="脸部图片上传中">
+              <Typography component="h1" variant="h5" style={{textAlign: "center"}}>
+                脸部图片上传
+              </Typography>
             <CameraVideo
               fileName="face.jpg"
               onFinish={(file) => {
+                setLoading(true);
                 const formData = new FormData();
                 formData.append("file", file);
-                axios.post("/api/user/face", formData,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    }
-                  }
-                )
-                  .then(() => {
-                    message.success("上传成功");
-                  })
-                  .catch((err) => {
-                    console.error(err);
-                    message.error(err?.response?.data?.message);
-                  });
+                postFace(formData);
               }}
             />
+            </Spin>
           </Modal>
-          <Button type="link" onClick={() => setFaceModalOpen(true)} >人脸上传</Button>
-          
           <Footer style={{ textAlign: "center", height: "8vh" }}>306众包平台 ©2023 Created by 306 wins</Footer>
         </Layout>
       </Layout>

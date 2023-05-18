@@ -266,7 +266,7 @@ const AdministratorAccount = () => {
               name="time"
               fullWidth
               id="time"
-              label="封禁天数"
+              label="封禁时长(分钟)"
               autoFocus
               type="number"
             />
