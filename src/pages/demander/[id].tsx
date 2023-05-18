@@ -376,10 +376,6 @@ const TasktaskScreen = () => {
             举报
           </Typography>
           <Divider></Divider>
-          <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
-            举报
-          </Typography>
-          <Divider></Divider>
           <Form
             name="basic"
             initialValues={{ remember: true }}

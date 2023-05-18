@@ -66,8 +66,6 @@ const LabelerTaskList = (props: LabelerTaskListProps) => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
-  const [time, setTime] = useState<number>(0);
-  const [flag, setFlag] = useState<boolean>(false);
   useEffect(() => {
     request(`/api/${props.state}`, "GET")
       .then((response) => {
