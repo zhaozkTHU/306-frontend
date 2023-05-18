@@ -92,15 +92,15 @@ const MemberComponent = () => {
         clearInterval(intervalIdRef.current);
       }
     };
-  }, [vipExpiry, isExpired]);
+  }, [vipExpiry]);
 
   const fetchAccountInfo = () => {
     setWaitLoading(true);
     axios.get('/api/account_info', { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
         setAccountInfo(response.data);
-        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000));
-        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000)));
+        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000));
+        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000)));
         setWaitLoading(false);
       })
       .catch((error) => {
@@ -163,8 +163,8 @@ const MemberComponent = () => {
     setWaitLoading(true);
     axios.post('/api/membership', {vip_time: vipTime}, { headers: { Authorization: `Bearer ${token}` } })
       .then((response) => {
-        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000));
-        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000)));
+        setVipExpiry(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000));
+        console.log('ddl:',new Date(response.data.ddl_time * 1000+(8 * 60 * 60 * 1000-12000)));
         setBuyTimeModal(false);
         setWaitLoading(false);
         message.success(`成功购买 ${vipTime}s 流量包`);
@@ -263,7 +263,7 @@ const MemberComponent = () => {
             </Col>
             <Col style={{ textAlign: 'center' }} span={8}>
             <Progress
-              size={[100, 30]}
+              size={[120, 200]}
               percent={getLevelProgress(accountInfo.level)}
               type="circle"
               strokeColor={{'0%': '#108ee9','100%': '#87d068'}}
