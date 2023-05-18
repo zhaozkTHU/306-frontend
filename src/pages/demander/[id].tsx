@@ -307,7 +307,7 @@ const TasktaskScreen = () => {
             <Tooltip title="你可以对不合格的标注方进行举报">
               <Button
                 type="link"
-                disabled={record.state !== 5}
+                disabled={record.labeler_state !== 5}
                 onClick={() => {
                   setLabelerId(record.labeler_id);
                   setReportModalOpen(true);

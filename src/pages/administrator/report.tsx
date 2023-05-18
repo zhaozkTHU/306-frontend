@@ -114,8 +114,8 @@ const AdministratorReport = () => {
     },
     {
       title: "举报者身份",
-      dataIndex: "demander_post",
-      key: "demander_post",
+      dataIndex: "reporter_role",
+      key: "reporter_role",
       align: "center",
       width: "20%",
       filters: [

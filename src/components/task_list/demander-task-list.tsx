@@ -78,11 +78,11 @@ const DemanderTaskList = (props: DemanderTaskListProps) => {
     agent_username: "agent1",
   });
   const [redistributeModalOpen, setRedistributeModalOpen] = useState<boolean>(false);
-  const auto_check = async (task_id: number, credits: number, accuracy: number) => {
+  const auto_check = async (task_id: number, credits: string, accuracy: string) => {
     request("/api/demander/auto_check", "POST", {
       task_id: task_id,
-      credits: credits,
-      accuracy: accuracy,
+      credits: parseInt(credits),
+      accuracy: parseInt(accuracy),
     })
       .then(() => {
         message.success("自动审核请求提交成功，请稍后查看结果");
