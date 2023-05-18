@@ -16,7 +16,8 @@ import {
   MenuFoldOutlined,
   BellFilled,
   ClockCircleOutlined,
-  PartitionOutlined
+  PartitionOutlined,
+  NotificationOutlined
 } from "@ant-design/icons";
 import { Col, MenuProps, Modal, Row, Spin } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
@@ -48,6 +49,7 @@ function getItem(
 }
 
 const demanderItems: MenuItem[] = [
+  getItem("公告栏", "/demander/announce", <NotificationOutlined />),
   getItem("所有任务", "/demander/all_task", <OrderedListOutlined />),
   getItem("新建任务", "/demander/new_task", <PlusOutlined />),
   getItem("中介列表", "/demander/agent_list", <TeamOutlined />),
@@ -61,6 +63,7 @@ const demanderItems: MenuItem[] = [
 ];
 
 const labelerItems: MenuItem[] = [
+  getItem("公告栏", "/labeler/announce", <NotificationOutlined />),
   getItem("我的任务", "/labeler/my_task", <EditOutlined />),
   getItem("审核中", "/labeler/checking", <QuestionCircleOutlined />),
   getItem("审核未通过", "/labeler/failed", <ExclamationCircleOutlined />),
@@ -70,6 +73,7 @@ const labelerItems: MenuItem[] = [
 ];
 
 const administratorItems: MenuItem[] = [
+  getItem("公告栏", "/administrator/announce", <NotificationOutlined />),
   getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
   getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
   getItem("用户账号管理", "/administrator/account", <ReconciliationOutlined />),
@@ -78,6 +82,7 @@ const administratorItems: MenuItem[] = [
 ];
 
 const agentItems: MenuItem[] = [
+  getItem("公告栏", "/agent/announce", <NotificationOutlined />),
   getItem("可配发任务", "/agent/available_task", <MonitorOutlined />),
   getItem("可配发标注者", "/agent/available_labeler", <TeamOutlined />),
   getItem("已配发任务", "/agent/distributed_task", <CarryOutOutlined />),

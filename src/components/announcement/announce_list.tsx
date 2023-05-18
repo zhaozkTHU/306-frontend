@@ -313,13 +313,14 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
         onOk={()=>(handleModalClose(),setEditable(false))}
         onCancel={()=>(handleModalClose(),setEditable(false))}
       >
-        <Input
-          value={currentAnnouncement?.title}
-          showCount
-          onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, title: e.target.value})}
-          maxLength={20}
-          disabled={!editable}
-        />
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Input
+            value={currentAnnouncement?.title}
+            showCount
+            onChange={(e) => setCurrentAnnouncement({...currentAnnouncement, title: e.target.value})}
+            maxLength={20}
+            disabled={!editable}
+            />
         <TextArea
           value={currentAnnouncement?.text}
           showCount
@@ -338,8 +339,10 @@ export const AnnouncementList: React.FC<AnnouncementListProps> = ({ isAdmin }) =
               </>
             )}
           </>
-        )}
+        )}  
+        </Space>
       </Modal>
+      
       <Modal
           title="新建公告"
           open={isNewAnnouncementModalOpen}
