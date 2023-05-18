@@ -1,4 +1,3 @@
-
 export interface User {
   username: string;
   password: string;
@@ -318,4 +317,36 @@ export const mapTag2Zh: Entag2Zh = {
   "part-of-speech": "词性分类",
   intent: "意图揣测",
   event: "事件概括",
+};
+
+export interface Announcement {
+  announce_id?: number;
+  admin_name: string;
+  key: boolean;
+  label: Label;
+  text: string;
+  time: number;
+  title: string;
+}
+
+export enum Label {
+  All = "all",
+  Block = "block", // 封禁公告
+  Maintain = "maintain", // 维护公告
+  Other = "other", // 其他公告
+  Update = "update", // 更新公告
+}
+
+export interface LabelMap {
+  [key: string]: {
+    name: string;
+    color: string;
+  };
+}
+export const mapLabel: LabelMap = {
+  block: { name: "封禁公示", color: "rgb(255, 0, 0)" }, // Red color for 封禁公告
+  maintain: { name: "维护公告", color: "rgb(220, 220, 0)" }, // Yellow color for 维护公告
+  other: { name: "其他公告", color: "rgb(0, 128, 0)" }, // Green color for 其他公告
+  all: { name: "所有公告", color: "rgb(0, 128, 0)" }, // Green color for 所有公告
+  update: { name: "更新公告", color: "rgb(0, 0, 255)" }, // Blue color for 更新公告
 };
