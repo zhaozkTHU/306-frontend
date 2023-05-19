@@ -227,8 +227,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
         }}
         onFinish={onFinish}
       >
-        <Row>
-          <Col span={12}>
+        {/* <Row>
+          <Col span={12}> */}
             <Form.Item
               label="任务标题"
               name="title"
@@ -236,10 +236,10 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             >
               <Input />
             </Form.Item>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={6}>
+          {/* </Col>
+        </Row> */}
+        {/* <Row> */}
+          {/* <Col span={6}> */}
             <Form.Item
               label="任务模板"
               name="template"
@@ -252,8 +252,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
                 options={selectOptions}
               />
             </Form.Item>
-          </Col>
-          <Col span={6}>
+          {/* </Col> */}
+          {/* <Col span={6}> */}
             <Form.Item
               label="任务内容分类标签"
               name="type"
@@ -268,10 +268,10 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
                 ]}
               />
             </Form.Item>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={4}>
+          {/* </Col> */}
+        {/* </Row> */}
+        {/* <Row> */}
+          {/* <Col span={4}> */}
             <Form.Item
               label="任务奖励"
               name="reward"
@@ -279,8 +279,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             >
               <InputNumber min={0} />
             </Form.Item>
-          </Col>
-          <Col span={4}>
+          {/* </Col> */}
+          {/* <Col span={4}> */}
             <Form.Item
               label="标注方人数"
               name="labeler_number"
@@ -288,8 +288,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             >
               <InputNumber min={0} />
             </Form.Item>
-          </Col>
-          <Col span={4}>
+          {/* </Col>
+          <Col span={4}> */}
             <Form.Item
               label="单题限时"
               name="time"
@@ -297,8 +297,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             >
               <InputNumber min={0} addonAfter="秒" />
             </Form.Item>
-          </Col>
-        </Row>
+          {/* </Col>
+        </Row> */}
         <Form.Item
           label="分发方式"
           name="distribute"
@@ -332,9 +332,9 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
             />
           </Form.Item>
         )}
-        <Row>
+        {/* <Row> */}
           <Space>
-            <Col>
+            {/* <Col> */}
               <Form.Item
                 label="任务截止时间"
                 name="deadline"
@@ -347,8 +347,8 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
                   disabledDate={(date) => date.valueOf() < dayjs().valueOf()}
                 />
               </Form.Item>
-            </Col>
-            <Col>
+            {/* </Col> */}
+            {/* <Col> */}
               <Form.Item
                 label="是否使用批量上传"
                 name="batch"
@@ -357,9 +357,9 @@ const TaskInfoForm: React.FC<TaskInfoFormProps> = (props) => {
               >
                 <Switch defaultChecked disabled />
               </Form.Item>
-            </Col>
+            {/* </Col> */}
           </Space>
-        </Row>
+        {/* </Row> */}
         {!batch && (
           <Form.List name="task_data">
             {(dataFields, { add: dataAdd, remove: dataRemove }) => (

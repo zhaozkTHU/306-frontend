@@ -15,7 +15,7 @@ const AdminAppeal = () => {
   const [loadingData, setLoadingData] = useState<boolean>(false);
   useEffect(() => {
     setLoadingData(true);
-    axios.get("/api/admin/appeal", { headers: { Authorization: localStorage.getItem("token") } })
+    axios.get("/api/admin/appeal", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
       .then((res) => setAppealData(res.data.data))
       .catch((err: AxiosError) => {
         message.error((err.response?.data as any).message);
@@ -50,7 +50,7 @@ const AdminAppeal = () => {
             axios.post(
               "/api/admin/appeal",
               { appeal_id },
-              { headers: { Authorization: localStorage.getItem("token") } }
+              { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             )
               .then(() => {
                 message.success("操作成功");
