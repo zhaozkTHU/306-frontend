@@ -14,13 +14,12 @@ import {
   ExclamationCircleOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  BellFilled,
   ClockCircleOutlined,
   PartitionOutlined,
   NotificationOutlined,
   SearchOutlined
 } from "@ant-design/icons";
-import { Col, Divider, MenuProps, Modal, Row, Spin, message } from "antd";
+import { Col, MenuProps, Modal, Row, Spin, message } from "antd";
 import { Layout, Menu as AntMenu, theme, Result, Button, Avatar, Image } from "antd";
 import Menu from "@mui/material/Menu";
 import { MenuItem, Typography } from "@mui/material";
@@ -30,7 +29,6 @@ import { mapRole2En } from "@/const/interface";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MemberComponent from "@/components/user_vip";
 import CameraVideo from "@/components/CameraVideo";
-import axios from "axios";
 import { request } from "@/utils/network";
 
 const { Header, Content, Sider, Footer } = Layout;
@@ -80,7 +78,6 @@ const administratorItems: MenuItem[] = [
   getItem("审核需求方权限", "/administrator/check_demander", <TeamOutlined />),
   getItem("审核发布任务", "/administrator/check_task", <QuestionCircleOutlined />),
   getItem("用户账号管理", "/administrator/account", <ReconciliationOutlined />),
-  getItem("任务与标注查询", "/administrator/query", <SearchOutlined />),
   getItem("举报管理", "/administrator/report", <ExclamationCircleOutlined />),
   getItem("申诉管理", "/administrator/appeal", <OrderedListOutlined />),
   getItem("个人信息", "/administrator/info", <UserOutlined />),
@@ -365,7 +362,7 @@ const MyLayout = (props: MyLayoutProps) => {
                     </div> */}
           </Content>
 
-          <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null}>
+          <Modal open={faceModal} onCancel={() => setFaceModal(false)} footer={null} destroyOnClose>
             <Spin spinning={loading} tip="脸部图片上传中">
               <Typography component="h1" variant="h5" style={{textAlign: "center"}}>
                 脸部图片上传

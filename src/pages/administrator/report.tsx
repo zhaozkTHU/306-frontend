@@ -1,5 +1,5 @@
 import { ColumnsType } from "antd/es/table";
-import { Button, Col, Divider, Form, Modal, Row, Table, message } from "antd";
+import { Button, Col, Divider, Form, Modal, Row, Table, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import MyImage from "@/components/my-img";
 import ImageFormatter from "@/components/image-formatter";
@@ -7,6 +7,7 @@ import { request } from "@/utils/network";
 import Typography from "@mui/material/Typography";
 import { Grid, TextField } from "@mui/material";
 import { mapRole2En } from "@/const/interface";
+import AdminQuery from "@/components/admin-query";
 
 interface Report {
   report_id: number;
@@ -37,6 +38,7 @@ const AdministratorReport = () => {
     reported_role: "labeler",
   });
   const [detailModalOpen, setDetailModalOpen] = useState<boolean>(false);
+  const [queryModalOpen, setQueryModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     request("/api/administrator/report", "GET")
@@ -90,19 +92,6 @@ const AdministratorReport = () => {
       align: "center",
       width: "20%",
       sorter: (a, b) => a.report_id - b.report_id,
-      render: (id, record) => {
-        return (
-          <Button
-            type="link"
-            onClick={() => {
-              setDetailModalOpen(true);
-              setDetail(record);
-            }}
-          >
-            {id}
-          </Button>
-        );
-      },
     },
     {
       title: "举报者ID",
@@ -113,27 +102,6 @@ const AdministratorReport = () => {
       sorter: (a, b) => a.reporter_id - b.reporter_id,
     },
     {
-      title: "举报者身份",
-      dataIndex: "demander_post",
-      key: "demander_post",
-      align: "center",
-      width: "20%",
-      filters: [
-        {
-          text: "需求方",
-          value: "demander",
-        },
-        {
-          text: "标注方",
-          value: "labeler",
-        },
-      ],
-      onFilter: (values, record) => record.role === values,
-      render: (role) => {
-        return mapRole2En[role];
-      },
-    },
-    {
       title: "被举报者ID",
       dataIndex: "user_id",
       key: "user_id",
@@ -142,11 +110,10 @@ const AdministratorReport = () => {
       sorter: (a, b) => a.user_id - b.user_id,
     },
     {
-      title: "操作",
+      title: "审核与查看",
       dataIndex: "operation",
       key: "operation",
       align: "center",
-      width: "20%",
       render: (_, record) => {
         return (
           <>
@@ -170,6 +137,27 @@ const AdministratorReport = () => {
             >
               驳回
             </Button>
+            <Tooltip title="查看标注，防止一面之辞">
+              <Button type="link"
+                onClick={() => {
+                  setQueryModalOpen(true);
+                  setDetail(record);
+                }}
+              >
+                查看标注
+              </Button>
+            </Tooltip>
+            <Tooltip title="查看标注，防止一面之辞">
+              <Button
+                type="link"
+                onClick={() => {
+                  setDetailModalOpen(true);
+                  setDetail(record);
+                }}
+              >
+                查看举报
+              </Button>
+            </Tooltip>
           </>
         );
       },
@@ -263,12 +251,10 @@ const AdministratorReport = () => {
       >
         <br />
         <b>
-          举报ID: {detail.report_id} <Divider type="vertical" /> 举报者ID: {detail.reporter_id}{" "}
-          <Divider type="vertical" /> 被举报者ID: {detail.user_id}
+          举报ID: {detail.report_id} <Divider type="vertical" /> 举报者ID: {detail.reporter_id}{" (" + mapRole2En[detail.reporter_role] + ")"}
+          <Divider type="vertical" /> 被举报者ID: {detail.user_id}{" (" + mapRole2En[detail.reported_role] + ")"}
         </b>
         <Divider />
-        <p>举报者身份: {mapRole2En[detail.reporter_role]}</p>
-        <p>被举报者身份: {mapRole2En[detail.reported_role]}</p>
         <p>举报者描述: {detail.description}</p>
         <p>图片证据:</p>
         <Row>
@@ -289,6 +275,20 @@ const AdministratorReport = () => {
             </Col>
           ))}
         </Row>
+      </Modal>
+      <Modal
+        open={queryModalOpen}
+        onCancel={() => {
+          setQueryModalOpen(false);
+        }}
+        footer={null}
+        destroyOnClose
+        maskClosable={false}
+      >
+        <Typography component="h1" variant="h5" style={{ textAlign: "center" }}>
+          标注详情
+        </Typography>
+        <AdminQuery task_id={detail.task_id} labeler_id={detail.reported_role==="labeler"?detail.user_id:detail.reporter_id}/>
       </Modal>
       <Table
         columns={ReportTableColumns}

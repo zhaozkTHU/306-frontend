@@ -36,6 +36,7 @@ const MemberComponent = () => {
   });
   const [waitLoading, setWaitLoading] = useState(false);
   const [vipExpiry, setVipExpiry] = useState<number>(Date.now());
+  const [isExpired, setIsExpired] = useState<boolean>(false); 
   const [timer, setTimer] = useState<string>("");
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null); // Using ref to hold the intervalId
 
@@ -68,7 +69,10 @@ const MemberComponent = () => {
         if (now >= vipExpiry) {
           setTimer(accountInfo.level === "diamond"?"永久享受最低流量限制":"流量包已不可用");
           if (!(accountInfo.level === "diamond")) {
-            message.info("流量包已过期");
+            if(!isExpired) { // check if the package was not expired, but now it is
+              setIsExpired(true); // set it as expired
+              message.info("流量包已过期"); // only show the message when it first expired
+            }
           }
           clearInterval(intervalIdRef.current as NodeJS.Timeout); // stop the interval
         } else {
@@ -77,6 +81,9 @@ const MemberComponent = () => {
           const minutes = Math.floor((diffSec % 3600) / 60);
           const seconds = diffSec % 60;
           setTimer(`${hours}h ${minutes}m ${seconds}s`);
+          if(isExpired) { // if it was expired, but now it is not, update the state
+            setIsExpired(false);
+          }
         }
       }, 1000);
     }
@@ -256,7 +263,7 @@ const MemberComponent = () => {
             </Col>
             <Col style={{ textAlign: 'center' }} span={8}>
             <Progress
-              size={[100, 30]}
+              size={[120, 200]}
               percent={getLevelProgress(accountInfo.level)}
               type="circle"
               strokeColor={{'0%': '#108ee9','100%': '#87d068'}}
